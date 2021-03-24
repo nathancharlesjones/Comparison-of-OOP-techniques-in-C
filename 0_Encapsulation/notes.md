@@ -1,0 +1,2 @@
+- James Grenning's "multiple-instance module"
+- Can't use inheritance (subclasses can't see the superclass struct)
