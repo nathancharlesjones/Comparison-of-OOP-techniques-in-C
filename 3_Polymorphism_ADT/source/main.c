@@ -4,9 +4,7 @@
 
 int
 main( void )
-{
-    printf("-----3_ADT-----\n");
-    
+{    
     Duck George = duckCreate();
     Duck Bill = mallardCreate();
     

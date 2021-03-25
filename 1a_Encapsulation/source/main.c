@@ -4,7 +4,6 @@
 int
 main( void )
 {
-    printf("-----0_Encapsulation-----\n");
     printf("|__Creating duck objects:\n");
 
     Duck Huey = duckCreate();

@@ -5,7 +5,6 @@
 int
 main( void )
 {
-    printf("-----1_Composition-----\n");
     printf("|__Creating servo controllers:\n");
 
     servoController wrist = servoControllerCreate();

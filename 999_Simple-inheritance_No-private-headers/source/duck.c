@@ -2,13 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include "duck.h"
-#include "duck.r"
 
-size_t
-sizeof_Duck( void )
+#define MAX_CHARS_NAME 10
+
+typedef struct Duck_t
 {
-    return sizeof(Duck_t);
-}
+    char name[MAX_CHARS_NAME];
+} Duck_t;
 
 Duck
 duckCreate( void )
@@ -31,4 +31,10 @@ void
 duckShow( Duck thisDuck )
 {
     printf("\tHi! My name is %s.\n", thisDuck->name);
+}
+
+char *
+duckGetName( Duck thisDuck )
+{
+    return thisDuck->name;
 }

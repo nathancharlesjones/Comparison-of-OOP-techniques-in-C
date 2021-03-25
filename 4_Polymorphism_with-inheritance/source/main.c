@@ -5,9 +5,7 @@
 
 int
 main( void )
-{
-    printf("-----4_Polymorphism-----\n");
-    
+{    
     Duck George = duckCreate();
     Mallard Bill = mallardCreate();
     redMallard Mary = redMallardCreate();

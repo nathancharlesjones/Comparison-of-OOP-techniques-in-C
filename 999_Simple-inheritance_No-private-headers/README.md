@@ -1,0 +1,4 @@
+- Miro Samek's OOP, part 1&2 (with private header files)
+- Requires breaking encapsulation (subclasses NEED to be able to see the full definition of the parent struct)
+    - Some encapsulation retained by using private header files, though
+- Not true polymorphism, since the object has to be explicitly cast to the correct type
