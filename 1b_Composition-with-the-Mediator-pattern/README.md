@@ -24,6 +24,7 @@ typedef struct robotArm_t
     servoController wrist;
 } robotArm_t;
 ```
+
 In this manner, the main program only needs to interface with the "robotArm" object and not the individual servo motors. The robot arm could change out the servo motors for stepper motors and only "robotArm.c" would need to change, not any other part of our program.
 
 ```
