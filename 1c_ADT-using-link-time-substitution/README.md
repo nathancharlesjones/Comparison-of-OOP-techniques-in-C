@@ -46,7 +46,7 @@ $(error Unreachable)
 endif
 ```
 
-This part of the makefile says that if the variable SERVO is equal to "normal", then "servoController.c" is included in our project (but not "servoController_special.c"). And if SERVO is equal to "special" then the opposite is true (see [How do I run it?]() to see how to use this when building the project). In this manner, we can change the behavior of our program by simply changing the implementation of "servoController.h", without ever having to change `main()`.
+This part of the makefile says that if the variable SERVO is equal to "normal", then "servoController.c" is included in our project (but not "servoController_special.c"). And if SERVO is equal to "special" then the opposite is true (see [How do I run it?](https://github.com/nathancharlesjones/Comparison-of-OOP-techniques-in-C/tree/main/1c_ADT-using-link-time-substitution#how-do-i-run-it) to see how to use this when building the project). In this manner, we can change the behavior of our program by simply changing the implementation of "servoController.h", without ever having to change `main()`.
 
 ## How do I run it?
 
