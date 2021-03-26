@@ -41,13 +41,13 @@ servoControllerMoveTo( servoController thisServoController, int angle )
 {
     if ( angle < 0 )
     {
-        printf("\t**WARNIG**: Desired angle was < 0. Limiting to 0 degrees.\n");
+        printf("\t**WARNING**: Desired angle was < 0. Limiting to 0 degrees.\n");
         angle = 0;
     }
 
     if ( angle > 180 )
     {
-        printf("\t**WARNIG**: Desired angle was > 180. Limiting to 180 degrees.\n");
+        printf("\t**WARNING**: Desired angle was > 180. Limiting to 180 degrees.\n");
         angle = 180;
     }
     
