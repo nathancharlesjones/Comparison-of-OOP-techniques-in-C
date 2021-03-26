@@ -27,6 +27,10 @@ mallardInit( Mallard thisMallard, char * name, featherColor color )
 {
     printf("\tInitializing new mallard duck with name: %s\n", name);
 
+    // Problem gets exposed (possibly) here: "thisMallard" was
+    // aligned using it's size, but may not be aligned based on
+    // the size of "Duck_t". Casting "thisMallard" to type "Duck"
+    // may result in an unaligned memory access.
     duckInit( (Duck)thisMallard, name );
 
     thisMallard->myColor = color;
@@ -35,5 +39,9 @@ mallardInit( Mallard thisMallard, char * name, featherColor color )
 void
 mallardShow( Mallard thisMallard )
 {
+    // Problem gets exposed (possibly) here: "thisMallard" was
+    // aligned using it's size, but may not be aligned based on
+    // the size of "Duck_t". Casting "thisMallard" to type "Duck"
+    // may result in an unaligned memory access.
     printf("\tHi! I'm a mallard duck. My name is %s. I have %s feathers.\n", duckGetName((Duck)thisMallard), colorNames[thisMallard->myColor]);
 }

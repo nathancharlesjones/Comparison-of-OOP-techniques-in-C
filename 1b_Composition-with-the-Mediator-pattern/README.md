@@ -75,4 +75,5 @@ Download or clone this repository. Navigate to this folder and then run "make" o
 ```
 
 ## References
-- 
+- ["Head First Design Patterns"](https://www.amazon.com/Head-First-Design-Patterns-Brain-Friendly/dp/0596007124/ref=sr_1_1?crid=1C1X7G13CZMI5&dchild=1&keywords=head+first+design+patterns&qid=1616758854&sprefix=head+first%2Caps%2C182&sr=8-1), Chapter 7 (called the "Adapter" pattern here)
+- ["Design Patterns for Embedded Systems in C"](https://www.amazon.com/Design-Patterns-Embedded-Systems-Engineering/dp/1856177076/ref=sr_1_2?dchild=1&keywords=design+patterns+for+embedded+c&qid=1616758966&sr=8-2), Chapter 3, Section 3.4
