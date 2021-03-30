@@ -3,14 +3,16 @@
 
 typedef enum {RED, BROWN, WHITE} featherColor;
 
-extern const char * colorNames[];
-
 typedef struct Mallard_t * Mallard;
 
 Mallard mallardCreate( void );
 void mallardInit( Mallard thisMallard, char * name, featherColor color );
-void mallardQuack( Mallard thisMallard );
-void mallardShow( Mallard thisMallard );
-void mallardMigrate( Mallard thisMallard );
+
+char * _mallardGetName( Mallard thisMallard );
+void _mallardQuack( Mallard thisMallard );
+void _mallardShow( Mallard thisMallard );
+
+const char * _mallardGetColor( Mallard thisMallard );
+void _mallardMigrate( Mallard thisMallard );
 
 #endif // MALLARD_H

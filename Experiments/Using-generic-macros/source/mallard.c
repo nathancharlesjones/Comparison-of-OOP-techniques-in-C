@@ -2,18 +2,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include "duck.h"
+#include "duckInterface.h"
 #include "mallard.h"
-#include "mallard.r"
 
 const char * colorNames[] = {"red", "brown", "white"};
 
-static void mallardShow( Duck thisDuck );
-static void _mallardMigrate( Mallard thisMallard );
-
-static Mallard_Interface_Struct interface = {
-    {.show=mallardShow},
-    _mallardMigrate
-};
+typedef struct Mallard_t
+{
+    Duck parentDuck;
+    featherColor myColor;
+} Mallard_t;
 
 Mallard
 mallardCreate( void )
@@ -29,31 +27,38 @@ mallardInit( Mallard thisMallard, char * name, featherColor color )
 {
     printf("\tInitializing new mallard duck with name: %s\n", name);
 
-    duckInit( &thisMallard->parentDuck, name );
+    thisMallard->parentDuck = duckCreate();
+    duckInit( thisMallard->parentDuck, name );
 
-    thisMallard->parentDuck.vtable = (Duck_Interface)&interface;
     thisMallard->myColor = color;
 }
 
-static void
-mallardShow( Duck thisDuck )
+char *
+_mallardGetName( Mallard thisMallard )
 {
-    Mallard thisMallard = (Mallard)thisDuck;
-    printf("\tHi! I'm a mallard duck. My name is %s. I have %s feathers.\n", thisMallard->parentDuck.name, colorNames[thisMallard->myColor]);
+    return duckGetName( thisMallard->parentDuck );
 }
 
 void
-mallardMigrate( Mallard thisMallard )
+_mallardQuack( Mallard thisMallard )
 {
-    if ( thisMallard && thisMallard->parentDuck.vtable && ((Mallard_Interface)(thisMallard->parentDuck.vtable))->migrate )
-    {
-        ((Mallard_Interface)(thisMallard->parentDuck.vtable))->migrate(thisMallard);
-    }
+    printf("\t%s: Quack!\n", duckGetName(thisMallard->parentDuck));
 }
 
-static void
+void
+_mallardShow( Mallard thisMallard )
+{
+    printf("\tHi! I'm a mallard duck. My name is %s. I have %s feathers.\n", duckGetName(thisMallard->parentDuck), colorNames[thisMallard->myColor]);
+}
+
+const char *
+_mallardGetColor( Mallard thisMallard )
+{
+    return colorNames[thisMallard->myColor];
+}
+
+void
 _mallardMigrate( Mallard thisMallard )
 {
-    Duck thisDuck = (Duck)thisMallard;
-    printf("\t%s: I'm migrating!\n", thisDuck->name);
+    printf("\t%s: I'm migrating!\n", duckGetName(thisMallard->parentDuck));
 }

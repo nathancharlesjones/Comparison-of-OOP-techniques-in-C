@@ -2,17 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include "duck.h"
+#include "duckInterface.h"
 #include "mallard.h"
+#include "mallardInterface.h"
 #include "redMallard.h"
-#include "redMallard.r"
 
-static void redMallardShow( Duck thisDuck );
-static void redMallardMigrate( Mallard thisMallard );
-
-static Mallard_Interface_Struct interface = {
-    {.show=redMallardShow},
-    redMallardMigrate
-};
+typedef struct redMallard_t
+{
+    Mallard parentMallard;
+} redMallard_t;
 
 redMallard
 redMallardCreate( void )
@@ -28,21 +26,32 @@ redMallardInit( redMallard thisRedMallard, char * name, featherColor color )
 {
     printf("\tInitializing new red-breasted mallard with name: %s\n", name);
 
-    mallardInit( &thisRedMallard->parentMallard, name, color );
-
-    thisRedMallard->parentMallard.parentDuck.vtable = (Duck_Interface)&interface;
+    thisRedMallard->parentMallard = mallardCreate();
+    mallardInit( thisRedMallard->parentMallard, name, color );
 }
 
-static void
-redMallardShow( Duck thisDuck )
+void
+_redMallardQuack( redMallard thisRedMallard )
 {
-    Mallard thisMallard = (Mallard)thisDuck;
-    printf("\tHi! I'm a red-breasted mallard duck. My name is %s. I have %s feathers.\n", thisDuck->name, colorNames[thisMallard->myColor]);
+    printf("\t%s: Quack!\n", duckGetName(thisRedMallard->parentMallard));
 }
 
-static void
-redMallardMigrate( Mallard thisMallard )
+void
+_redMallardShow( redMallard thisRedMallard )
 {
-    Duck thisDuck = (Duck)thisMallard;
-    printf("\t%s: I'm migrating from North to South America with my fellow red-breasted mallards!\n", thisDuck->name);
+    Mallard thisMallard = thisRedMallard->parentMallard;
+    printf("\tHi! I'm a red-breasted mallard duck. My name is %s. I have %s feathers.\n", duckGetName(thisMallard), mallardGetColor(thisMallard));
+}
+
+const char *
+_redMallardGetColor( redMallard thisRedMallard )
+{
+    return mallardGetColor( thisRedMallard->parentMallard );
+}
+
+void
+_redMallardMigrate( redMallard thisRedMallard )
+{
+    Mallard thisMallard = thisRedMallard->parentMallard;
+    printf("\t%s: I'm migrating from North to South America with my fellow red-breasted mallards!\n", duckGetName(thisMallard));
 }

@@ -2,7 +2,7 @@
 
 ## Description
 
-The easiest OOP principle to introduce in C is "encapsulation". A software object that is "encapsulated" does not expose to other parts of the program how it is constructed. This prevents the rest of the program from reaching in and directly manipulating the object's attributes. In this example, the object "Duck_t" is encapsulated by virtue of the fact that it was moved from "duck.h" to "duck.c", which no other part of the program is privy to. Instead, only a pointer to this object is exposed, which the rest of the program can use to refer to "Duck" objects.
+The easiest OOP principle to introduce in C is "encapsulation". A software object that is "encapsulated" does not expose to other parts of the program how it is constructed. This prevents the rest of the program from reaching in and directly manipulating the object's attributes. In this example, the object "Duck_t" is encapsulated by virtue of the fact that it was moved from "duck.h" to "duck.c", which no other part of the program is privy to. Instead, only a pointer to this object is exposed, which the rest of the program can use to refer to "Duck" objects. Structs that don't expose their internal data elements to the rest of the program are sometimes called "opaque structs".
 
 ```
 // include/duck.h

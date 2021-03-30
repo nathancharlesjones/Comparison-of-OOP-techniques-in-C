@@ -13,7 +13,6 @@ typedef struct Duck_t
 
 typedef struct Duck_Interface_Struct
 {
-    void (*quack)( Duck_t * thisDuck );
     void (*show)( Duck_t * thisDuck );
 } Duck_Interface_Struct;
 

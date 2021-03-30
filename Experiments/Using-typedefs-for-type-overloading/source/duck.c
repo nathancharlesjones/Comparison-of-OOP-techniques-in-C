@@ -2,13 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include "duck.h"
+#include "duck.r"
 
-#define MAX_CHARS_NAME 10
+static void _duckShow( Duck thisDuck );
 
-typedef struct Duck_t
-{
-    char name[MAX_CHARS_NAME];
-} Duck_t;
+static Duck_Interface_Struct interface = {
+    _duckShow
+};
 
 Duck
 duckCreate( void )
@@ -24,22 +24,26 @@ duckInit( Duck thisDuck, char * name )
 {
     printf("\tInitializing duck with name: %s\n", name);
 
+    thisDuck->vtable = &interface;
     strncpy(thisDuck->name, name, MAX_CHARS_NAME);
 }
 
-char *
-_duckGetName( Duck thisDuck )
-{
-    return thisDuck->name;
-}
-
 void
-_duckQuack( Duck thisDuck )
+duckQuack( Duck thisDuck )
 {
     printf("\t%s: Quack!\n", thisDuck->name);
 }
 
 void
+duckShow( Duck thisDuck )
+{
+    if ( thisDuck && thisDuck->vtable && thisDuck->vtable->show )
+    {
+        thisDuck->vtable->show(thisDuck);
+    }
+}
+
+static void
 _duckShow( Duck thisDuck )
 {
     printf("\tHi! My name is %s.\n", thisDuck->name);

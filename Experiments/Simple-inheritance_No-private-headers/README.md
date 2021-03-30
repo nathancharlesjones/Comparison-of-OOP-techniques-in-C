@@ -1,4 +1,5 @@
-- Miro Samek's OOP, part 1&2 (with private header files)
-- Requires breaking encapsulation (subclasses NEED to be able to see the full definition of the parent struct)
-    - Some encapsulation retained by using private header files, though
-- Not true polymorphism, since the object has to be explicitly cast to the correct type
+# Simple inheritance, without private headers
+
+- Attempt to get rid of private headers by allocating sufficient space in the subclass struct
+- Couldn't figure out a way to do this other than to #define the size of the superclass struct and create a dummy uint8_t array of the same size in the subclass struct. As noted in the code, though, this is a pretty bad idea since the size value is hand-calculated (and therefore very error-prone, particularly because it may not include padding) and embedding it in the subclass struct like I did also does not take into account any padding that might normally need to be in place for the subclass struct.
+    - Consider the scenario where the superclass struct ends with a uint32_t and then a uint8_t and the subclass struct begins with a uint32_t. With private headers, the compiler knows these facts about both structs and will likely insert padding between the superclass struct and the data elements of the subclass struct so that both uint32_t variables are word-aligned. But with the hack that I demonstrate here, there wouldn't be any padding and accessing one or both of those uint32_t variables would cause an unaligned memory access fault.
