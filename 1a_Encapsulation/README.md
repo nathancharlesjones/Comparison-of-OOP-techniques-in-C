@@ -13,7 +13,8 @@ The rest of the program is able to interact with these "Duck" objects using the 
 
 ```
 // include/duck.h
-Duck duckCreate( void );
+Duck duckCreate_dynamic( void );
+Duck duckCreate_static( void );
 void duckInit( Duck thisDuck, char * name );
 void duckShow( Duck thisDuck );
 ```
@@ -22,9 +23,11 @@ This is demonstrated in "main.c". First, "Duck" objects are created and initiali
 
 ```
 // source/main.c
-Duck Huey = duckCreate();
+Duck Huey = duckCreate_dynamic();
 duckInit(Huey, "Huey");
 ```
+
+Two "Create" functions are provided to demonstrate that _either_ dynamic or static memory allocation can be used in the implementation of these objects. The function `duckCreate_dynamic()` uses `malloc()` to dynamically allocate memory on the heap for each object. The function `duckCreate_static()` utilizes an array of "Duck" objects that is defined in `duck.c` and simply passes out pointers to the elements of this array. The array of "Duck" objects is allocated in static memory and, thus, might be useful to developers who want or need to avoid the use of heap memory.
 
 Then, the program can use the public functions ("duckShow") to interact with the "Duck" objects.
 
@@ -48,19 +51,25 @@ main( void )
 {
     printf("|__Creating duck objects:\n");    -->    |__Creating duck objects:
 
-    Duck Huey = duckCreate();                 -->        Initializing new duck with name: Huey
-    Duck Dewey = duckCreate();                -->        Initializing new duck with name: Duey
-    Duck Louie = duckCreate();                -->        Initializing new duck with name: Luey
+    Duck Huey = duckCreate_dynamic();
+    Duck Dewey = duckCreate_dynamic();
+    Duck Louie = duckCreate_static();
 
-    duckInit(Huey, "Huey");
-    duckInit(Dewey, "Duey");
-    duckInit(Louie, "Luey");
+    duckInit(Huey, "Huey");                   -->        Initializing new duck with name: Huey
+    duckInit(Dewey, "Duey");                  -->        Initializing new duck with name: Duey
+    duckInit(Louie, "Luey");                  -->        Initializing new duck with name: Luey
 
     printf("|__Showing duck objects:\n");     -->    |__Showing duck objects:
     
     duckShow(Huey);                           -->        Hi! My name is Huey.
     duckShow(Dewey);                          -->        Hi! My name is Duey.
     duckShow(Louie);                          -->        Hi! My name is Luey.
+
+    printf("|__Destroying duck objects:\n");  -->    |__Destroying duck objects:
+
+    duckDestroy_dynamic(Huey);                -->        Destroying Duck object with name 'Huey'.
+    duckDestroy_dynamic(Dewey);               -->        Destroying Duck object with name 'Dewey'.
+    duckDestroy_static(Louie);                -->        Destroying Duck object with name 'Louie'.
 
     return 0;
 }

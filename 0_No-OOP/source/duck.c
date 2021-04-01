@@ -25,3 +25,11 @@ duckShow( Duck_t * thisDuck )
 {
     printf("\tHi! My name is %s.\n", thisDuck->name);
 }
+
+void
+duckDestroy( Duck_t * thisDuck )
+{
+    printf("\tDestroying Duck object with name '%s'.\n", thisDuck->name);
+    memset(thisDuck, 0, sizeof(Duck_t));
+    free(thisDuck);
+}

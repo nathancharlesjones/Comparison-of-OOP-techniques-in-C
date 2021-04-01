@@ -16,8 +16,8 @@ main( void )
     Duck_t * Louie = duckCreate();
 
     duckInit(Huey, "Huey");                                                   -->      Initializing new duck with name: Huey
-    duckInit(Dewey, "Duey");                                                  -->      Initializing new duck with name: Duey
-    duckInit(Louie, "Luey");                                                  -->      Initializing new duck with name: Luey
+    duckInit(Dewey, "Dewey");                                                 -->      Initializing new duck with name: Duey
+    duckInit(Louie, "Louie");                                                 -->      Initializing new duck with name: Luey
 
     printf("|__Showing duck objects:\n");                                     -->  |__Showing duck objects:
     
@@ -28,8 +28,14 @@ main( void )
     printf("|__Printing duck objects by directly accessing their names:\n");  -->  |__Printing duck objects by directly accessing their names:
     
     printf("\tAccessing name directly for: %s\n", Huey->name);                -->      Accessing name directly for: Huey
-    printf("\tAccessing name directly for: %s\n", Dewey->name);               -->      Accessing name directly for: Duey
-    printf("\tAccessing name directly for: %s\n", Louie->name);               -->      Accessing name directly for: Luey
+    printf("\tAccessing name directly for: %s\n", Dewey->name);               -->      Accessing name directly for: Dewey
+    printf("\tAccessing name directly for: %s\n", Louie->name);               -->      Accessing name directly for: Louie
+
+    printf("|__Destroying duck objects:\n");                                  -->  |__Destroying duck objects:
+
+    duckDestroy(Huey);                                                        -->      Destroying Duck object with name 'Huey'.
+    duckDestroy(Dewey);                                                       -->      Destroying Duck object with name 'Dewey'.
+    duckDestroy(Louie);                                                       -->      Destroying Duck object with name 'Louie'.
 
     return 0;
 }

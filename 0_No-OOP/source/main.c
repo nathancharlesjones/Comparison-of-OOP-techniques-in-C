@@ -11,8 +11,8 @@ main( void )
     Duck_t * Louie = duckCreate();
 
     duckInit(Huey, "Huey");
-    duckInit(Dewey, "Duey");
-    duckInit(Louie, "Luey");
+    duckInit(Dewey, "Dewey");
+    duckInit(Louie, "Louie");
 
     printf("|__Showing duck objects:\n");
     
@@ -25,6 +25,12 @@ main( void )
     printf("\tAccessing name directly for: %s\n", Huey->name);
     printf("\tAccessing name directly for: %s\n", Dewey->name);
     printf("\tAccessing name directly for: %s\n", Louie->name);
+
+    printf("|__Destroying duck objects:\n");
+
+    duckDestroy(Huey);
+    duckDestroy(Dewey);
+    duckDestroy(Louie);
 
     return 0;
 }

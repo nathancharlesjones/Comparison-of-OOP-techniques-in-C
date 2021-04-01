@@ -11,5 +11,6 @@ typedef struct Duck_t
 Duck_t * duckCreate( void );
 void duckInit( Duck_t * thisDuck, char * name );
 void duckShow( Duck_t * thisDuck );
+void duckDestroy( Duck_t * thisDuck );
 
 #endif // DUCK_H
