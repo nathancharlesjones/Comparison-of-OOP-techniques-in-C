@@ -63,9 +63,9 @@ main( void )
 {
     printf("|__Creating servo controllers:\n");          -->  |__Creating servo controllers:
 
-    servoController wrist = servoControllerCreate();
-    servoController elbow = servoControllerCreate();
-    servoController shoulder = servoControllerCreate();
+    servoController wrist = servoControllerCreate_dynamic();
+    servoController elbow = servoControllerCreate_dynamic();
+    servoController shoulder = servoControllerCreate_static();
 
     servoControllerInit(wrist, "Wrist");                 -->      Initializing new servo controller with name: Wrist
     servoControllerInit(elbow, "Elbow");                 -->      Initializing new servo controller with name: Elbow
@@ -73,7 +73,7 @@ main( void )
 
     printf("|__Creating robot arm controller:\n");       -->  |__Creating robot arm controller:
 
-    robotArm arm = robotArmCreate();
+    robotArm arm = robotArmCreate_static();
     robotArmInit( arm, shoulder, elbow, wrist );         -->      Initializing new robot arm
 
     printf("|__Moving within range of motion:\n");       -->  |__Moving within range of motion:
@@ -112,9 +112,9 @@ main( void )
 {
     printf("|__Creating servo controllers:\n");          -->  |__Creating servo controllers:
 
-    servoController wrist = servoControllerCreate();
-    servoController elbow = servoControllerCreate();
-    servoController shoulder = servoControllerCreate();
+    servoController wrist = servoControllerCreate_dynamic();
+    servoController elbow = servoControllerCreate_dynamic();
+    servoController shoulder = servoControllerCreate_static();
 
     servoControllerInit(wrist, "Wrist");                 -->      Initializing new servo controller with name: Wrist
                                                                   I'm a special servo controller!
@@ -125,7 +125,7 @@ main( void )
 
     printf("|__Creating robot arm controller:\n");       -->  |__Creating robot arm controller:
 
-    robotArm arm = robotArmCreate();
+    robotArm arm = robotArmCreate_static();
     robotArmInit( arm, shoulder, elbow, wrist );         -->      Initializing new robot arm
 
     printf("|__Moving within range of motion:\n");       -->  |__Moving within range of motion:

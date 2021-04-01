@@ -56,14 +56,14 @@ main( void )
     Duck Louie = duckCreate_static();
 
     duckInit(Huey, "Huey");                   -->        Initializing new duck with name: Huey
-    duckInit(Dewey, "Duey");                  -->        Initializing new duck with name: Duey
-    duckInit(Louie, "Luey");                  -->        Initializing new duck with name: Luey
+    duckInit(Dewey, "Dewey");                 -->        Initializing new duck with name: Dewey
+    duckInit(Louie, "Louie");                 -->        Initializing new duck with name: Louie
 
     printf("|__Showing duck objects:\n");     -->    |__Showing duck objects:
     
     duckShow(Huey);                           -->        Hi! My name is Huey.
-    duckShow(Dewey);                          -->        Hi! My name is Duey.
-    duckShow(Louie);                          -->        Hi! My name is Luey.
+    duckShow(Dewey);                          -->        Hi! My name is Dewey.
+    duckShow(Louie);                          -->        Hi! My name is Louie.
 
     printf("|__Destroying duck objects:\n");  -->    |__Destroying duck objects:
 
