@@ -42,14 +42,28 @@ Download or clone this repository. Navigate to this folder and then run "make" o
 ## Expected output
 
 ```
-|__Creating duck objects:
-        Initializing new duck with name: Huey
-        Initializing new duck with name: Duey
-        Initializing new duck with name: Luey
-|__Showing duck objects:
-        Hi! My name is Huey.
-        Hi! My name is Duey.
-        Hi! My name is Luey.
+// source/main.c
+int
+main( void )
+{
+    printf("|__Creating duck objects:\n");    -->    |__Creating duck objects:
+
+    Duck Huey = duckCreate();                 -->        Initializing new duck with name: Huey
+    Duck Dewey = duckCreate();                -->        Initializing new duck with name: Duey
+    Duck Louie = duckCreate();                -->        Initializing new duck with name: Luey
+
+    duckInit(Huey, "Huey");
+    duckInit(Dewey, "Duey");
+    duckInit(Louie, "Luey");
+
+    printf("|__Showing duck objects:\n");     -->    |__Showing duck objects:
+    
+    duckShow(Huey);                           -->        Hi! My name is Huey.
+    duckShow(Dewey);                          -->        Hi! My name is Duey.
+    duckShow(Louie);                          -->        Hi! My name is Luey.
+
+    return 0;
+}
 ```
 
 ## References

@@ -147,7 +147,8 @@ main( void )
     printf("|__Initializing duck and mallard objects:\n");    -->    |__Initializing duck and mallard objects:
 
     duckInit(George, "George");                               -->        Initializing duck with name: George
-    mallardInit(Bill, "Bill", BROWN);                         -->        Initializing new mallard duck with name: Bill / Initializing duck with name: Bill
+    mallardInit(Bill, "Bill", BROWN);                         -->        Initializing new mallard duck with name: Bill
+                                                                         Initializing duck with name: Bill
 
     printf("|__Quacking duck and mallard objects:\n");        -->    |__Quacking duck and mallard objects:
     
@@ -171,3 +172,5 @@ main( void )
             - [AcmeWirelessLightDriver.h](https://github.com/jwgrenning/tddec-code/blob/master/code-t3/include/devices/AcmeWirelessLightDriver.h) | [AcmeWirelessLightDriver.c](https://github.com/jwgrenning/tddec-code/blob/master/code-t3/src/devices/AcmeWirelessLightDriver.c)
             - [MemMappedLightDriver.h](https://github.com/jwgrenning/tddec-code/blob/master/code-t3/include/devices/MemMappedLightDriver.h) | [MemMappedLightDriver.c](https://github.com/jwgrenning/tddec-code/blob/master/code-t3/src/devices/MemMappedLightDriver.c)
             - [X10LightDriver.h](https://github.com/jwgrenning/tddec-code/blob/master/code-t3/include/devices/X10LightDriver.h) | [X10LightDriver.c](https://github.com/jwgrenning/tddec-code/blob/master/code-t3/src/devices/X10LightDriver.c)
+- ["OOP in C", Section 3](https://www.state-machine.com/doc/AN_OOP_in_C.pdf), Miro Samek
+    - [Code example](https://github.com/QuantumLeaps/OOP-in-C/tree/master/polymorphism)

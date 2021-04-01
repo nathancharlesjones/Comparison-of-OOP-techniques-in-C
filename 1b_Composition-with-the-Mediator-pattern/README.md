@@ -57,21 +57,40 @@ Download or clone this repository. Navigate to this folder and then run "make" o
 ## Expected output
 
 ```
-|__Creating servo controllers:
-        Initializing new servo controller with name: Wrist
-        Initializing new servo controller with name: Elbow
-        Initializing new servo controller with name: Shoulder
-|__Creating robot arm controller:
-        Initializing new robot arm
-|__Moving within range of motion:
-        Moving Elbow to 90 degrees.
-        Moving Wrist to 55 degrees.
-        Moving Shoulder to 179 degrees.
-|__Moving outside range of motion:
-        Restricting elbow movement to [25, 155] degrees when shoulder joint is within 10 degrees of its extremes.
-        Moving Elbow to 25 degrees.
-        Restricting wrist movement to [50, 130] degrees when elbow joint is within 30 degrees of its extremes.
-        Moving Wrist to 130 degrees.
+// source/main.c
+int
+main( void )
+{
+    printf("|__Creating servo controllers:\n");          -->  |__Creating servo controllers:
+
+    servoController wrist = servoControllerCreate();
+    servoController elbow = servoControllerCreate();
+    servoController shoulder = servoControllerCreate();
+
+    servoControllerInit(wrist, "Wrist");                 -->      Initializing new servo controller with name: Wrist
+    servoControllerInit(elbow, "Elbow");                 -->      Initializing new servo controller with name: Elbow
+    servoControllerInit(shoulder, "Shoulder");           -->      Initializing new servo controller with name: Shoulder
+
+    printf("|__Creating robot arm controller:\n");       -->  |__Creating robot arm controller:
+
+    robotArm arm = robotArmCreate();
+    robotArmInit( arm, shoulder, elbow, wrist );         -->      Initializing new robot arm
+
+    printf("|__Moving within range of motion:\n");       -->  |__Moving within range of motion:
+    
+    robotArm_moveElbowTo(arm, 90);                       -->      Moving Elbow to 90 degrees.
+    robotArm_moveWristTo(arm, 55);                       -->      Moving Wrist to 55 degrees.
+    robotArm_moveShoulderTo(arm, 179);                   -->      Moving Shoulder to 179 degrees.
+
+    printf("|__Moving outside range of motion:\n");      -->  |__Moving outside range of motion:
+    
+    robotArm_moveElbowTo(arm, 10);                       -->      Restricting elbow movement to [25, 155] degrees when shoulder joint is within 10 degrees of its extremes.
+                                                                  Moving Elbow to 25 degrees.
+    robotArm_moveWristTo(arm, 140);                      -->      Restricting wrist movement to [50, 130] degrees when elbow joint is within 30 degrees of its extremes.
+                                                                  Moving Wrist to 130 degrees.
+
+    return 0;
+}
 ```
 
 ## References

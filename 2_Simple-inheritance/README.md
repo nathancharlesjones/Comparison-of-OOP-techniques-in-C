@@ -78,15 +78,30 @@ Download or clone this repository. Navigate to this folder and then run "make" o
 ## Expected output
 
 ```
-|__Initializing mallard objects:
-        Initializing duck with name: George
-        Initializing new mallard duck with name: Bill
-        Initializing duck with name: Bill
-|__Showing duck and mallard objects:
-        Hi! My name is George.
-        Hi! I'm a mallard duck. My name is Bill. I have brown feathers.
-|__Showing mallard objects (cast to duck objects):
-        Hi! My name is Bill.
+// source/main.c
+int
+main( void )
+{    
+    Duck George = duckCreate();
+    Mallard Bill = mallardCreate();
+    
+    printf("|__Initializing mallard objects:\n");                    -->  |__Initializing mallard objects:
+
+    duckInit(George, "George");                                      -->      Initializing duck with name: George
+    mallardInit(Bill, "Bill", BROWN);                                -->      Initializing new mallard duck with name: Bill
+                                                                              Initializing duck with name: Bill
+
+    printf("|__Showing duck and mallard objects:\n");                -->  |__Showing duck and mallard objects:
+    
+    duckShow(George);                                                -->      Hi! My name is George.
+    mallardShow(Bill);                                               -->      Hi! I'm a mallard duck. My name is Bill. I have brown feathers.
+    
+    printf("|__Showing mallard objects (cast to duck objects):\n");  -->  |__Showing mallard objects (cast to duck objects):
+    
+    duckShow((Duck)Bill);                                            -->      Hi! My name is Bill.
+
+    return 0;
+}
 ```
 
 ## References
