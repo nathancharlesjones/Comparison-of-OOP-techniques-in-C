@@ -2,8 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include "duck.h"
+#include "duck.r"
 #include "mallard.h"
-#include "mallard.r"
+
+typedef struct Mallard_t
+{
+    Duck_t parentDuck;
+    featherColor myColor;
+} Mallard_t;
 
 const char * colorNames[] = {"red", "brown", "white"};
 

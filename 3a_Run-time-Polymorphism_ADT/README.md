@@ -1,4 +1,4 @@
-# Polymorphism (ADT)
+# Run-time Polymorphism (ADT)
 
 ## Description
 
@@ -77,7 +77,7 @@ duckShow( Duck thisDuck )
 Looking at a derived object may help this make more sense. Our "Mallard" objects "inherit" from Duck, so it includes a Duck_t object as it's first element.
 
 ```
-// include/mallard.r
+// source/mallard.c
 typedef struct Mallard_t
 {
     Duck_t parentDuck;
