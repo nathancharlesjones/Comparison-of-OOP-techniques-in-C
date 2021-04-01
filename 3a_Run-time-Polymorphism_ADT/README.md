@@ -30,7 +30,7 @@ typedef struct Duck_Interface_Struct
 //
 ```
 
-We'll also add this interface struct as the first member of our Duck struct (we'll see why in a minute).
+We'll also add this interface struct as the first member of our Duck struct.
 
 ```
 // include/duck.r
