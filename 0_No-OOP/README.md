@@ -33,9 +33,9 @@ main( void )
 
     printf("|__Destroying duck objects:\n");                                  -->  |__Destroying duck objects:
 
-    duckDestroy(Huey);                                                        -->      Destroying Duck object with name 'Huey'.
-    duckDestroy(Dewey);                                                       -->      Destroying Duck object with name 'Dewey'.
-    duckDestroy(Louie);                                                       -->      Destroying Duck object with name 'Louie'.
+    duckDestroy(Huey);                                                        -->      Destroying Duck object with name: Huey
+    duckDestroy(Dewey);                                                       -->      Destroying Duck object with name: Dewey
+    duckDestroy(Louie);                                                       -->      Destroying Duck object with name: Louie
 
     return 0;
 }

@@ -67,9 +67,9 @@ main( void )
 
     printf("|__Destroying duck objects:\n");  -->    |__Destroying duck objects:
 
-    duckDestroy_dynamic(Huey);                -->        Destroying Duck object with name 'Huey'.
-    duckDestroy_dynamic(Dewey);               -->        Destroying Duck object with name 'Dewey'.
-    duckDestroy_static(Louie);                -->        Destroying Duck object with name 'Louie'.
+    duckDestroy_dynamic(Huey);                -->        Destroying Duck object with name: Huey
+    duckDestroy_dynamic(Dewey);               -->        Destroying Duck object with name: Dewey
+    duckDestroy_static(Louie);                -->        Destroying Duck object with name: Louie
 
     return 0;
 }

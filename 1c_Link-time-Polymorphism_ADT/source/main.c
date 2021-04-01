@@ -7,9 +7,9 @@ main( void )
 {
     printf("|__Creating servo controllers:\n");
 
-    servoController wrist = servoControllerCreate();
-    servoController elbow = servoControllerCreate();
-    servoController shoulder = servoControllerCreate();
+    servoController wrist = servoControllerCreate_dynamic();
+    servoController elbow = servoControllerCreate_dynamic();
+    servoController shoulder = servoControllerCreate_static();
 
     servoControllerInit(wrist, "Wrist");
     servoControllerInit(elbow, "Elbow");
@@ -17,7 +17,7 @@ main( void )
 
     printf("|__Creating robot arm controller:\n");
 
-    robotArm arm = robotArmCreate();
+    robotArm arm = robotArmCreate_static();
     robotArmInit( arm, shoulder, elbow, wrist );
 
     printf("|__Moving within range of motion:\n");
@@ -30,6 +30,16 @@ main( void )
     
     robotArm_moveElbowTo(arm, 10);
     robotArm_moveWristTo(arm, 140);
+
+    printf("|__Destroying servo controller objects:\n");
+
+    servoControllerDestroy_dynamic(wrist);
+    servoControllerDestroy_dynamic(elbow);
+    servoControllerDestroy_static(shoulder);
+
+    printf("|__Destroying robot arm object:\n");
+
+    robotArmDestroy_static(arm);
 
     return 0;
 }

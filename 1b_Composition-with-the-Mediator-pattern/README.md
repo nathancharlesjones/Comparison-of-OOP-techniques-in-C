@@ -87,7 +87,17 @@ main( void )
     robotArm_moveElbowTo(arm, 10);                       -->      Restricting elbow movement to [25, 155] degrees when shoulder joint is within 10 degrees of its extremes.
                                                                   Moving Elbow to 25 degrees.
     robotArm_moveWristTo(arm, 140);                      -->      Restricting wrist movement to [50, 130] degrees when elbow joint is within 30 degrees of its extremes.
-                                                                  Moving Wrist to 130 degrees.
+                                                                  Moving Wrist to 130 degrees.    
+
+    printf("|__Destroying servo controller objects:\n"); -->  |__Destroying servo controller objects:
+
+    servoControllerDestroy_dynamic(wrist);               -->      Destroying servoController object with name: Wrist
+    servoControllerDestroy_dynamic(elbow);               -->      Destroying servoController object with name: Elbow
+    servoControllerDestroy_static(shoulder);             -->      Destroying servoController object with name: Shoulder
+
+    printf("|__Destroying robot arm object:\n");         -->  |__Destroying robot arm object:
+
+    robotArmDestroy_static(arm);                         -->      Destroying robotArm object
 
     return 0;
 }

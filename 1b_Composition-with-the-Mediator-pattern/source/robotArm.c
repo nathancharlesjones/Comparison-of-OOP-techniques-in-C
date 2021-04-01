@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
 #include "robotArm.h"
 #include "servoController.h"
 
@@ -10,11 +12,36 @@ typedef struct robotArm_t
     servoController wrist;
 } robotArm_t;
 
+typedef struct robotArmMemoryPool_t
+{
+    bool used;
+    robotArm_t thisRobotArm;
+} robotArmMemoryPool_t;
+
+static robotArmMemoryPool_t robotArmMemoryPool[MAX_NUM_ROBOT_ARM_OBJS] = {0};
+
 robotArm
-robotArmCreate( void )
+robotArmCreate_dynamic( void )
 {
     robotArm newRobotArm = (robotArm)malloc(sizeof(robotArm_t));
     // TODO: Check for null pointer on malloc failure
+
+    return newRobotArm;
+}
+
+robotArm
+robotArmCreate_static( void )
+{
+    robotArm newRobotArm = NULL;
+
+    for( int i = 0; i < MAX_NUM_ROBOT_ARM_OBJS; i++)
+    {
+        if( robotArmMemoryPool[i].used == false )
+        {
+            robotArmMemoryPool[i].used = true;
+            newRobotArm = &robotArmMemoryPool[i].thisRobotArm;
+        }
+    }
 
     return newRobotArm;
 }
@@ -69,4 +96,27 @@ robotArm_moveWristTo( robotArm thisRobotArm, int angle )
         if ( angle < 50 ) angle = 50;
     }
     servoControllerMoveTo( thisRobotArm->wrist, angle );
+}
+
+void
+robotArmDestroy_dynamic( robotArm thisRobotArm )
+{
+    printf("\tDestroying robotArm object\n");
+    memset(thisRobotArm, 0, sizeof(robotArm_t));
+    free(thisRobotArm);
+}
+
+void
+robotArmDestroy_static( robotArm thisRobotArm )
+{
+    for( int i = 0; i < MAX_NUM_ROBOT_ARM_OBJS; i++)
+    {
+        if( thisRobotArm == &robotArmMemoryPool[i].thisRobotArm )
+        {
+            printf("\tDestroying robotArm object\n");
+            memset(&robotArmMemoryPool[i].thisRobotArm, 0, sizeof(robotArm_t));
+            robotArmMemoryPool[i].used = false;
+            thisRobotArm = NULL;
+        }
+    }
 }
