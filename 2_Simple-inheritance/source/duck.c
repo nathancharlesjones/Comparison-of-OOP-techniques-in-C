@@ -4,12 +4,6 @@
 #include "duck.h"
 #include "duck.r"
 
-size_t
-sizeof_Duck( void )
-{
-    return sizeof(Duck_t);
-}
-
 Duck
 duckCreate( void )
 {

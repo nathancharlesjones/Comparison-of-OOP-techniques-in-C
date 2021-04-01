@@ -69,7 +69,7 @@ In this manner, a pointer to a Mallard_t object IS ALSO A pointer to a Duck_t ob
 duckShow((Duck)Bill);
 ```
 
-The private header file is necessary so that derived classes, like "mallard.h", can see the full internals of the base class that they're inheriting from, but the rest of the program cannot (at least, not if they're behaving themselves). Unfortunately, the "duckShow()" function has no concept of "Mallard" or "featherColor", so they aren't able to be included in the sentence that gets printed. Additionally, we have no way for the "Mallard" class to add functions to an interface which _further_ derived class could then inherit. We'll fix these problems in a future project.
+The private header file is necessary so that derived classes, like "mallard.h", can see the full internals of the base class that they're inheriting from, but the rest of the program cannot (at least, not if they're behaving themselves). Unfortunately, the "duckShow()" function has no concept of "Mallard" or "featherColor", so they aren't able to be included in the sentence that gets printed. Additionally, we have no way for the "Mallard" class to add functions to an interface which _further_ derived classes could then inherit. We'll fix these problems in a future project.
 
 ## How do I run it?
 
