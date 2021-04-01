@@ -1,6 +1,3 @@
-- ADT can have virtual and unchanged functions; concrete class can add data and other methods (but can't be extending to further sublasses without modification)
-- Data elements are all ADT type; User specifies which concrete class to use by which "...Create" method is called and needs to manually manage this (i.e. there is nothing the compiler can see that will tell it or the user later on in the code if a specific object is of one concrete type or another)
-
 # Polymorphism (ADT)
 
 ## Description
@@ -105,9 +102,33 @@ mallardInit( Duck thisDuck, char * name, featherColor color )
 }
 ```
 
-Now, when `duckShow()` is called on a Mallard object, the function call `thisDuck->vtable->show(thisDuck)` points not to `_duckShow()` but to `mallardShow()`!
+Now, when `duckShow()` is called on a Mallard object, the function call `thisDuck->vtable->show(thisDuck)` points **not** to `_duckShow()` but to `mallardShow()`!
 
-Of critical importance to this setup is that the Mallard functions do not operate on "Mallard" objects, but rather "Duck" objects. Notice also that the function `mallardCreate()` does not return a Mallard object, but rather a Duck object.
+Of critical importance to this setup is that the Mallard functions do not operate on "Mallard" objects, but rather "Duck" objects.
+
+```
+// include/mallard.h
+void mallardInit( Duck thisDuck, char * name, featherColor color );
+```
+
+Notice also that the function `mallardCreate()` does not return a Mallard object, but rather a Duck object.
+
+```
+// include/mallard.h
+Duck mallardCreate( void );
+
+// source/mallard.c
+Duck
+mallardCreate( void )
+{
+    ...
+    return (Duck)newMallard;
+}
+```
+
+This is what allows us to call Duck methods on Mallard objects without having to explicitly cast: although Mallard objects extend and behave differently than Duck objects, because they inherit from Duck, then can be treated by the rest of the program exactly as Ducks. The vtable then allows them to perform Mallard-specific implementations of the Duck functions. Thus, the Duck class is considered an "abstract data type" for which "Mallard" (and any other derived classes) offer an implementation.
+
+One last thing to note is that this structure does not allow for full inheritance. Meaning, we couldn't use this same code to define a class that is derived from "Mallard" and then also expect to pass them to Duck functions without error. That problem will be solved in a future project.
 
 ## How do I run it?
 
@@ -116,17 +137,37 @@ Download or clone this repository. Navigate to this folder and then run "make" o
 ## Expected output
 
 ```
-|__Initializing duck and mallard objects:
-        Initializing duck with name: George
-        Initializing new mallard duck with name: Bill
-        Initializing duck with name: Bill
-|__Quacking duck and mallard objects:
-        George: Quack!
-        Bill: Quack!
-|__Showing duck and mallard objects:
-        Hi! My name is George.
-        Hi! I'm a mallard duck. My name is Bill. I have brown feathers.
+// source/main.c
+int
+main( void )
+{    
+    Duck George = duckCreate();
+    Duck Bill = mallardCreate();
+    
+    printf("|__Initializing duck and mallard objects:\n");    -->    |__Initializing duck and mallard objects:
+
+    duckInit(George, "George");                               -->        Initializing duck with name: George
+    mallardInit(Bill, "Bill", BROWN);                         -->        Initializing new mallard duck with name: Bill / Initializing duck with name: Bill
+
+    printf("|__Quacking duck and mallard objects:\n");        -->    |__Quacking duck and mallard objects:
+    
+    duckQuack(George);                                        -->        George: Quack!
+    duckQuack(Bill);                                          -->        Bill: Quack!
+    
+    printf("|__Showing duck and mallard objects:\n");         -->    |__Showing duck and mallard objects:
+    
+    duckShow(George);                                         -->        Hi! My name is George.
+    duckShow(Bill);                                           -->        Hi! I'm a mallard duck. My name is Bill. I have brown feathers.
+    
+    return 0;
+}
 ```
 
 ## References
-- 
+- "Improving the Design with Dynamic Interface" from "TDD for Embedded C", pg 233
+    - Code example: The ADT is a light controller for a home automation project. A number of different lights could be used in the home, so multiple implementations of the ADT are provided (one each for every type of light that could be used). The lights each have the same interface, so the application code can treat them all the same, while letting the specific implementations handle the details of turning themselves on or off.
+        - Base class: [LightDriverPrivate.h](https://github.com/jwgrenning/tddec-code/blob/master/code-t3/include/devices/LightDriverPrivate.h) | [LightDriver.h](https://github.com/jwgrenning/tddec-code/blob/master/code-t3/include/devices/LightDriver.h) | [LightDriver.c](https://github.com/jwgrenning/tddec-code/blob/master/code-t3/src/devices/LightDriver.c)
+        - Derived classes
+            - [AcmeWirelessLightDriver.h](https://github.com/jwgrenning/tddec-code/blob/master/code-t3/include/devices/AcmeWirelessLightDriver.h) | [AcmeWirelessLightDriver.c](https://github.com/jwgrenning/tddec-code/blob/master/code-t3/src/devices/AcmeWirelessLightDriver.c)
+            - [MemMappedLightDriver.h](https://github.com/jwgrenning/tddec-code/blob/master/code-t3/include/devices/MemMappedLightDriver.h) | [MemMappedLightDriver.c](https://github.com/jwgrenning/tddec-code/blob/master/code-t3/src/devices/MemMappedLightDriver.c)
+            - [X10LightDriver.h](https://github.com/jwgrenning/tddec-code/blob/master/code-t3/include/devices/X10LightDriver.h) | [X10LightDriver.c](https://github.com/jwgrenning/tddec-code/blob/master/code-t3/src/devices/X10LightDriver.c)
