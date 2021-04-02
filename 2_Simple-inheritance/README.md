@@ -19,18 +19,27 @@ typedef struct Duck_t
 (The ".r" extension is meant to indicate a private header file, the reason for which will be explained a little later.) In memory, this struct might look like this:
 
 ```
-|---------------|--------|---------|
++---------------+--------+---------+
 |               |        | name[0] |
+|               |        +---------|
 |               |        | name[1] |
+|               |        +---------|
 |               |        | name[2] |
+|               |        +---------|
 |               |        | name[3] |
+|               |        +---------|
 | Duck_t object | name[] | name[4] |
+|               |        +---------|
 |               |        | name[5] |
+|               |        +---------|
 |               |        | name[6] |
+|               |        +---------|
 |               |        | name[7] |
+|               |        +---------|
 |               |        | name[8] |
+|               |        +---------|
 |               |        | name[9] |
-|---------------|--------|---------|
++---------------+--------+---------+
 ```
 
 Notice now that the "mallard" objects have a Duck_t object as the first data element, after which come any other mallard-specific attributes.
@@ -47,19 +56,29 @@ typedef struct Mallard_t
 The placement of this Duck_t object is crucial! Consider the layout of a Mallard_t object in memory:
 
 ```
-|------------------|---------------|--------|---------|
++------------------+---------------+--------+---------+
 |                  |               |        | name[0] |
+|                  |               |        +---------|
 |                  |               |        | name[1] |
+|                  |               |        +---------|
 |                  |               |        | name[2] |
+|                  |               |        +---------|
 |                  |               |        | name[3] |
+|                  |               |        +---------|
 |                  | Duck_t object | name[] | name[4] |
-| Mallard_t object |               |        | name[5] |
+| Mallard_t object |               |        +---------|
+|                  |               |        | name[5] |
+|                  |               |        +---------|
 |                  |               |        | name[6] |
+|                  |               |        +---------|
 |                  |               |        | name[7] |
+|                  |               |        +---------|
 |                  |               |        | name[8] |
+|                  |               |        +---------|
 |                  |               |        | name[9] |
-|                  |             featherColor         |
-|------------------|---------------|--------|---------|
+|                  +---------------+--------+---------|
+|                  |            featherColor          |
++------------------+----------------------------------+
 ```
 
 In this manner, a pointer to a Mallard_t object IS ALSO A pointer to a Duck_t object, since the starting address of both objects is the same. We can exploit this as shown in `main.c` by creating a Mallard_t object and doing both "duck" and "mallard" things with it (this requires a cast to "Duck" so that the compiler doesn't complain about mismatched types).
