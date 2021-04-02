@@ -82,8 +82,8 @@ Download or clone this repository. Navigate to this folder and then run "make" o
 int
 main( void )
 {    
-    Duck George = duckCreate();
-    Mallard Bill = mallardCreate();
+    Duck George = duckCreate_static();
+    Mallard Bill = mallardCreate_dynamic();
     
     printf("|__Initializing mallard objects:\n");                    -->  |__Initializing mallard objects:
 
@@ -99,6 +99,11 @@ main( void )
     printf("|__Showing mallard objects (cast to duck objects):\n");  -->  |__Showing mallard objects (cast to duck objects):
     
     duckShow((Duck)Bill);                                            -->      Hi! My name is Bill.
+
+    printf("|__Destroying duck and mallard objects:\n");             -->  |__Destroying duck and mallard objects:
+    
+    duckDestroy_static(George);                                      -->      Destroying Duck object with name: George
+    mallardDestroy_dynamic(Bill);                                    -->      Destroying Mallard object with name: Bill
 
     return 0;
 }
