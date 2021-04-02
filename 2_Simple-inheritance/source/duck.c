@@ -54,10 +54,16 @@ duckShow( Duck thisDuck )
 }
 
 void
+duckDeinit( Duck thisDuck )
+{
+    printf("\tDeinitializing Duck object with name: %s\n", thisDuck->name);
+    
+    memset(thisDuck->name, 0, sizeof(char)*MAX_CHARS_NAME);
+}
+
+void
 duckDestroy_dynamic( Duck thisDuck )
 {
-    printf("\tDestroying Duck object with name: %s\n", thisDuck->name);
-    memset(thisDuck, 0, sizeof(Duck_t));
     free(thisDuck);
 }
 
@@ -68,8 +74,6 @@ duckDestroy_static( Duck thisDuck )
     {
         if( thisDuck == &duckMemoryPool[i].thisDuck )
         {
-            printf("\tDestroying Duck object with name: %s\n", thisDuck->name);
-            memset(&duckMemoryPool[i].thisDuck, 0, sizeof(Duck_t));
             duckMemoryPool[i].used = false;
             thisDuck = NULL;
         }

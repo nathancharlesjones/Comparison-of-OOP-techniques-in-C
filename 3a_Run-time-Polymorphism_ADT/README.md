@@ -17,7 +17,7 @@ duckShow((Duck)Bill);
 
 Ideally, we would be able to provide any derived object to any base class function without casting AND let the derived class define a function which _supercedes_ the base class's function. In other words, instead of writing `duckShow((Duck)Bill)` and seeing `"Hi! My name is Bill."` on the output, we'd like to write `duckShow(Bill)` (notice: no casting to type Duck) and see something like `"Hi! I'm a mallard duck. My name is Bill. I have brown feathers."` on the output. In this project, we're going to look at one way of doing this.
 
-To do this, we first need to define a table of function pointers for each data type. This will allow derived classes the ability to change the default function for a base class to one that's specific to the derived class. Our Duck object will have one function, `duckShow()`, which we will allow derived classes to change and one function, `duckQuack()`, which we will not. Thus, `duckShow()` is the only only included in our interface definition. In C++ parlance, this is a "vtable" or "table of virtual functions" (the "virtual" part means that they are intended to be defined by the derived classes).
+To do this, we first need to define a table of function pointers for each data type. This will allow derived classes the ability to change the default function for a base class to one that's specific to the derived class. Our Duck object will have one function which we will allow derived classes to change (`duckShow()`) and one function which we will not (`duckQuack()`). Thus, only the first is included in our interface definition. In C++ parlance, this is a "vtable" or "table of virtual functions" (the "virtual" part means that they are intended to be defined by the derived classes). Each class (base and derived) will also need to write their own "Create", "Init", "Deinit", and "Destroy" functions. Making those functions polymorphic requires a bit more work and only seems necessary for very specific applications.
 
 ```
 // include/duck.r
@@ -58,7 +58,7 @@ duckInit( Duck thisDuck, char * name )
 }
 ```
 
-The function `_duckShow()` is the function we'll use for Ducks or other derived objects that don't want to define their own function. It's prefixed with an underscore to prevent any sort of name-clashing with the publicly-available `duckShow()` function.
+The function `_duckShow()` is the function we'll use for Ducks or other derived objects that don't want to define their own implementations. It is prefixed with an underscore to prevent any sort of name-clashing with the publicly-available functions.
 
 The definition for `duckQuack()` is straightforward, but the one for `duckShow()` looks a little odd. When this function runs, it is because some part of the code has called it on a Duck _or_ an object derived from Duck. We don't know at the outset which it is, but by following our conventions above, it doesn't matter: every Duck or object derived from Duck has a "vtable" which points to a Duck interface that contains a function pointer for the "show" function. Provided all of these pointers are defined, then all we need to do to call the correct function is reference that function pointer in the vtable.
 
@@ -141,6 +141,8 @@ Download or clone this repository. Navigate to this folder and then run "make" o
 int
 main( void )
 {    
+    printf("|__Creating duck and mallard objects\n");         -->    |__Creating duck and mallard objects
+
     Duck George = duckCreate();
     Duck Bill = mallardCreate();
     
@@ -159,6 +161,17 @@ main( void )
     
     duckShow(George);                                         -->        Hi! My name is George.
     duckShow(Bill);                                           -->        Hi! I'm a mallard duck. My name is Bill. I have brown feathers.
+
+    printf("|__Deinitializing duck and mallard objects:\n");  -->    |__Deinitializing duck and mallard objects:
+
+    duckDeinit(George);                                       -->        Deinitializing Duck object with name: George
+    mallardDeinit(Bill);                                      -->        Deinitializing Mallard object with name: Bill
+                                                                         Deinitializing Duck object with name: Bill
+
+    printf("|__Destroying duck and mallard objects:\n");      -->    |__Destroying duck and mallard objects
+
+    duckDestroy_dynamic(George);
+    mallardDestroy_static(Bill);
     
     return 0;
 }

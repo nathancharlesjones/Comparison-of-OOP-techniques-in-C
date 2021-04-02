@@ -13,6 +13,7 @@ Mallard mallardCreate_dynamic( void );
 Mallard mallardCreate_static( void );
 void mallardInit( Mallard thisMallard, char * name, featherColor color );
 void mallardShow( Mallard thisMallard );
+void mallardDeinit( Mallard thisMallard );
 void mallardDestroy_dynamic( Mallard thisMallard );
 void mallardDestroy_static( Mallard thisMallard );
 

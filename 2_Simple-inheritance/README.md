@@ -71,6 +71,8 @@ duckShow((Duck)Bill);
 
 The private header file is necessary so that derived classes, like "mallard.h", can see the full internals of the base class that they're inheriting from, but the rest of the program cannot (at least, not if they're behaving themselves). Unfortunately, the "duckShow()" function has no concept of "Mallard" or "featherColor", so they aren't able to be included in the sentence that gets printed. Additionally, we have no way for the "Mallard" class to add functions to an interface which _further_ derived classes could then inherit. We'll fix these problems in a future project.
 
+Additionally in this project, we're adding a "Deinit" function. This allows us to separate the part of the code that clears out the object in question from the part of the code that frees the pointer to the object. Some objects, such as motor controllers, may require very specific deinitialization (such as to ensure the they are off or in a home position) but we only need to free the pointer to the obejct in ONE location. So we now required that objects be deinitialized prior to destorying them and it is incumbent upon the derived classes to make sure that their base class is deinitialized at the same time they are.
+
 ## How do I run it?
 
 Download or clone this repository. Navigate to this folder and then run "make" or "make clean && make" from the command line.
@@ -82,6 +84,8 @@ Download or clone this repository. Navigate to this folder and then run "make" o
 int
 main( void )
 {    
+    printf("|__Creating duck and mallard objects\n");                -->  |__Creating duck and mallard objects
+    
     Duck George = duckCreate_static();
     Mallard Bill = mallardCreate_dynamic();
     
@@ -100,10 +104,16 @@ main( void )
     
     duckShow((Duck)Bill);                                            -->      Hi! My name is Bill.
 
+    printf("|__Deinitializing duck and mallard objects:\n");         -->  |__Deinitializing duck and mallard objects
+
+    duckDeinit(George);                                              -->      Deinitializing Duck object with name: George
+    mallardDeinit(Bill);                                             -->      Deinitializing Mallard object with name: Bill
+                                                                              Deinitializing Duck object with name: Bill
+
     printf("|__Destroying duck and mallard objects:\n");             -->  |__Destroying duck and mallard objects:
     
-    duckDestroy_static(George);                                      -->      Destroying Duck object with name: George
-    mallardDestroy_dynamic(Bill);                                    -->      Destroying Mallard object with name: Bill
+    duckDestroy_static(George);
+    mallardDestroy_dynamic(Bill);
 
     return 0;
 }

@@ -1,12 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <stdbool.h>
 #include "duck.h"
+#include "duck.r"
 #include "mallard.h"
-#include "mallard.r"
 
 const char * colorNames[] = {"red", "brown", "white"};
+
+typedef struct Mallard_t
+{
+    Duck_t parentDuck;
+    featherColor myColor;
+} Mallard_t;
 
 typedef struct mallardMemoryPool_t
 {
@@ -59,10 +64,18 @@ mallardShow( Mallard thisMallard )
 }
 
 void
+mallardDeinit( Mallard thisMallard )
+{
+    printf("\tDeinitializing Mallard object with name: %s\n", thisMallard->parentDuck.name);
+    
+    thisMallard->myColor = 0;
+    
+    duckDeinit((Duck)thisMallard);
+}
+
+void
 mallardDestroy_dynamic( Mallard thisMallard )
 {
-    printf("\tDestroying Mallard object with name: %s\n", thisMallard->parentDuck.name);
-    memset(thisMallard, 0, sizeof(Mallard_t));
     free(thisMallard);
 }
 
@@ -73,8 +86,6 @@ mallardDestroy_static( Mallard thisMallard )
     {
         if( thisMallard == &mallardMemoryPool[i].thisMallard )
         {
-            printf("\tDestroying Mallard object with name: %s\n", thisMallard->parentDuck.name);
-            memset(&mallardMemoryPool[i].thisMallard, 0, sizeof(Mallard_t));
             mallardMemoryPool[i].used = false;
             thisMallard = NULL;
         }

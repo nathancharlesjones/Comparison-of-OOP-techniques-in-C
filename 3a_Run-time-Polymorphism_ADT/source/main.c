@@ -5,8 +5,10 @@
 int
 main( void )
 {    
-    Duck George = duckCreate();
-    Duck Bill = mallardCreate();
+    printf("|__Creating duck and mallard objects\n");
+
+    Duck George = duckCreate_dynamic();
+    Duck Bill = mallardCreate_static();
     
     printf("|__Initializing duck and mallard objects:\n");
 
@@ -22,6 +24,16 @@ main( void )
     
     duckShow(George);
     duckShow(Bill);
+
+    printf("|__Deinitializing duck and mallard objects:\n");
+
+    duckDeinit(George);
+    mallardDeinit(Bill);
+
+    printf("|__Destroying duck and mallard objects\n");
+
+    duckDestroy_dynamic(George);
+    mallardDestroy_static(Bill);
     
     return 0;
 }
