@@ -3,8 +3,13 @@
 
 #include "CaffeinatedBeverage.h"
 
-typedef struct CoffeeStruct* Coffee;
+#define MAX_NUM_COFFEE_OBJS 10
 
-CaffeinatedBeverage newCoffee(void);
+typedef struct CoffeeStruct * Coffee;
+
+CaffeinatedBeverage newCoffee_dynamic( char * name );
+CaffeinatedBeverage newCoffee_static( char * name );
+void coffeeDestroy_dynamic( CaffeinatedBeverage thisCoffee );
+void coffeeDestroy_static( CaffeinatedBeverage thisCoffee );
 
 #endif /*COFFEE_H*/
