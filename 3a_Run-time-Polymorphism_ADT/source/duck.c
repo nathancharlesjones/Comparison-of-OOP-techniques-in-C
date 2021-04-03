@@ -1,10 +1,15 @@
-#include <stdio.h>      // For printf
-#include <stdlib.h>     // For malloc, free
-#include <string.h>     // For strncpy, memset
-#include <stdbool.h>    // For bool data type
-#include <stdarg.h>     // For variadic macros (va_list, va_start, va_end)
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
 #include "duck.h"
 #include "duck.r"
+
+static void _duckShow( Duck thisDuck );
+
+static Duck_Interface_Struct interface = {
+    _duckShow
+};
 
 typedef struct duckMemoryPool_t
 {
@@ -15,45 +20,15 @@ typedef struct duckMemoryPool_t
 static duckMemoryPool_t duckMemoryPool[MAX_NUM_DUCK_OBJS] = {0};
 
 Duck
-duckCreate( Duck_Interface newDuckType, char * name, ... )
-{
-    va_list args;
-    va_start(args, name);
-
-    Duck newDuck = NULL;
-    
-    if( newDuckType->create )
-    {
-        newDuck = newDuckType->create();
-    }
-    
-    if( newDuck )
-    {
-        printf("\tInitializing duck with name: %s\n", name);
-
-        newDuck->vtable = newDuckType;
-        strncpy(newDuck->name, name, MAX_CHARS_NAME);
-
-        if ( newDuck && newDuck->vtable && newDuck->vtable->init )
-        {
-            newDuck->vtable->init(newDuck, &args);
-        }
-    }
-
-    va_end(args);
-
-    return newDuck;
-}
-
-static Duck
 duckCreate_dynamic( void )
 {
     Duck newDuck = (Duck)malloc(sizeof(Duck_t));
+    // TODO: Check for null pointer on malloc failure
 
     return newDuck;
 }
 
-static Duck
+Duck
 duckCreate_static( void )
 {
     Duck newDuck = NULL;
@@ -71,6 +46,15 @@ duckCreate_static( void )
 }
 
 void
+duckInit( Duck thisDuck, char * name )
+{
+    printf("\tInitializing duck with name: %s\n", name);
+
+    thisDuck->vtable = &interface;
+    strncpy(thisDuck->name, name, MAX_CHARS_NAME);
+}
+
+void
 duckQuack( Duck thisDuck )
 {
     printf("\t%s: Quack!\n", thisDuck->name);
@@ -83,39 +67,29 @@ duckShow( Duck thisDuck )
     {
         thisDuck->vtable->show(thisDuck);
     }
-    else
-    {
-        printf("\tHi! My name is %s.\n", thisDuck->name);
-    }
-}
-
-void
-duckDestroy( Duck thisDuck )
-{
-    if( thisDuck )
-    {
-        if ( thisDuck->vtable && thisDuck->vtable->deinit )
-        {
-            thisDuck->vtable->deinit(thisDuck);
-        }
-
-        printf("\tDeinitializing Duck object with name: %s\n", thisDuck->name);
-        memset(thisDuck->name, 0, sizeof(char)*MAX_CHARS_NAME);
-
-        if ( thisDuck->vtable && thisDuck->vtable->destroy )
-        {
-            thisDuck->vtable->destroy(thisDuck);
-        }
-    }
 }
 
 static void
+_duckShow( Duck thisDuck )
+{
+    printf("\tHi! My name is %s.\n", thisDuck->name);
+}
+
+void
+duckDeinit( Duck thisDuck )
+{
+    printf("\tDeinitializing Duck object with name: %s\n", thisDuck->name);
+    
+    memset(thisDuck->name, 0, sizeof(char)*MAX_CHARS_NAME);
+}
+
+void
 duckDestroy_dynamic( Duck thisDuck )
 {
     free(thisDuck);
 }
 
-static void
+void
 duckDestroy_static( Duck thisDuck )
 {
     for( int i = 0; i < MAX_NUM_DUCK_OBJS; i++)
@@ -127,23 +101,3 @@ duckDestroy_static( Duck thisDuck )
         }
     }
 }
-
-Duck_Interface_Struct duckDynamic = {
-    .create=duckCreate_dynamic,
-    .init=0,
-    .show=0,
-    .deinit=0,
-    .destroy=duckDestroy_dynamic
-};
-
-Duck_Interface duckFromHeapMem = &duckDynamic;
-
-Duck_Interface_Struct duckStatic = {
-    .create=duckCreate_static,
-    .init=0,
-    .show=0,
-    .deinit=0,
-    .destroy=duckDestroy_static
-};
-
-Duck_Interface duckFromStaticMem = &duckStatic;
