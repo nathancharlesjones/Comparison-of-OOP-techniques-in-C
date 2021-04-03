@@ -39,6 +39,7 @@ duckCreate_static( void )
         {
             duckMemoryPool[i].used = true;
             newDuck = &duckMemoryPool[i].thisDuck;
+            break;
         }
     }
 
@@ -78,6 +79,7 @@ duckDestroy_static( Duck thisDuck )
             memset(&duckMemoryPool[i].thisDuck, 0, sizeof(Duck_t));
             duckMemoryPool[i].used = false;
             thisDuck = NULL;
+            break;
         }
     }
 }

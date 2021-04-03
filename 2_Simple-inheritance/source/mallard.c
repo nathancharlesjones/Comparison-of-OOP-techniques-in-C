@@ -41,6 +41,7 @@ mallardCreate_static( void )
         {
             mallardMemoryPool[i].used = true;
             newMallard = &mallardMemoryPool[i].thisMallard;
+            break;
         }
     }
 
@@ -88,6 +89,7 @@ mallardDestroy_static( Mallard thisMallard )
         {
             mallardMemoryPool[i].used = false;
             thisMallard = NULL;
+            break;
         }
     }
 }

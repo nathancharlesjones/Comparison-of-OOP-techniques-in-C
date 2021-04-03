@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 #include "duck.h"
 #include "duck.r"
 #include "mallard.h"
@@ -11,13 +12,7 @@ typedef struct Mallard_t
 {
     Duck_t parentDuck;
     featherColor myColor;
-} Mallard_t;
-
-static void mallardShow( Duck thisDuck );
-
-static Duck_Interface_Struct interface = {
-    .show=mallardShow
-};
+} Mallard_t, *Mallard;
 
 typedef struct mallardMemoryPool_t
 {
@@ -27,17 +22,32 @@ typedef struct mallardMemoryPool_t
 
 static mallardMemoryPool_t mallardMemoryPool[MAX_NUM_MALLARD_OBJS] = {0};
 
+static const Duck_Interface_Struct interface_dynamic;
+static const Duck_Interface_Struct interface_static;
+
+void
+mallardInit( Mallard thisMallard, Duck_Interface interface, char * name, featherColor color )
+{
+    printf("\tInitializing new mallard duck with name: %s\n", name);
+
+    strncpy(thisMallard->parentDuck.name, name, MAX_CHARS_NAME);
+    thisMallard->parentDuck.vtable = interface;
+    thisMallard->myColor = color;
+}
+
 Duck
-mallardCreate_dynamic( void )
+mallardCreate_dynamic( char * name, featherColor color )
 {
     Mallard newMallard = (Mallard)malloc(sizeof(Mallard_t));
     // TODO: Check for null pointer on malloc failure
+
+    mallardInit( newMallard, &interface_dynamic, name, color);
 
     return (Duck)newMallard;
 }
 
 Duck
-mallardCreate_static( void )
+mallardCreate_static( char * name, featherColor color )
 {
     Mallard newMallard = NULL;
 
@@ -47,22 +57,12 @@ mallardCreate_static( void )
         {
             mallardMemoryPool[i].used = true;
             newMallard = &mallardMemoryPool[i].thisMallard;
+            mallardInit( newMallard, &interface_static, name, color);
+            break;
         }
     }
 
     return (Duck)newMallard;
-}
-
-void
-mallardInit( Duck thisDuck, char * name, featherColor color )
-{
-    printf("\tInitializing new mallard duck with name: %s\n", name);
-
-    duckInit( thisDuck, name );
-
-    Mallard thisMallard = (Mallard)thisDuck;
-    thisMallard->parentDuck.vtable = &interface;
-    thisMallard->myColor = color;
 }
 
 static void
@@ -72,31 +72,42 @@ mallardShow( Duck thisDuck )
     printf("\tHi! I'm a mallard duck. My name is %s. I have %s feathers.\n", thisMallard->parentDuck.name, colorNames[thisMallard->myColor]);
 }
 
-void
-mallardDeinit( Duck thisMallard )
+static void
+mallardDeinit( Duck thisDuck )
 {
-    printf("\tDeinitializing Mallard object with name: %s\n", thisMallard->name);
+    printf("\tDeinitializing Mallard object with name: %s\n", thisDuck->name);
 
-    ((Mallard)thisMallard)->myColor = 0;
-
-    duckDeinit(thisMallard);
+    ((Mallard)thisDuck)->myColor = 0;
 }
 
 void
-mallardDestroy_dynamic( Duck thisMallard )
+mallardDestroy_dynamic( Duck thisDuck )
 {
-    free((Mallard)thisMallard);
+    free((Mallard)thisDuck);
 }
 
 void
-mallardDestroy_static( Duck thisMallard )
+mallardDestroy_static( Duck thisDuck )
 {
     for( int i = 0; i < MAX_NUM_MALLARD_OBJS; i++)
     {
-        if( (Mallard)thisMallard == &mallardMemoryPool[i].thisMallard )
+        if( (Mallard)thisDuck == &mallardMemoryPool[i].thisMallard )
         {
             mallardMemoryPool[i].used = false;
-            thisMallard = NULL;
+            thisDuck = NULL;
+            break;
         }
     }
 }
+
+static const Duck_Interface_Struct interface_dynamic = {
+    .show=mallardShow,
+    .deinit=mallardDeinit,
+    .destroy=mallardDestroy_dynamic
+};
+
+static const Duck_Interface_Struct interface_static = {
+    .show=mallardShow,
+    .deinit=mallardDeinit,
+    .destroy=mallardDestroy_static
+};

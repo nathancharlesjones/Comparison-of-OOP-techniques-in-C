@@ -40,6 +40,7 @@ robotArmCreate_static( void )
         {
             robotArmMemoryPool[i].used = true;
             newRobotArm = &robotArmMemoryPool[i].thisRobotArm;
+            break;
         }
     }
 
@@ -117,6 +118,7 @@ robotArmDestroy_static( robotArm thisRobotArm )
             memset(&robotArmMemoryPool[i].thisRobotArm, 0, sizeof(robotArm_t));
             robotArmMemoryPool[i].used = false;
             thisRobotArm = NULL;
+            break;
         }
     }
 }

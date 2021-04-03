@@ -40,6 +40,7 @@ servoControllerCreate_static( void )
         {
             servoControllerMemoryPool[i].used = true;
             newServoController = &servoControllerMemoryPool[i].thisServoController;
+            break;
         }
     }
 
@@ -101,6 +102,7 @@ servoControllerDestroy_static( servoController thisServoController )
             memset(&servoControllerMemoryPool[i].thisServoController, 0, sizeof(servoController_t));
             servoControllerMemoryPool[i].used = false;
             thisServoController = NULL;
+            break;
         }
     }
 }

@@ -17,7 +17,7 @@ duckShow((Duck)Bill);
 
 Ideally, we would be able to provide any derived object to any base class function without casting AND let the derived class define a function which _supercedes_ the base class's function. In other words, instead of writing `duckShow((Duck)Bill)` and seeing `"Hi! My name is Bill."` on the output, we'd like to write `duckShow(Bill)` (notice: no casting to type Duck) and see something like `"Hi! I'm a mallard duck. My name is Bill. I have brown feathers."` on the output. In this project, we're going to look at one way of doing this.
 
-To do this, we first need to define a table of function pointers for each data type. This will allow derived classes the ability to change the default function for a base class to one that's specific to the derived class. Our Duck object will have one function which we will allow derived classes to change (`duckShow()`) and one function which we will not (`duckQuack()`). Thus, only the first is included in our interface definition. In C++ parlance, this is a "vtable" or "table of virtual functions" (the "virtual" part means that they are intended to be defined by the derived classes). Each class (base and derived) will also need to write their own "Create", "Init", "Deinit", and "Destroy" functions. Making those functions polymorphic requires a bit more work and will be tackled in a [future project](https://github.com/nathancharlesjones/Comparison-of-OOP-techniques-in-C/tree/main/3c_Run-time-Polymorphism_ADT_Complete-interface).
+To do this, we first need to define a table of function pointers for the abstract data type, "Duck", emphasis on the word "abstract". As opposed to our last project, we are going to prohibit the ability to create objects of the base class, which will make the implementation much easier (I'll return to creating objects of the base class in a later project). The table of function pointers will allow derived classes the ability to change the default function for a base class to one that's specific to the derived class. Our Duck object will have three functions which we will allow or require derived classes to change or implement (`show()`, `deinit()`, and `destroy()`) and one function which we will not (`duckQuack()`). Thus, the first three are included in our interface definition. In C++ parlance, this is a "vtable" or "table of virtual functions" (the "virtual" part means that they are intended to be defined by the derived classes). Each derived class will also need to write their own "Create" function(s). Making the "Create" functions polymorphic requires a bit more work and will be tackled in a [future project](https://github.com/nathancharlesjones/Comparison-of-OOP-techniques-in-C/tree/main/3c_Run-time-Polymorphism_ADT_Complete-interface).
 
 ```
 // include/duck.r
@@ -26,11 +26,15 @@ typedef struct Duck_Interface_Struct const * Duck_Interface;
 typedef struct Duck_Interface_Struct
 {
     void (*show)( Duck_t * thisDuck );
+    void (*deinit)( Duck_t * thisDuck );
+    void (*destroy)( Duck_t * thisDuck );
 } Duck_Interface_Struct;
 //
 ```
 
-We'll also add this interface struct as the first member of our Duck struct.
+The `show()` function will print something to the console. The `destroy()` function will free up the spot in memory where a Duck was being stored; it's always preceded by `deinit()` in order to allow for the clean-up of any parts of the derived class (such as ensuring a motor is returned home and powered off). Deinitialization operations are required to be in the `deinit()` function, as opposed to inside the `destroy()` function, since our base class has some data elements of it's own (`name`). The derived classes need to handle their own destroy operations but the order of deinitializing should be derived object first, followed by base object. If the base class were to have no explicit deinitialization, then the `deinit()` function in the interface struct could be omitted.
+
+We'll also add the interface struct as the first member of our Duck struct.
 
 ```
 // include/duck.r
@@ -41,24 +45,7 @@ typedef struct Duck_t
 } Duck_t;
 ```
 
-When creating a new Duck object, now, we also need to make sure that this "vtable" points to the interface struct that defines the interface for our generic Ducks.
-
-```
-// source/duck.c
-static const Duck_Interface_Struct interface = {
-    .show=0
-};
-
-void
-duckInit( Duck thisDuck, char * name )
-{
-    ...
-    thisDuck->vtable = &interface;
-    ...
-}
-```
-
-The definition for `duckQuack()` is straightforward, but the one for `duckShow()` looks a little odd. When this function runs, it is because some part of the code has called it on a Duck _or_ an object derived from Duck. We don't know at the outset which it is, but by following our conventions above, it doesn't matter: every Duck or object derived from Duck has a "vtable" which points to a Duck interface that contains a function pointer for the "show" function. Provided all of these pointers are defined, then all we need to do to call the correct function is reference that function pointer in the vtable. If one is not, as in the case of the Duck interface, then the "else" condition is executed (acting like a base or default implementation of `duckShow()` for objects that haven't provided their own implementation).
+The definition for `duckQuack()` is straightforward, but the ones for `duckShow()` and `duckDestroy()` look a little odd. When this function runs, it is because some part of the code has called it on object derived from the Duck class. We don't know at the outset which derived class that might be, but by following our conventions above, it doesn't matter: every object derived from Duck has a "vtable" which points to a Duck interface that contains a function pointer for the "show" function. Provided all of these pointers are defined, then all we need to do to call the correct function is reference that function pointer in the vtable. If one is not, as in the case of the Duck interface, then the "else" condition is executed (acting like a base or default implementation of `duckShow()` for objects that haven't provided their own implementation).
 
 ```
 // source/duck.c
@@ -91,44 +78,46 @@ When we create a Mallard object, we now need to change the "vtable" to point to 
 
 ```
 // source/mallard.c
-static Duck_Interface_Struct interface = {
-    .show=mallardShow
+static Duck_Interface_Struct interface_dynamic = {
+    .show=mallardShow,
+    .deinit=mallardDeinit,
+    .destroy=mallardDestroy_dynamic
 };
 
 void
-mallardInit( Duck thisDuck, char * name, featherColor color )
+mallardInit( Mallard thisMallard, Duck_Interface interface, char * name, featherColor color )
 {
     ...
-    thisMallard->parentDuck.vtable = &interface;
+    thisMallard->parentDuck.vtable = interface;
     ...
 }
 ```
 
-Now, when `duckShow()` is called on a Mallard object, the function call `thisDuck->vtable->show(thisDuck)` points **not** to `_duckShow()` but to `mallardShow()`!
+Now, when `duckShow()` is called on a Mallard object, the function call `thisDuck->vtable->show(thisDuck)` points to `mallardShow()`!
 
 Of critical importance to this setup is that the Mallard functions do not operate on "Mallard" objects, but rather "Duck" objects.
 
 ```
 // include/mallard.h
-void mallardInit( Duck thisDuck, char * name, featherColor color );
+Duck mallardCreate_dynamic( char * name, featherColor color );
 ```
 
-Notice also that the function `mallardCreate()` does not return a Mallard object, but rather a Duck object.
+Notice also that the functions `mallardCreate_XXX()` do not return a Mallard object, but rather a Duck object.
 
 ```
 // include/mallard.h
-Duck mallardCreate( void );
+Duck mallardCreate_dynamic( char * name, featherColor color );
 
 // source/mallard.c
 Duck
-mallardCreate( void )
+mallardCreate_dynamic( char * name, featherColor color )
 {
     ...
     return (Duck)newMallard;
 }
 ```
 
-This is what allows us to call Duck methods on Mallard objects without having to explicitly cast: although Mallard objects extend and behave differently than Duck objects, because they inherit from Duck, then can be treated by the rest of the program exactly as Ducks. The vtable then allows them to perform Mallard-specific implementations of the Duck functions. Thus, the Duck class is considered an "abstract data type" for which "Mallard" (and any other derived classes) offer an implementation.
+This is what allows us to call Duck methods on Mallard and Rubber duck objects without having to explicitly cast: although those objects extend and behave differently than Duck objects, because they inherit from Duck, then can be treated by the rest of the program exactly as Ducks. The vtable then allows them to perform Mallard- and Rubber-specific implementations of the Duck functions. Thus, the Duck class is considered an "abstract data type" for which "Mallard", "Rubber", and any other derived classes offer an implementation.
 
 One last thing to note is that this structure does not allow for full inheritance. Meaning, we couldn't use this same code to define a class that is derived from "Mallard" and then also expect to pass them to Duck functions without error. That problem will be solved in a future project.
 
@@ -145,15 +134,9 @@ main( void )
 {    
     printf("|__Creating duck and mallard objects\n");         -->    |__Creating duck and mallard objects
 
-    Duck George = duckCreate();
-    Duck Bill = mallardCreate();
+    Duck George = rubberCreate_dynamic("George", MEDIUM);
+    Duck Bill = mallardCreate_static("Bill", BROWN);
     
-    printf("|__Initializing duck and mallard objects:\n");    -->    |__Initializing duck and mallard objects:
-
-    duckInit(George, "George");                               -->        Initializing duck with name: George
-    mallardInit(Bill, "Bill", BROWN);                         -->        Initializing new mallard duck with name: Bill
-                                                                         Initializing duck with name: Bill
-
     printf("|__Quacking duck and mallard objects:\n");        -->    |__Quacking duck and mallard objects:
     
     duckQuack(George);                                        -->        George: Quack!
@@ -161,19 +144,15 @@ main( void )
     
     printf("|__Showing duck and mallard objects:\n");         -->    |__Showing duck and mallard objects:
     
-    duckShow(George);                                         -->        Hi! My name is George.
+    duckShow(George);                                         -->        Hi! I'm a medium rubber duck. My name is George.
     duckShow(Bill);                                           -->        Hi! I'm a mallard duck. My name is Bill. I have brown feathers.
-
-    printf("|__Deinitializing duck and mallard objects:\n");  -->    |__Deinitializing duck and mallard objects:
-
-    duckDeinit(George);                                       -->        Deinitializing Duck object with name: George
-    mallardDeinit(Bill);                                      -->        Deinitializing Mallard object with name: Bill
-                                                                         Deinitializing Duck object with name: Bill
 
     printf("|__Destroying duck and mallard objects:\n");      -->    |__Destroying duck and mallard objects
 
-    duckDestroy_dynamic(George);
-    mallardDestroy_static(Bill);
+    duckDestroy(George);                                      -->        Deinitializing Rubber Duck object with name: George
+                                                                         Deinitializing Duck object with name: George
+    duckDestroy(Bill);                                        -->        Deinitializing Mallard object with name: Bill
+                                                                         Deinitializing Duck object with name: Bill
     
     return 0;
 }
