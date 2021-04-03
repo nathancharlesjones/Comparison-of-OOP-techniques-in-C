@@ -1,93 +1,115 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <stdbool.h>
+#include "assert.h"
+#include "oopUtils.h"
 #include "duck.h"
-#include "duck.r"
 #include "mallard.h"
+#include "mallard.r"
 
 const char * colorNames[] = {"red", "brown", "white"};
 
-typedef struct Mallard_t
-{
-    Duck_t parentDuck;
-    featherColor myColor;
-} Mallard_t;
+static void mallardShow( void * thisDuck );
+static void _mallardMigrate( void * thisMallard );
 
-typedef struct mallardMemoryPool_t
-{
-    bool used;
-    Mallard_t thisMallard;
-} mallardMemoryPool_t;
+Mallard_Interface_Struct mallardDef = {
+/*  /----------Duck_t-----------\
+      /-BaseClass-\               */
+    { { &duckDef }, mallardShow },
+    _mallardMigrate
+};
 
-static mallardMemoryPool_t mallardMemoryPool[MAX_NUM_MALLARD_OBJS] = {0};
+Mallard_Interface Mallard = &mallardDef;
 
-Mallard
-mallardCreate_dynamic( void )
+bool
+isMallard( void * thisMallard )
 {
-    Mallard newMallard = (Mallard)malloc(sizeof(Mallard_t));
+    bool ret = false;
+
+    ASSERT(thisMallard);
+
+    void * thisType = GET_TYPE_FROM_OBJ(thisMallard);
+
+    while( thisType && thisType != Mallard )
+    {
+        thisType = (void *)GET_PARENT_FROM_TYPE(thisType);
+    }
+
+    if( thisType == Mallard ) ret = true;
+
+    return ret;
+}
+
+void *
+mallardCreate( void )
+{
+    void * newMallard = (Mallard_t *)malloc(sizeof(Mallard_t));
     // TODO: Check for null pointer on malloc failure
 
     return newMallard;
 }
 
-Mallard
-mallardCreate_static( void )
-{
-    Mallard newMallard = NULL;
-
-    for( int i = 0; i < MAX_NUM_MALLARD_OBJS; i++)
-    {
-        if( mallardMemoryPool[i].used == false )
-        {
-            mallardMemoryPool[i].used = true;
-            newMallard = &mallardMemoryPool[i].thisMallard;
-        }
-    }
-
-    return newMallard;
-}
-
 void
-mallardInit( Mallard thisMallard, char * name, featherColor color )
+mallardInit( void * thisMallard, char * name, featherColor color )
 {
+    ASSERT(thisMallard);
+    ASSERT(name);
+
+    Mallard_t * _thisMallard = (Mallard_t *)thisMallard;
+
     printf("\tInitializing new mallard duck with name: %s\n", name);
 
-    duckInit( &thisMallard->parentDuck, name );
+    duckInit( &_thisMallard->parentDuck, name );
 
-    thisMallard->myColor = color;
+    _thisMallard->parentDuck.vtable = (Duck_Interface)Mallard;
+    _thisMallard->myColor = color;
 }
 
-void
-mallardShow( Mallard thisMallard )
+static void
+mallardShow( void * thisDuck )
 {
-    printf("\tHi! I'm a mallard duck. My name is %s. I have %s feathers.\n", thisMallard->parentDuck.name, colorNames[thisMallard->myColor]);
-}
+    ASSERT(thisDuck);
+    ASSERT(isMallard(thisDuck));
 
-void
-mallardDeinit( Mallard thisMallard )
-{
-    printf("\tDeinitializing Mallard object with name: %s\n", thisMallard->parentDuck.name);
-    
-    thisMallard->myColor = 0;
-    
-    duckDeinit((Duck)thisMallard);
-}
-
-void
-mallardDestroy_dynamic( Mallard thisMallard )
-{
-    free(thisMallard);
-}
-
-void
-mallardDestroy_static( Mallard thisMallard )
-{
-    for( int i = 0; i < MAX_NUM_MALLARD_OBJS; i++)
+    // Once ASSERT has been replaced with something that will actually
+    // halt program execution, this guard clause could/should be
+    // removed.
+    if( isMallard(thisDuck) )
     {
-        if( thisMallard == &mallardMemoryPool[i].thisMallard )
+        Mallard_t * thisMallard = (Mallard_t *)thisDuck;
+        printf("\tHi! I'm a mallard duck. My name is %s. I have %s feathers.\n", thisMallard->parentDuck.name, colorNames[thisMallard->myColor]);
+    }
+}
+
+void
+mallardMigrate( void * thisMallard )
+{
+    ASSERT(thisMallard);
+    ASSERT(isMallard(thisMallard));
+
+    // Once ASSERT has been replaced with something that will actually
+    // halt program execution, this guard clause could/should be
+    // removed.
+    if( isMallard(thisMallard) )
+    {
+        Mallard_t * _thisMallard = (Mallard_t *)thisMallard;
+
+        if ( _thisMallard && _thisMallard->parentDuck.vtable && ((Mallard_Interface)(_thisMallard->parentDuck.vtable))->migrate )
         {
-            mallardMemoryPool[i].used = false;
-            thisMallard = NULL;
+            ((Mallard_Interface)(_thisMallard->parentDuck.vtable))->migrate(thisMallard);
         }
     }
+}
+
+static void
+_mallardMigrate( void * thisMallard )
+{
+    ASSERT(thisMallard);
+    ASSERT(isMallard(thisMallard)); //should be unnecessary since this function is only ever called
+    // by way of "mallardMigrate()", which confirms that the object is a Mallard. I leave it in
+    // because it "feels" right.
+
+    Duck_t * thisDuck = (Duck_t *)thisMallard;
+    printf("\t%s: I'm migrating!\n", thisDuck->name);
 }

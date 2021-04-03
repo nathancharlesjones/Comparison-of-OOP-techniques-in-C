@@ -128,7 +128,7 @@ duckDestroy_static( Duck thisDuck )
     }
 }
 
-Duck_Interface_Struct duckDynamic = {
+const Duck_Interface_Struct duckDynamic = {
     .create=duckCreate_dynamic,
     .init=0,
     .show=0,
@@ -138,7 +138,7 @@ Duck_Interface_Struct duckDynamic = {
 
 Duck_Interface duckFromHeapMem = &duckDynamic;
 
-Duck_Interface_Struct duckStatic = {
+const Duck_Interface_Struct duckStatic = {
     .create=duckCreate_static,
     .init=0,
     .show=0,

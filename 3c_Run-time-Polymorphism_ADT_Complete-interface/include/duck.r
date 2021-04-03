@@ -5,7 +5,7 @@
 
 #define MAX_CHARS_NAME 10
 
-typedef struct Duck_Interface_Struct * Duck_Interface;
+typedef struct Duck_Interface_Struct const * Duck_Interface;
 
 typedef struct Duck_t
 {
