@@ -11,11 +11,10 @@ extern const char * colorNames[];
 
 typedef struct Mallard_t * Mallard;
 
-Duck mallardCreate_dynamic( void );
-Duck mallardCreate_static( void );
-void mallardInit( Duck thisDuck, char * name, featherColor color );
-void mallardDeinit( Duck thisDuck );
-void mallardDestroy_dynamic( Duck thisDuck );
-void mallardDestroy_static( Duck thisDuck );
+extern Duck_Interface mallardFromHeapMem;
+extern Duck_Interface mallardFromStaticMem;
+
+// "Create" function requires a featherColor. E.g.:
+// Duck Bill = duckCreate(mallardFromHeapMem, "Bill", WHITE);
 
 #endif // MALLARD_H

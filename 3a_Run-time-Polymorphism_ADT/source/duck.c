@@ -15,10 +15,10 @@ typedef struct duckMemoryPool_t
 static duckMemoryPool_t duckMemoryPool[MAX_NUM_DUCK_OBJS] = {0};
 
 Duck
-duckCreate( Duck_Interface newDuckType, char * name )
+duckCreate( Duck_Interface newDuckType, char * name, ... )
 {
-    //va_list args;
-    //va_start(args, name);
+    va_list args;
+    va_start(args, name);
 
     Duck newDuck = NULL;
     
@@ -36,12 +36,11 @@ duckCreate( Duck_Interface newDuckType, char * name )
 
         if ( newDuck && newDuck->vtable && newDuck->vtable->init )
         {
-            //newDuck->vtable->init(newDuck, args);
-            newDuck->vtable->init(newDuck);
+            newDuck->vtable->init(newDuck, &args);
         }
     }
 
-    //va_end(args);
+    va_end(args);
 
     return newDuck;
 }

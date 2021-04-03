@@ -8,24 +8,22 @@ main( void )
     printf("|__Creating duck and mallard objects\n");
 
     Duck George = duckCreate(duckFromStaticMem, "George");
-    //Duck George = duckCreate_dynamic();
-    //Duck Bill = mallardCreate_static();
+    Duck Bill = duckCreate(mallardFromHeapMem, "Bill", WHITE);
 
     printf("|__Quacking duck and mallard objects:\n");
     
     duckQuack(George);
-    //duckQuack(Bill);
+    duckQuack(Bill);
     
     printf("|__Showing duck and mallard objects:\n");
     
     duckShow(George);
-    //duckShow(Bill);
+    duckShow(Bill);
 
     printf("|__Destroying duck and mallard objects\n");
 
     duckDestroy(George);
-    //duckDestroy_dynamic(George);
-    //mallardDestroy_static(Bill);
+    duckDestroy(Bill);
     
     return 0;
 }

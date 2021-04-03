@@ -10,7 +10,7 @@ typedef struct Duck_t * Duck;
 extern Duck_Interface duckFromHeapMem;
 extern Duck_Interface duckFromStaticMem; 
 
-Duck duckCreate( Duck_Interface newDuckType, char * name );
+Duck duckCreate( Duck_Interface newDuckType, char * name, ... );
 void duckQuack( Duck thisDuck );
 void duckShow( Duck thisDuck );
 void duckDestroy( Duck thisDuck );
