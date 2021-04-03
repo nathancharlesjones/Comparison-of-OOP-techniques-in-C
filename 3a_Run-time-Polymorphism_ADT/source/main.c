@@ -7,33 +7,25 @@ main( void )
 {    
     printf("|__Creating duck and mallard objects\n");
 
-    Duck George = duckCreate_dynamic();
-    Duck Bill = mallardCreate_static();
-    
-    printf("|__Initializing duck and mallard objects:\n");
-
-    duckInit(George, "George");
-    mallardInit(Bill, "Bill", BROWN);
+    Duck George = duckCreate(duckFromStaticMem, "George");
+    //Duck George = duckCreate_dynamic();
+    //Duck Bill = mallardCreate_static();
 
     printf("|__Quacking duck and mallard objects:\n");
     
     duckQuack(George);
-    duckQuack(Bill);
+    //duckQuack(Bill);
     
     printf("|__Showing duck and mallard objects:\n");
     
     duckShow(George);
-    duckShow(Bill);
-
-    printf("|__Deinitializing duck and mallard objects:\n");
-
-    duckDeinit(George);
-    mallardDeinit(Bill);
+    //duckShow(Bill);
 
     printf("|__Destroying duck and mallard objects\n");
 
-    duckDestroy_dynamic(George);
-    mallardDestroy_static(Bill);
+    duckDestroy(George);
+    //duckDestroy_dynamic(George);
+    //mallardDestroy_static(Bill);
     
     return 0;
 }
