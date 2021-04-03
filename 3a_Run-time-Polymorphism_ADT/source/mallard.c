@@ -16,7 +16,7 @@ typedef struct Mallard_t
 static void mallardShow( Duck thisDuck );
 
 static Duck_Interface_Struct interface = {
-    mallardShow
+    .show=mallardShow
 };
 
 typedef struct mallardMemoryPool_t

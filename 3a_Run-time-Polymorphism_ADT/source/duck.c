@@ -5,10 +5,8 @@
 #include "duck.h"
 #include "duck.r"
 
-static void _duckShow( Duck thisDuck );
-
-static Duck_Interface_Struct interface = {
-    _duckShow
+static const Duck_Interface_Struct interface = {
+    .show=0
 };
 
 typedef struct duckMemoryPool_t
@@ -67,12 +65,10 @@ duckShow( Duck thisDuck )
     {
         thisDuck->vtable->show(thisDuck);
     }
-}
-
-static void
-_duckShow( Duck thisDuck )
-{
-    printf("\tHi! My name is %s.\n", thisDuck->name);
+    else
+    {
+        printf("\tHi! My name is %s.\n", thisDuck->name);
+    }
 }
 
 void

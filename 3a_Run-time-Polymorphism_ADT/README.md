@@ -17,11 +17,11 @@ duckShow((Duck)Bill);
 
 Ideally, we would be able to provide any derived object to any base class function without casting AND let the derived class define a function which _supercedes_ the base class's function. In other words, instead of writing `duckShow((Duck)Bill)` and seeing `"Hi! My name is Bill."` on the output, we'd like to write `duckShow(Bill)` (notice: no casting to type Duck) and see something like `"Hi! I'm a mallard duck. My name is Bill. I have brown feathers."` on the output. In this project, we're going to look at one way of doing this.
 
-To do this, we first need to define a table of function pointers for each data type. This will allow derived classes the ability to change the default function for a base class to one that's specific to the derived class. Our Duck object will have one function which we will allow derived classes to change (`duckShow()`) and one function which we will not (`duckQuack()`). Thus, only the first is included in our interface definition. In C++ parlance, this is a "vtable" or "table of virtual functions" (the "virtual" part means that they are intended to be defined by the derived classes). Each class (base and derived) will also need to write their own "Create", "Init", "Deinit", and "Destroy" functions. Making those functions polymorphic requires a bit more work and only seems necessary for very specific applications.
+To do this, we first need to define a table of function pointers for each data type. This will allow derived classes the ability to change the default function for a base class to one that's specific to the derived class. Our Duck object will have one function which we will allow derived classes to change (`duckShow()`) and one function which we will not (`duckQuack()`). Thus, only the first is included in our interface definition. In C++ parlance, this is a "vtable" or "table of virtual functions" (the "virtual" part means that they are intended to be defined by the derived classes). Each class (base and derived) will also need to write their own "Create", "Init", "Deinit", and "Destroy" functions. Making those functions polymorphic requires a bit more work and will be tackled in a [future project](https://github.com/nathancharlesjones/Comparison-of-OOP-techniques-in-C/tree/main/3c_Run-time-Polymorphism_ADT_Complete-interface).
 
 ```
 // include/duck.r
-typedef struct Duck_Interface_Struct * Duck_Interface;
+typedef struct Duck_Interface_Struct const * Duck_Interface;
 ...
 typedef struct Duck_Interface_Struct
 {
@@ -45,8 +45,8 @@ When creating a new Duck object, now, we also need to make sure that this "vtabl
 
 ```
 // source/duck.c
-static Duck_Interface_Struct interface = {
-    _duckShow
+static const Duck_Interface_Struct interface = {
+    .show=0
 };
 
 void
@@ -58,9 +58,7 @@ duckInit( Duck thisDuck, char * name )
 }
 ```
 
-The function `_duckShow()` is the function we'll use for Ducks or other derived objects that don't want to define their own implementations. It is prefixed with an underscore to prevent any sort of name-clashing with the publicly-available functions.
-
-The definition for `duckQuack()` is straightforward, but the one for `duckShow()` looks a little odd. When this function runs, it is because some part of the code has called it on a Duck _or_ an object derived from Duck. We don't know at the outset which it is, but by following our conventions above, it doesn't matter: every Duck or object derived from Duck has a "vtable" which points to a Duck interface that contains a function pointer for the "show" function. Provided all of these pointers are defined, then all we need to do to call the correct function is reference that function pointer in the vtable.
+The definition for `duckQuack()` is straightforward, but the one for `duckShow()` looks a little odd. When this function runs, it is because some part of the code has called it on a Duck _or_ an object derived from Duck. We don't know at the outset which it is, but by following our conventions above, it doesn't matter: every Duck or object derived from Duck has a "vtable" which points to a Duck interface that contains a function pointer for the "show" function. Provided all of these pointers are defined, then all we need to do to call the correct function is reference that function pointer in the vtable. If one is not, as in the case of the Duck interface, then the "else" condition is executed (acting like a base or default implementation of `duckShow()` for objects that haven't provided their own implementation).
 
 ```
 // source/duck.c
@@ -70,6 +68,10 @@ duckShow( Duck thisDuck )
     if ( thisDuck && thisDuck->vtable && thisDuck->vtable->show )
     {
         thisDuck->vtable->show(thisDuck);
+    }
+    else
+    {
+        printf("\tHi! My name is %s.\n", thisDuck->name);
     }
 }
 ```
@@ -90,7 +92,7 @@ When we create a Mallard object, we now need to change the "vtable" to point to 
 ```
 // source/mallard.c
 static Duck_Interface_Struct interface = {
-    mallardShow
+    .show=mallardShow
 };
 
 void
