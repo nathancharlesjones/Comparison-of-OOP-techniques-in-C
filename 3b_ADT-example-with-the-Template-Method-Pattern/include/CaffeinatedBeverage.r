@@ -3,7 +3,7 @@
 
 #define MAX_CHARS_NAME 20
 
-typedef struct CaffeinatedBeverage_Interface_Struct* CaffeinatedBeverage_Interface;
+typedef struct CaffeinatedBeverage_Interface_Struct const * CaffeinatedBeverage_Interface;
 
 typedef struct CaffeinatedBeverage_Data_Struct {
     CaffeinatedBeverage_Interface interface;
@@ -14,8 +14,8 @@ typedef struct CaffeinatedBeverage_Interface_Struct {
     void (*brew)(CaffeinatedBeverage_Data_Struct*);
     void (*addCondiments)(CaffeinatedBeverage_Data_Struct*);
     void (*addWhip)(CaffeinatedBeverage_Data_Struct*);
+    void (*deinit)(CaffeinatedBeverage_Data_Struct*);
+    void (*destroy)(CaffeinatedBeverage_Data_Struct*);
 } CaffeinatedBeverage_Interface_Struct;
-
-void caffeinatedBeverageDeinit( CaffeinatedBeverage_Data_Struct * _self );
 
 #endif /*CAFFEINATED_BEVERAGE_R*/

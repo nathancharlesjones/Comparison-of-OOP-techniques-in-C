@@ -4,6 +4,18 @@
 #include "CaffeinatedBeverage.h"
 #include "CaffeinatedBeverage.r"
 
+void
+CaffeinatedBeverage_setName(CaffeinatedBeverage _self, char * name)
+{
+    strncpy(_self->name, name, MAX_CHARS_NAME);
+}
+
+char *
+CaffeinatedBeverage_getName(CaffeinatedBeverage _self)
+{
+    return _self->name;
+}
+
 static void CaffeinatedBeverage_boilWater(CaffeinatedBeverage _self) {
     printf("\tBoiling water.\n\r");
 }
@@ -41,4 +53,24 @@ void CaffeinatedBeverage_prepare(CaffeinatedBeverage _self) {
 
 void caffeinatedBeverageDeinit( CaffeinatedBeverage _self ) {
     memset(_self->name,0,sizeof(char)*MAX_CHARS_NAME);
+}
+
+void
+CaffeinatedBeverage_destroy(CaffeinatedBeverage _self)
+{
+    if( _self )
+    {
+        if ( _self->interface && _self->interface->deinit )
+        {
+            _self->interface->deinit(_self);
+        }
+
+        printf("\tDeinitializing caffeinated beverage object with name: %s\n", _self->name);
+        memset(_self->name, 0, sizeof(char)*MAX_CHARS_NAME);
+
+        if ( _self->interface && _self->interface->destroy )
+        {
+            _self->interface->destroy(_self);
+        }
+    }
 }

@@ -9,7 +9,5 @@ typedef struct TeaStruct * Tea;
 
 CaffeinatedBeverage newTea_dynamic( char * name );
 CaffeinatedBeverage newTea_static( char * name );
-void teaDestroy_dynamic( CaffeinatedBeverage super );
-void teaDestroy_static( CaffeinatedBeverage super );
 
 #endif /*TEA_H*/

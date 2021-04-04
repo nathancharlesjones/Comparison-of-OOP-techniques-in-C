@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include "CaffeinatedBeverage.h"
 #include "CaffeinatedBeverage.r"
 #include "Tea.h"
 
@@ -18,24 +19,20 @@ typedef struct teaMemoryPool_t
 
 static teaMemoryPool_t teaMemoryPool[MAX_NUM_TEA_OBJS] = {0};
 
-static void Tea_brew(CaffeinatedBeverage super) {
-    printf("\tSteeping the tea.\n\r");
-}
+static const CaffeinatedBeverage_Interface_Struct interface_dynamic;
+static const CaffeinatedBeverage_Interface_Struct interface_static;
 
-static void Tea_addCondiments(CaffeinatedBeverage super) {
-    printf("\tAdding lemon.\n\r");
-}
+void
+teaInit( Tea thisTea, CaffeinatedBeverage_Interface interface, char * name){
+    printf("\tInitializing new tea drink with name: %s\n", name);
 
-static CaffeinatedBeverage_Interface_Struct interface = {
-    Tea_brew,
-    Tea_addCondiments,
-    0
-};
+    CaffeinatedBeverage_setName((CaffeinatedBeverage)thisTea,name);
+    thisTea->base.interface = interface;
+}
 
 CaffeinatedBeverage newTea_dynamic( char * name ) {
     Tea newTea = (Tea)malloc(sizeof(TeaStruct));
-    newTea->base.interface = &interface;
-    strncpy(newTea->base.name, name, MAX_CHARS_NAME);
+    teaInit(newTea, &interface_dynamic, name);
     return (CaffeinatedBeverage)newTea;
 }
 
@@ -48,31 +45,50 @@ CaffeinatedBeverage newTea_static( char * name ) {
         {
             teaMemoryPool[i].used = true;
             newTea = &teaMemoryPool[i].thisTea;
-            newTea->base.interface = &interface;
-            strncpy(newTea->base.name, name, MAX_CHARS_NAME);
+            teaInit(newTea, &interface_static, name);
+            break;
         }
     }
 
     return (CaffeinatedBeverage)newTea;
 }
 
-void teaDestroy_dynamic( CaffeinatedBeverage super ) {
-    printf("\tDestroying tea object with name: %s\n", super->name);
-    
-    caffeinatedBeverageDeinit( super );
+static void Tea_brew(CaffeinatedBeverage super) {
+    printf("\tSteeping the tea.\n\r");
+}
 
+static void Tea_addCondiments(CaffeinatedBeverage super) {
+    printf("\tAdding lemon.\n\r");
+}
+
+void Tea_destroyDynamic( CaffeinatedBeverage super ) {
     free(super);
 }
 
-void teaDestroy_static( CaffeinatedBeverage super ) {
+void Tea_destroyStatic( CaffeinatedBeverage super ) {
     for( int i = 0; i < MAX_NUM_TEA_OBJS; i++)
     {
         if( (Tea)super == &teaMemoryPool[i].thisTea )
         {
-            printf("\tDestroying tea object with name: %s\n", super->name);    
-            caffeinatedBeverageDeinit( super );
             teaMemoryPool[i].used = false;
             super = NULL;
+            break;
         }
     }
 }
+
+static const CaffeinatedBeverage_Interface_Struct interface_dynamic = {
+    Tea_brew,
+    Tea_addCondiments,
+    0,
+    0,
+    Tea_destroyDynamic
+};
+
+static const CaffeinatedBeverage_Interface_Struct interface_static = {
+    Tea_brew,
+    Tea_addCondiments,
+    0,
+    0,
+    Tea_destroyStatic
+};

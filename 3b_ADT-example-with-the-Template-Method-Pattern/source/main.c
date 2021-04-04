@@ -18,8 +18,8 @@ main(void)
 
     printf("|__Destroying beverage objects\n");
 
-    teaDestroy_dynamic(Tea1);
-    coffeeDestroy_static(Coffee1);
+    CaffeinatedBeverage_destroy(Tea1);
+    CaffeinatedBeverage_destroy(Coffee1);
 
     return 0;
 }
