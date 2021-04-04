@@ -2,7 +2,7 @@
 
 ## Description
 
-In life and software, many objects have a "has a" relationship more than an "is a" relationship. For instance, a car HAS an engine but a swallow IS A bird. The first relationship is often called "composition" (as in, an object is being composed of other objects) while the second is often called "inheritance" (as in, an object is inheriting all of the attributes of the "parent" object and, possibly, adding some of its own). Composition is rather easy to implement at this point since all we need to do is define a object that includes other objects in it's attributes. Along the way, we'll see a design pattern called "mediator".
+In life and software, many objects have a "has a" relationship more than an "is a" relationship. For instance, a car HAS an engine but a swallow IS A bird. The first relationship is often called "composition" (as in, an object is being composed of other objects) while the second is often called "inheritance" (as in, an object is inheriting all of the attributes of the "parent" object and, possibly, adding some of its own). Composition is rather easy to implement at this point since all we need to do is define a object that includes other objects in it's attributes. Along the way, we'll see a design pattern<sup>1</sup> called "mediator".
 
 In this example, we're going to assume that we're trying to control a robotic arm that is composed of three joints (shoulder, elbow, and wrist), each of which is manipulated using a standard servo motor. We've started by creating an object, "servoController", which will encapsulate details about how our servo motors are controlled.
 
@@ -49,6 +49,10 @@ robotArm_moveShoulderTo( robotArm thisRobotArm, int angle )
     servoControllerMoveTo( thisRobotArm->shoulder, angle );
 }
 ```
+
+### Notes
+
+1) A "design pattern" is a "general repeatable solution to a commonly occurring problem in software design" ([Source Making](https://sourcemaking.com/design_patterns)). The seminal book on design patterns was ["Design Patterns"](https://www.amazon.com/Design-Patterns-Object-Oriented-Addison-Wesley-Professional-ebook/dp/B000SEIBB8), affectionately referred to as the "Gang of Four" or "GoF", in reference to the four authors of said book, but I started with ["Head First Design Patterns"](https://www.amazon.com/Head-First-Design-Patterns-Brain-Friendly/dp/0596007124), which seemed more approachable. Design patterns can supercharge your programming but they almost always assume that the developer is working with an OOP language, which C is not (by default).
 
 ## How do I run it?
 

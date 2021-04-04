@@ -13,3 +13,4 @@ A collection of ways to use OOP techniques in C, organized from least to most co
 - "OOP in ANSI C" by Axel Schreiner.
     - [PDF](https://www.cs.rit.edu/~ats/books/ooc.pdf)
     - [Git repo](https://github.com/shichao-an/ooc)
+- ["Design Patterns for Embedded Systems in C"](https://www.amazon.com/Design-Patterns-Embedded-Systems-Engineering/dp/1856177076) by Bruce Powel Douglass
