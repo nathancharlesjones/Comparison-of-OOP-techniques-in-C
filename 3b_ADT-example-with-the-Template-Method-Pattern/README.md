@@ -13,7 +13,7 @@ In this example, we're creating an ADT called `CaffeinatedBeverage` with a `prep
 4. Add condiments
 5. Add whipped cream
 
-We don't want each of the derived classes to re-implement this entire method, just the individual pieces as needed, so we'll use the "Template Method" pattern. To accomplish this, notice how our "prepare" method merely calls functions associated with the five steps above:
+We don't want each of the derived classes to re-implement this entire method, just the individual pieces as needed, so we'll use the "Template Method" pattern. To accomplish this, notice how our `prepare()` method merely calls functions associated with the five steps above:
 
 ```
 // source/CaffeinatedBeverage.c
@@ -35,8 +35,7 @@ typedef struct CaffeinatedBeverage_Interface_Struct {
     void (*brew)(CaffeinatedBeverage_Data_Struct*);
     void (*addCondiments)(CaffeinatedBeverage_Data_Struct*);
     void (*addWhip)(CaffeinatedBeverage_Data_Struct*);
-    void (*deinit)(CaffeinatedBeverage_Data_Struct*);
-    void (*destroy)(CaffeinatedBeverage_Data_Struct*);
+    ...
 } CaffeinatedBeverage_Interface_Struct;
 ```
 
