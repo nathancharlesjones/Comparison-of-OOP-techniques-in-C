@@ -30,7 +30,7 @@ rubberInit( Rubber thisRubber, Duck_Interface interface, char * name, duck_size 
 {
     printf("\tInitializing new rubber duck with name: %s\n", name);
 
-    strncpy(thisRubber->parentDuck.name, name, MAX_CHARS_NAME);
+    duckSetName((Duck)thisRubber, name);
     thisRubber->parentDuck.vtable = interface;
     thisRubber->size = size;
 }
@@ -69,13 +69,13 @@ static void
 rubberShow( Duck thisDuck )
 {
     Rubber thisRubber = (Rubber)thisDuck;
-    printf("\tHi! I'm a %s rubber duck. My name is %s.\n", sizeNames[thisRubber->size], thisRubber->parentDuck.name);
+    printf("\tHi! I'm a %s rubber duck. My name is %s.\n", sizeNames[thisRubber->size], duckGetName((Duck)thisRubber));
 }
 
 static void
 rubberDeinit( Duck thisDuck )
 {
-    printf("\tDeinitializing Rubber Duck object with name: %s\n", thisDuck->name);
+    printf("\tDeinitializing Rubber Duck object with name: %s\n", duckGetName(thisDuck));
 
     ((Rubber)thisDuck)->size = 0;
 }

@@ -6,6 +6,18 @@
 #include "duck.r"
 
 void
+duckSetName( Duck thisDuck, char * name )
+{
+    strncpy(thisDuck->name, name, MAX_CHARS_NAME);
+}
+
+char *
+duckGetName( Duck thisDuck )
+{
+    return thisDuck->name;
+}
+
+void
 duckQuack( Duck thisDuck )
 {
     printf("\t%s: Quack!\n", thisDuck->name);

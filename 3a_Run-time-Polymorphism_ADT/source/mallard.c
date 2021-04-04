@@ -30,7 +30,7 @@ mallardInit( Mallard thisMallard, Duck_Interface interface, char * name, feather
 {
     printf("\tInitializing new mallard duck with name: %s\n", name);
 
-    strncpy(thisMallard->parentDuck.name, name, MAX_CHARS_NAME);
+    duckSetName((Duck)thisMallard, name);
     thisMallard->parentDuck.vtable = interface;
     thisMallard->myColor = color;
 }
@@ -69,13 +69,13 @@ static void
 mallardShow( Duck thisDuck )
 {
     Mallard thisMallard = (Mallard)thisDuck;
-    printf("\tHi! I'm a mallard duck. My name is %s. I have %s feathers.\n", thisMallard->parentDuck.name, colorNames[thisMallard->myColor]);
+    printf("\tHi! I'm a mallard duck. My name is %s. I have %s feathers.\n", duckGetName((Duck)thisMallard), colorNames[thisMallard->myColor]);
 }
 
 static void
 mallardDeinit( Duck thisDuck )
 {
-    printf("\tDeinitializing Mallard object with name: %s\n", thisDuck->name);
+    printf("\tDeinitializing Mallard object with name: %s\n", duckGetName(thisDuck));
 
     ((Mallard)thisDuck)->myColor = 0;
 }

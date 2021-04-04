@@ -32,7 +32,7 @@ typedef struct Duck_Interface_Struct
 //
 ```
 
-The `show()` function will print something to the console. The `destroy()` function will free up the spot in memory where a Duck was being stored; it's always preceded by `deinit()` in order to allow for the clean-up of any parts of the derived class (such as ensuring a motor is returned home and powered off). Deinitialization operations are required to be in the `deinit()` function, as opposed to inside the `destroy()` function, since our base class has some data elements of it's own (`name`). The derived classes need to handle their own destroy operations but the order of deinitializing should be derived object first, followed by base object. If the base class were to have no explicit deinitialization, then the `deinit()` function in the interface struct could be omitted.
+The `show()` function will print something to the console. The `destroy()` function will free up the spot in memory where a Duck was being stored; it's always preceded by `deinit()` in order to allow for the clean-up of any parts of the derived class (such as ensuring a motor is returned home and powered off). Deinitialization operations are required to be in the `deinit()` function, as opposed to inside the `destroy()` function, since our base class has some data elements of it's own (`name`). The derived classes need to handle their own destroy operations (since they may be interacting with their own static memory pool) but the order of deinitializing should be derived object _first_, followed by base object (followed by returning the object to either the heap or static memory pool). If the base class were to have no explicit deinitialization, then the `deinit()` function in the interface struct could be omitted.
 
 We'll also add the interface struct as the first member of our Duck struct.
 
@@ -45,7 +45,7 @@ typedef struct Duck_t
 } Duck_t;
 ```
 
-The definition for `duckQuack()` is straightforward, but the ones for `duckShow()` and `duckDestroy()` look a little odd. When this function runs, it is because some part of the code has called it on object derived from the Duck class. We don't know at the outset which derived class that might be, but by following our conventions above, it doesn't matter: every object derived from Duck has a "vtable" which points to a Duck interface that contains a function pointer for the "show" function. Provided all of these pointers are defined, then all we need to do to call the correct function is reference that function pointer in the vtable. If one is not, as in the case of the Duck interface, then the "else" condition is executed (acting like a base or default implementation of `duckShow()` for objects that haven't provided their own implementation).
+The definition for `duckQuack()` is straightforward, but the ones for `duckShow()` and `duckDestroy()` look a little odd. When these functions run, it is because some part of the code has called them on an object derived from the Duck class. We don't know at the outset which derived class that might be, but by following our conventions above, it doesn't matter: every object derived from Duck has a "vtable" which points to a Duck interface that contains a function pointer for the "show" or "destroy" functions. Provided all of these pointers are defined, then all we need to do to call the correct function is reference that function pointer in the vtable. If one is not, as in the case of the Duck interface, then the "else" condition is executed (acting like a base or default implementation of `duckShow()` for objects that haven't provided their own implementation).
 
 ```
 // source/duck.c
@@ -98,8 +98,15 @@ Now, when `duckShow()` is called on a Mallard object, the function call `thisDuc
 Of critical importance to this setup is that the Mallard functions do not operate on "Mallard" objects, but rather "Duck" objects.
 
 ```
-// include/mallard.h
-Duck mallardCreate_dynamic( char * name, featherColor color );
+// source/mallard.c
+static void mallardShow( Duck thisDuck ){...}
+
+// Matches function signature in Duck_Interface_Struct (include/duck.r):
+// typedef struct Duck_Interface_Struct
+// {
+//     void (*show)( Duck_t * thisDuck );
+//     ...
+// } Duck_Interface_Struct;
 ```
 
 Notice also that the functions `mallardCreate_XXX()` do not return a Mallard object, but rather a Duck object.
