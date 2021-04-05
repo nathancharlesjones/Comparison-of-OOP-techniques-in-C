@@ -1,6 +1,9 @@
 {
     "files.associations": {
-        "*.h": "c",
-        "*.r": "c"
+        "stdio.h": "c",
+        "*.r": "c",
+        "servocontroller.h": "c",
+        "servocontroller_special.h": "c",
+        "mallard.h": "c"
     }
 }

@@ -1,20 +1,41 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "duck.h"
 #include "duck.r"
 
-static void _duckShow( Duck thisDuck );
+typedef struct duckMemoryPool_t
+{
+    bool used;
+    Duck_t thisDuck;
+} duckMemoryPool_t;
 
-static Duck_Interface_Struct interface = {
-    _duckShow
-};
+static duckMemoryPool_t duckMemoryPool[MAX_NUM_DUCK_OBJS] = {0};
 
 Duck
-duckCreate( void )
+duckCreate_dynamic( void )
 {
     Duck newDuck = (Duck)malloc(sizeof(Duck_t));
     // TODO: Check for null pointer on malloc failure
+
+    return newDuck;
+}
+
+Duck
+duckCreate_static( void )
+{
+    Duck newDuck = NULL;
+
+    for( int i = 0; i < MAX_NUM_DUCK_OBJS; i++)
+    {
+        if( duckMemoryPool[i].used == false )
+        {
+            duckMemoryPool[i].used = true;
+            newDuck = &duckMemoryPool[i].thisDuck;
+            break;
+        }
+    }
 
     return newDuck;
 }
@@ -24,8 +45,19 @@ duckInit( Duck thisDuck, char * name )
 {
     printf("\tInitializing duck with name: %s\n", name);
 
-    thisDuck->vtable = &interface;
     strncpy(thisDuck->name, name, MAX_CHARS_NAME);
+}
+
+void
+duckSetName( Duck thisDuck, char * name )
+{
+    strncpy(thisDuck->name, name, MAX_CHARS_NAME);
+}
+
+char *
+duckGetName( Duck thisDuck )
+{
+    return thisDuck->name;
 }
 
 void
@@ -37,14 +69,33 @@ duckQuack( Duck thisDuck )
 void
 duckShow( Duck thisDuck )
 {
-    if ( thisDuck && thisDuck->vtable && thisDuck->vtable->show )
-    {
-        thisDuck->vtable->show(thisDuck);
-    }
+    printf("\tHi! My name is %s.\n", thisDuck->name);
 }
 
-static void
-_duckShow( Duck thisDuck )
+void
+duckDeinit( Duck thisDuck )
 {
-    printf("\tHi! My name is %s.\n", thisDuck->name);
+    printf("\tDeinitializing Duck object with name: %s\n", thisDuck->name);
+    
+    memset(thisDuck->name, 0, sizeof(char)*MAX_CHARS_NAME);
+}
+
+void
+duckDestroy_dynamic( Duck thisDuck )
+{
+    free(thisDuck);
+}
+
+void
+duckDestroy_static( Duck thisDuck )
+{
+    for( int i = 0; i < MAX_NUM_DUCK_OBJS; i++)
+    {
+        if( thisDuck == &duckMemoryPool[i].thisDuck )
+        {
+            duckMemoryPool[i].used = false;
+            thisDuck = NULL;
+            break;
+        }
+    }
 }

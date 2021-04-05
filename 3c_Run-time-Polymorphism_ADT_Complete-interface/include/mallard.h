@@ -1,9 +1,9 @@
 #ifndef MALLARD_H
 #define MALLARD_H
 
-#define MAX_NUM_MALLARD_OBJS 10
-
 #include "duck.h"
+
+#define MAX_NUM_MALLARD_OBJS 10
 
 typedef enum {RED, BROWN, WHITE} featherColor;
 

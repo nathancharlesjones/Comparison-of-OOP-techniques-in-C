@@ -27,16 +27,16 @@ Duck Huey = duckCreate_dynamic();
 duckInit(Huey, "Huey");
 ```
 
-Two "Create" functions are provided to demonstrate that _either_ dynamic or static memory allocation can be used in the implementation of these objects. The function `duckCreate_dynamic()` uses `malloc()` to dynamically allocate memory on the heap for each object. The function `duckCreate_static()` utilizes an array of "Duck" objects that is defined in `duck.c` and simply passes out pointers to the elements of this array. The array of "Duck" objects is allocated in static memory and, thus, might be useful to developers who want or need to avoid the use of heap memory.
+Two "Create" functions are provided to demonstrate that _either_ dynamic or static memory allocation can be used in the implementation of these objects. The function `duckCreate_dynamic()` uses `malloc()` to dynamically allocate memory on the heap for each object. The function `duckCreate_static()` utilizes an array of "Duck" objects that is defined in `duck.c` and simply passes out pointers to the elements of this array. The array of "Duck" objects is allocated in static memory and, thus, might be useful to developers who want or need to avoid the use of heap memory. Actual projects will likely only need one implementation; both are shown here and for many of the projects simply for completeness.
 
-Then, the program can use the public functions ("duckShow") to interact with the "Duck" objects.
+After a `Duck` object has been created, the program can use the public functions ("duckShow") to interact with them.
 
 ```
 // source/main.c
 duckShow(Huey);
 ```
 
-Notice how the program can't directly access the "name" field of the "Duck" objects like it could in the project "0_No-OOP".
+Notice how the program can't directly access the "name" field of the "Duck" objects like it could in the project "0_No-OOP". Although we've only just starting exploring OOP techniques in C, I want to note at this point that just this technique is sufficient to understand all of the techniques discussed in ["Design Patterns for Embedded Systems in C"](https://www.amazon.com/Design-Patterns-Embedded-Systems-Engineering/dp/1856177076) by Bruce Powel Douglass.
 
 ## How do I run it?
 

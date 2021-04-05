@@ -2,6 +2,7 @@
 #define MALLARD_R
 
 #include "duck.r"
+#include "mallard.h"
 
 typedef struct Mallard_Interface_Struct * Mallard_Interface;
 

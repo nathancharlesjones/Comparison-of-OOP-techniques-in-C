@@ -5,8 +5,6 @@
 
 typedef enum {RED, BROWN, WHITE} featherColor;
 
-extern const char * colorNames[];
-
 typedef struct Mallard_t * Mallard;
 
 Mallard mallardCreate_dynamic( void );
