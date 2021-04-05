@@ -3,8 +3,19 @@
 #include "mallard.h"
 
 int
-main( void )
-{    
+main( int argc, char * argv[] )
+{   
+    Duck myDuck = NULL;
+
+    switch (expression)
+    {
+    case /* constant-expression */:
+        /* code */
+        break;
+    
+    default:
+        break;
+    } 
     printf("|__Creating duck and mallard objects\n");
 
     Duck George = duckCreate(duckFromStaticMem, "George");

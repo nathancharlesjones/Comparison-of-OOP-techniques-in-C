@@ -1,134 +1,96 @@
-# Run-time Polymorphism (ADT)
+# Run-time Polymorphism (ADT), Complete Interface
 
 ## Description
 
-In our last project, ["Simple Inheritance"](https://github.com/nathancharlesjones/Comparison-of-OOP-techniques-in-C/tree/main/2_Simple-inheritance), although our base class functions could be called using our derived class ("Mallard"), the object had to be explicitly cast to the base class and the function could not access any of the data elements in the derived class.
+Our first attempt at run-time polymorphism (Projects [3a](https://github.com/nathancharlesjones/Comparison-of-OOP-techniques-in-C/tree/main/3a_Run-time-Polymorphism_ADT)/[3b](https://github.com/nathancharlesjones/Comparison-of-OOP-techniques-in-C/tree/main/3b_ADT-example-with-the-Template-Method-Pattern)) succeeded in allowing for a consistent interface once an object has been created. We could call `duckQuack()`, `duckShow()`, and `duckDestroy()` on any object that implemented the `Duck` base class, but _only after the object had already been created_ and we required a unique `Create()` function for each type of object we wanted to interact with in our code (`duckCreate_dynamic()`, `duckCreate_static()`, `mallardCreate_dynamic()`, and `mallardCreate_static()`). In some cases it might be useful to have a single `Create()` function which we can overload depending on the object we're trying to create (similar to the "vtable" in the base class that allows for derived classes to override the base class implementation of other functions). A function could then create an object which was defined on the command line or in an argument to the function and fully operate on that object without needing to know it's exact implementation. Accomplishing this involves a few modifications to our existing code.
+
+First, consider that we want to take the four create functions listed above and condense them into a single overarching create function, like below. It will have to take some kind of input argument to inform it which object it needs to create.
 
 ```
-// 2_Simple-inheritance/source/main.c
-
-// "Bill" is a Mallard object, but is here treated
-// exactly as though it were just a Duck object. The
-// expected output is "Hi! My name is Bill." just as
-// if Bill were a duck.
-//
-duckShow((Duck)Bill);
+Duck duckCreate( /* Something goes here to indicate which type of object to create */ );
 ```
 
-Ideally, we would be able to provide any derived object to any base class function without casting AND let the derived class define a function which _supercedes_ the base class's function. In other words, instead of writing `duckShow((Duck)Bill)` and seeing `"Hi! My name is Bill."` on the output, we'd like to write `duckShow(Bill)` (notice: no casting to type Duck) and see something like `"Hi! I'm a mallard duck. My name is Bill. I have brown feathers."` on the output. In this project, we're going to look at one way of doing this.
-
-To do this, we first need to define a table of function pointers for each data type. This will allow derived classes the ability to change the default function for a base class to one that's specific to the derived class. Our Duck object will have one function which we will allow derived classes to change (`duckShow()`) and one function which we will not (`duckQuack()`). Thus, only the first is included in our interface definition. In C++ parlance, this is a "vtable" or "table of virtual functions" (the "virtual" part means that they are intended to be defined by the derived classes). Each class (base and derived) will also need to write their own "Create", "Init", "Deinit", and "Destroy" functions. Making those functions polymorphic requires a bit more work and only seems necessary for very specific applications.
-
-```
-// include/duck.r
-typedef struct Duck_Interface_Struct * Duck_Interface;
-...
-typedef struct Duck_Interface_Struct
-{
-    void (*show)( Duck_t * thisDuck );
-} Duck_Interface_Struct;
-//
-```
-
-We'll also add this interface struct as the first member of our Duck struct.
-
-```
-// include/duck.r
-typedef struct Duck_t
-{
-    Duck_Interface vtable;
-    char name[MAX_CHARS_NAME];
-} Duck_t;
-```
-
-When creating a new Duck object, now, we also need to make sure that this "vtable" points to the interface struct that defines the interface for our generic Ducks.
+Effectively we need some kind of function pointer to point to the specific "create" function we want. However, we already have a table of function pointers that each derived class defines for its objects: the "vtable". This list of function pointers uniquely defines each object and can easily be used to tell the `Create()` function which type of object to make. Provided we add a `create()` function to our vtable, the overarching function `duckCreate()` can just defer the actual object creation to the function that's defined in the vtable, just like for our other polymorphic functions.
 
 ```
 // source/duck.c
-static Duck_Interface_Struct interface = {
-    _duckShow
+const Duck_Interface_Struct duckDynamic = {
+    .create=duckCreate_dynamic,
+    .init=0,
+    .show=0,
+    .deinit=0,
+    .destroy=duckDestroy_dynamic
 };
 
-void
-duckInit( Duck thisDuck, char * name )
-{
-    ...
-    thisDuck->vtable = &interface;
-    ...
-}
-```
+Duck_Interface duckFromHeapMem = &duckDynamic;
 
-The function `_duckShow()` is the function we'll use for Ducks or other derived objects that don't want to define their own implementations. It is prefixed with an underscore to prevent any sort of name-clashing with the publicly-available functions.
-
-The definition for `duckQuack()` is straightforward, but the one for `duckShow()` looks a little odd. When this function runs, it is because some part of the code has called it on a Duck _or_ an object derived from Duck. We don't know at the outset which it is, but by following our conventions above, it doesn't matter: every Duck or object derived from Duck has a "vtable" which points to a Duck interface that contains a function pointer for the "show" function. Provided all of these pointers are defined, then all we need to do to call the correct function is reference that function pointer in the vtable.
-
-```
-// source/duck.c
-void
-duckShow( Duck thisDuck )
-{
-    if ( thisDuck && thisDuck->vtable && thisDuck->vtable->show )
-    {
-        thisDuck->vtable->show(thisDuck);
-    }
-}
-```
-
-Looking at a derived object may help this make more sense. Our "Mallard" objects "inherit" from Duck, so it includes a Duck_t object as it's first element.
-
-```
-// source/mallard.c
-typedef struct Mallard_t
-{
-    Duck_t parentDuck;
-    featherColor myColor;
-} Mallard_t;
-```
-
-When we create a Mallard object, we now need to change the "vtable" to point to the list of functions that we want to be called for Mallard objects.
-
-```
-// source/mallard.c
-static Duck_Interface_Struct interface = {
-    mallardShow
+const Duck_Interface_Struct duckStatic = {
+    .create=duckCreate_static,
+    .init=0,
+    .show=0,
+    .deinit=0,
+    .destroy=duckDestroy_static
 };
 
-void
-mallardInit( Duck thisDuck, char * name, featherColor color )
-{
-    ...
-    thisMallard->parentDuck.vtable = &interface;
-    ...
-}
+Duck_Interface duckFromStaticMem = &duckStatic;
 ```
 
-Now, when `duckShow()` is called on a Mallard object, the function call `thisDuck->vtable->show(thisDuck)` points **not** to `_duckShow()` but to `mallardShow()`!
+We'll also need to add an `init()` function to the vtable since, similar to the process of destroying an object, the order of operations needs to be (1) object created by derived class, (2) initialization of base class variables, (3) initialization of derived class variables.
 
-Of critical importance to this setup is that the Mallard functions do not operate on "Mallard" objects, but rather "Duck" objects.
-
-```
-// include/mallard.h
-void mallardInit( Duck thisDuck, char * name, featherColor color );
-```
-
-Notice also that the function `mallardCreate()` does not return a Mallard object, but rather a Duck object.
+For the calling code to use these data values, we'll just need to "extern" them in the header files.
 
 ```
-// include/mallard.h
-Duck mallardCreate( void );
+// include/duck.h
+extern Duck_Interface duckFromHeapMem;
+extern Duck_Interface duckFromStaticMem;
+```
 
-// source/mallard.c
+We'll start writing our single `Create()` function, making the first argument a pointer to `Duck_Interface_Struct` (aka `Duck_Interface`). Following that are any data values required to initialize the attributes of our `Duck` object (in this case, just `name`).
+
+```
+// include/duck.h
+Duck duckCreate( Duck_Interface newDuckType, char * name, ... );
+```
+
+Following any required data values are three elipses (`...`), which is the C syntax for a variadic function. This tells the C compiler that this function may be called with any number of arguments after `name`, which is required for our project since we want to use this one function to create _all_ types of Ducks, even ones we haven't created yet. The "Mallard" class, for instance, requires a `featherColor` to be initialized, but we would have no idea ahead of time that this was a possibility. We have no idea how many and what types of data values all of our derived classes may need when they get created so we have to write our `Create()` function to accept an unknown number of them.
+
+To use variadic arguments in C, we need to include the header "stdarg.h" and start and end our function with the following:
+
+```
 Duck
-mallardCreate( void )
+duckCreate( Duck_Interface newDuckType, char * name, ... )
 {
+    va_list args;
+    va_start(args, name);
     ...
-    return (Duck)newMallard;
+    va_end(args);
 }
 ```
 
-This is what allows us to call Duck methods on Mallard objects without having to explicitly cast: although Mallard objects extend and behave differently than Duck objects, because they inherit from Duck, then can be treated by the rest of the program exactly as Ducks. The vtable then allows them to perform Mallard-specific implementations of the Duck functions. Thus, the Duck class is considered an "abstract data type" for which "Mallard" (and any other derived classes) offer an implementation.
+`va_list`, `va_start`, and `va_end` are macros that are defined in the "stdarg.h" header. `args` can be any valid C variable name and points to the list of variable arguments that gets past in through the elipses. The second argument to `va_start` (here, `name`) is the last required argument to the function.
 
-One last thing to note is that this structure does not allow for full inheritance. Meaning, we couldn't use this same code to define a class that is derived from "Mallard" and then also expect to pass them to Duck functions without error. That problem will be solved in a future project.
+We don't actually need any of these variable arguments in this function, but we do need to pass them to the derived object's `init()` function. To do that, we can pass a pointer to the list of arguments (`&args`) to that function.
+
+```
+// source/duck.c
+newDuck->vtable->init(newDuck, &args); // Line 39
+```
+
+To accept this argument, the derived class's `init()` function needs to be defined to take an input of `va_list`.
+
+```
+// source/mallard.c
+void mallardInit( Duck thisDuck, va_list * args ){...}
+```
+
+To pull out these arguments, we use the `va_arg()` macro, which takes in a `va_list` and a type of variable to access. The `va_list` effectively tells the C compiler where in the stack the list of variable arguments is stored and the variable type given to `va_arg()` tells it how much and what type of memory it's accessing.
+
+```
+// source/mallard.c
+thisMallard->myColor = va_arg(*args, featherColor); // Line 58
+```
+
+And with that, our solution is complete. Our `main` function can now call a single create function, `duckCreate()`, with parameters that entirely define what type of object to create. It's interaction with this object is entirely through the interface, allowing it to operate exactly the same on different objects of different types (provided they all have a base class of `Duck`). To demonstrate the utility of this, I've rewritten our typical `main` function so that it accepts a few command line arguments that allow the user to define what type of object they want created.
 
 ## How do I run it?
 
@@ -143,15 +105,9 @@ main( void )
 {    
     printf("|__Creating duck and mallard objects\n");         -->    |__Creating duck and mallard objects
 
-    Duck George = duckCreate();
-    Duck Bill = mallardCreate();
+    Duck George = duckCreate(duckFromStaticMem, "George");
+    Duck Bill = duckCreate(mallardFromHeapMem, "Bill", WHITE);
     
-    printf("|__Initializing duck and mallard objects:\n");    -->    |__Initializing duck and mallard objects:
-
-    duckInit(George, "George");                               -->        Initializing duck with name: George
-    mallardInit(Bill, "Bill", BROWN);                         -->        Initializing new mallard duck with name: Bill
-                                                                         Initializing duck with name: Bill
-
     printf("|__Quacking duck and mallard objects:\n");        -->    |__Quacking duck and mallard objects:
     
     duckQuack(George);                                        -->        George: Quack!
@@ -159,31 +115,18 @@ main( void )
     
     printf("|__Showing duck and mallard objects:\n");         -->    |__Showing duck and mallard objects:
     
-    duckShow(George);                                         -->        Hi! My name is George.
+    duckShow(George);                                         -->        Hi! I'm a medium rubber duck. My name is George.
     duckShow(Bill);                                           -->        Hi! I'm a mallard duck. My name is Bill. I have brown feathers.
-
-    printf("|__Deinitializing duck and mallard objects:\n");  -->    |__Deinitializing duck and mallard objects:
-
-    duckDeinit(George);                                       -->        Deinitializing Duck object with name: George
-    mallardDeinit(Bill);                                      -->        Deinitializing Mallard object with name: Bill
-                                                                         Deinitializing Duck object with name: Bill
 
     printf("|__Destroying duck and mallard objects:\n");      -->    |__Destroying duck and mallard objects
 
-    duckDestroy_dynamic(George);
-    mallardDestroy_static(Bill);
+    duckDestroy(George);                                      -->        Deinitializing Rubber Duck object with name: George
+                                                                         Deinitializing Duck object with name: George
+    duckDestroy(Bill);                                        -->        Deinitializing Mallard object with name: Bill
+                                                                         Deinitializing Duck object with name: Bill
     
     return 0;
 }
 ```
 
 ## References
-- "Improving the Design with Dynamic Interface" from "TDD for Embedded C", pg 233
-    - Code example: The ADT is a light controller for a home automation project. A number of different lights could be used in the home, so multiple implementations of the ADT are provided (one each for every type of light that could be used). The lights each have the same interface, so the application code can treat them all the same, while letting the specific implementations handle the details of turning themselves on or off.
-        - Base class: [LightDriverPrivate.h](https://github.com/jwgrenning/tddec-code/blob/master/code-t3/include/devices/LightDriverPrivate.h) | [LightDriver.h](https://github.com/jwgrenning/tddec-code/blob/master/code-t3/include/devices/LightDriver.h) | [LightDriver.c](https://github.com/jwgrenning/tddec-code/blob/master/code-t3/src/devices/LightDriver.c)
-        - Derived classes
-            - [AcmeWirelessLightDriver.h](https://github.com/jwgrenning/tddec-code/blob/master/code-t3/include/devices/AcmeWirelessLightDriver.h) | [AcmeWirelessLightDriver.c](https://github.com/jwgrenning/tddec-code/blob/master/code-t3/src/devices/AcmeWirelessLightDriver.c)
-            - [MemMappedLightDriver.h](https://github.com/jwgrenning/tddec-code/blob/master/code-t3/include/devices/MemMappedLightDriver.h) | [MemMappedLightDriver.c](https://github.com/jwgrenning/tddec-code/blob/master/code-t3/src/devices/MemMappedLightDriver.c)
-            - [X10LightDriver.h](https://github.com/jwgrenning/tddec-code/blob/master/code-t3/include/devices/X10LightDriver.h) | [X10LightDriver.c](https://github.com/jwgrenning/tddec-code/blob/master/code-t3/src/devices/X10LightDriver.c)
-- ["OOP in C", Section 3](https://www.state-machine.com/doc/AN_OOP_in_C.pdf), Miro Samek
-    - [Code example](https://github.com/QuantumLeaps/OOP-in-C/tree/master/polymorphism)
