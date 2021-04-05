@@ -11,6 +11,8 @@ extern Duck_Interface duckFromHeapMem;
 extern Duck_Interface duckFromStaticMem; 
 
 Duck duckCreate( Duck_Interface newDuckType, char * name, ... );
+void duckSetName( Duck thisDuck, char * name );
+char * duckGetName( Duck thisDuck );
 void duckQuack( Duck thisDuck );
 void duckShow( Duck thisDuck );
 void duckDestroy( Duck thisDuck );

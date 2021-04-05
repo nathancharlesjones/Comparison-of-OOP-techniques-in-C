@@ -2,8 +2,8 @@
 SRC_FILES := \
 	source/main.c \
 	source/duck.c \
-	source/mallard.c
-	#source/redMallard.c
+	source/mallard.c \
+	source/redMallard.c
 
 # Generate a list of .o files from the .c files. Prefix them with the build
 # folder to output the files there. These variables are recursive because

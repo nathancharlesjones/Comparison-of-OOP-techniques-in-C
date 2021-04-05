@@ -4,14 +4,9 @@
 #include "duck.h"
 #include "duck.r"
 #include "mallard.h"
+#include "mallard.r"
 
 const char * colorNames[] = {"red", "brown", "white"};
-
-typedef struct Mallard_t
-{
-    Duck_t parentDuck;
-    featherColor myColor;
-} Mallard_t;
 
 typedef struct mallardMemoryPool_t
 {
@@ -21,17 +16,90 @@ typedef struct mallardMemoryPool_t
 
 static mallardMemoryPool_t mallardMemoryPool[MAX_NUM_MALLARD_OBJS] = {0};
 
+void
+mallardShow( Duck thisDuck )
+{
+    Mallard thisMallard = (Mallard)thisDuck;
+    printf("\tHi! I'm a mallard duck. My name is %s. I have %s feathers.\n", duckGetName(&thisMallard->parentDuck), colorNames[thisMallard->myColor]);
+}
+
+void
+mallardMigrate( Mallard thisMallard )
+{
+    if ( thisMallard && thisMallard->parentDuck.vtable && ((Mallard_Interface)(thisMallard->parentDuck.vtable))->migrate )
+    {
+        ((Mallard_Interface)(thisMallard->parentDuck.vtable))->migrate(thisMallard);
+    }
+    else
+    {
+        printf("\t%s: I'm migrating!\n", duckGetName(&thisMallard->parentDuck));
+    }
+}
+
+void
+mallardDeinit( Duck thisDuck )
+{
+    Mallard thisMallard = (Mallard)thisDuck;
+
+    printf("\tDeinitializing mallard object with name: %s\n", duckGetName(&thisMallard->parentDuck));
+    
+    thisMallard->myColor = 0;
+    
+    duckDeinit((Duck)thisMallard);
+}
+
+void
+mallardDestroy_dynamic( Duck thisDuck )
+{
+    free(thisDuck);
+}
+
+void
+mallardDestroy_static( Duck thisDuck )
+{
+    for( int i = 0; i < MAX_NUM_MALLARD_OBJS; i++)
+    {
+        if( (Mallard)thisDuck == &mallardMemoryPool[i].thisMallard )
+        {
+            mallardMemoryPool[i].used = false;
+            thisDuck = NULL;
+            break;
+        }
+    }
+}
+
+const Mallard_Interface_Struct mallardDynamic = {
+    .duckInterface = { .show=mallardShow,
+                         .deinit=mallardDeinit,
+                         .destroy=mallardDestroy_dynamic },
+    .migrate = 0
+};
+
+Mallard_Interface mallardFromHeapMem = &mallardDynamic;
+
+const Mallard_Interface_Struct mallardStatic = {
+    .duckInterface = { .show=mallardShow,
+                         .deinit=mallardDeinit,
+                         .destroy=mallardDestroy_static },
+    .migrate = 0
+};
+
+Mallard_Interface mallardFromStaticMem = &mallardStatic;
+
 Mallard
-mallardCreate_dynamic( void )
+mallardCreate_dynamic( char * name, featherColor color )
 {
     Mallard newMallard = (Mallard)malloc(sizeof(Mallard_t));
     // TODO: Check for null pointer on malloc failure
+
+    mallardInit(newMallard, name, color);
+    newMallard->parentDuck.vtable = (Duck_Interface)mallardFromHeapMem;
 
     return newMallard;
 }
 
 Mallard
-mallardCreate_static( void )
+mallardCreate_static( char * name, featherColor color )
 {
     Mallard newMallard = NULL;
 
@@ -41,6 +109,8 @@ mallardCreate_static( void )
         {
             mallardMemoryPool[i].used = true;
             newMallard = &mallardMemoryPool[i].thisMallard;
+            mallardInit(newMallard, name, color);
+            newMallard->parentDuck.vtable = (Duck_Interface)mallardFromStaticMem;
             break;
         }
     }
@@ -51,9 +121,9 @@ mallardCreate_static( void )
 void
 mallardInit( Mallard thisMallard, char * name, featherColor color )
 {
-    printf("\tInitializing new mallard duck with name: %s\n", name);
+    duckInit((Duck)thisMallard, name);
 
-    duckInit( &thisMallard->parentDuck, name );
+    printf("\tInitializing mallard duck with name: %s\n", name);
 
     thisMallard->myColor = color;
 }
@@ -74,46 +144,4 @@ const char *
 mallardGetFeatherColorName( Mallard thisMallard )
 {
     return colorNames[thisMallard->myColor];
-}
-
-void
-mallardShow( Mallard thisMallard )
-{
-    printf("\tHi! I'm a mallard duck. My name is %s. I have %s feathers.\n", duckGetName(&thisMallard->parentDuck), colorNames[thisMallard->myColor]);
-}
-
-void
-mallardMigrate( Mallard thisMallard )
-{
-    printf("\t%s: I'm migrating!\n", duckGetName(&thisMallard->parentDuck));
-}
-
-void
-mallardDeinit( Mallard thisMallard )
-{
-    printf("\tDeinitializing Mallard object with name: %s\n", duckGetName(&thisMallard->parentDuck));
-    
-    thisMallard->myColor = 0;
-    
-    duckDeinit((Duck)thisMallard);
-}
-
-void
-mallardDestroy_dynamic( Mallard thisMallard )
-{
-    free(thisMallard);
-}
-
-void
-mallardDestroy_static( Mallard thisMallard )
-{
-    for( int i = 0; i < MAX_NUM_MALLARD_OBJS; i++)
-    {
-        if( thisMallard == &mallardMemoryPool[i].thisMallard )
-        {
-            mallardMemoryPool[i].used = false;
-            thisMallard = NULL;
-            break;
-        }
-    }
 }
