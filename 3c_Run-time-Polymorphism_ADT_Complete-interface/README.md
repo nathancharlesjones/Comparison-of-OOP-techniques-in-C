@@ -90,7 +90,9 @@ To pull out these arguments, we use the `va_arg()` macro, which takes in a `va_l
 thisMallard->myColor = va_arg(*args, featherColor); // Line 58
 ```
 
-And with that, our solution is complete. Our `main` function can now call a single create function, `duckCreate()`, with parameters that entirely define what type of object to create. It's interaction with this object is entirely through the interface, allowing it to operate exactly the same on different objects of different types (provided they all have a base class of `Duck`). To demonstrate the utility of this, I've rewritten our typical `main` function so that it accepts a few command line arguments that allow the user to define what type of object they want created. See [How do I run it?](https://github.com/nathancharlesjones/Comparison-of-OOP-techniques-in-C/tree/main/3c_Run-time-Polymorphism_ADT_Complete-interface#how-do-i-run-it) for an explanation.
+And with that, our solution is complete! Our `main` function can now call a single create function, `duckCreate()`, with parameters that entirely define what type of object to create. It's interaction with this object is entirely through the interface, allowing it to operate exactly the same on different objects of different types (provided they all have a base class of `Duck`). Additionally, we can use the same calling code for any new type of derived class we come up with without changing the calling code, provided the new class inherits from `Duck` and implements at least the `create()` and `destroy()` functions.
+
+To demonstrate the utility of this, I've rewritten our typical `main` function so that it accepts a few command line arguments that allow the user to define what type of object they want created. See [How do I run it?](https://github.com/nathancharlesjones/Comparison-of-OOP-techniques-in-C/tree/main/3c_Run-time-Polymorphism_ADT_Complete-interface#how-do-i-run-it) for an explanation.
 
 ## How do I run it?
 
