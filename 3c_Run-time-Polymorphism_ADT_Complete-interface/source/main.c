@@ -1,40 +1,74 @@
 #include <stdio.h>
+#include <string.h>
 #include "duck.h"
 #include "mallard.h"
+
+Duck duckFromCliArgs( int argc, char * argv[] );
 
 int
 main( int argc, char * argv[] )
 {   
-    Duck myDuck = NULL;
+    printf("|__Creating duck object\n");
 
-    switch (expression)
-    {
-    case /* constant-expression */:
-        /* code */
-        break;
+    Duck myDuck = duckFromCliArgs( argc, argv );
+
+    printf("|__Quacking duck object:\n");
     
-    default:
-        break;
-    } 
-    printf("|__Creating duck and mallard objects\n");
-
-    Duck George = duckCreate(duckFromStaticMem, "George");
-    Duck Bill = duckCreate(mallardFromHeapMem, "Bill", WHITE);
-
-    printf("|__Quacking duck and mallard objects:\n");
+    duckQuack(myDuck);
     
-    duckQuack(George);
-    duckQuack(Bill);
+    printf("|__Showing duck object:\n");
     
-    printf("|__Showing duck and mallard objects:\n");
-    
-    duckShow(George);
-    duckShow(Bill);
+    duckShow(myDuck);
 
-    printf("|__Destroying duck and mallard objects\n");
+    printf("|__Destroying duck object\n");
 
-    duckDestroy(George);
-    duckDestroy(Bill);
+    duckDestroy(myDuck);
     
     return 0;
+}
+
+Duck
+duckFromCliArgs( int argc, char * argv[] )
+{
+    Duck newDuck = NULL;
+
+    char * duck_interface = argv[1];
+    char * name = argv[2];
+
+    if( 0 == strcmp(duck_interface,"dh"))
+    {
+        newDuck = duckCreate(duckFromHeapMem, name);
+    }
+    else if( 0 == strcmp(duck_interface, "ds") )
+    {
+        newDuck = duckCreate(duckFromStaticMem, name);
+    }
+    else
+    {
+        char * feathers = argv[3];
+        featherColor myColor = 0;
+        if( 0 == strcmp(feathers, "red") )
+        {
+            myColor = RED;
+        }
+        else if( 0 == strcmp(feathers, "brown") )
+        {
+            myColor = BROWN;
+        }
+        else
+        {
+            myColor = WHITE;
+        }
+
+        if( 0 == strcmp(duck_interface, "mh") )
+        {
+            newDuck = duckCreate(mallardFromHeapMem, name, myColor);
+        }
+        else if( 0 == strcmp(duck_interface, "ms") )
+        {
+            newDuck = duckCreate(mallardFromStaticMem, name, myColor);
+        }
+    }
+
+    return newDuck;
 }

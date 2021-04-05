@@ -90,43 +90,53 @@ To pull out these arguments, we use the `va_arg()` macro, which takes in a `va_l
 thisMallard->myColor = va_arg(*args, featherColor); // Line 58
 ```
 
-And with that, our solution is complete. Our `main` function can now call a single create function, `duckCreate()`, with parameters that entirely define what type of object to create. It's interaction with this object is entirely through the interface, allowing it to operate exactly the same on different objects of different types (provided they all have a base class of `Duck`). To demonstrate the utility of this, I've rewritten our typical `main` function so that it accepts a few command line arguments that allow the user to define what type of object they want created.
+And with that, our solution is complete. Our `main` function can now call a single create function, `duckCreate()`, with parameters that entirely define what type of object to create. It's interaction with this object is entirely through the interface, allowing it to operate exactly the same on different objects of different types (provided they all have a base class of `Duck`). To demonstrate the utility of this, I've rewritten our typical `main` function so that it accepts a few command line arguments that allow the user to define what type of object they want created. See [How do I run it?](https://github.com/nathancharlesjones/Comparison-of-OOP-techniques-in-C/tree/main/3c_Run-time-Polymorphism_ADT_Complete-interface#how-do-i-run-it) for an explanation.
 
 ## How do I run it?
 
-Download or clone this repository. Navigate to this folder and then run "make" or "make clean && make" from the command line.
+Download or clone this repository. Navigate to this folder and then run "make" or "make clean && make" from the command line. This program requires two or three command line arguments to run.
+- The first argument should be either "dh", "ds", "mh", or "ms" to denote the object type ("**d**uck from **h**eap memory", "**d**uck from **s**tatic memory", "**m**allard from **h**eap memory", or "**m**allard from **s**tatic memory").
+- Following that needs to be the duck's name (no quotes).
+- If the duck is a "Mallard", then after the name needs to be the feather color: either "red", "brown", or "white".
 
-## Expected output
+Running "make" simply runs the program with a default set of command line arguments ("mh Freida red"). You can run the executable in the "build" folder with other arguments, such as:
+- ./build/3c_Run-time-Polymorphism_ADT_Complete-interface.out ms Helen white
+- ./build/3c_Run-time-Polymorphism_ADT_Complete-interface.out ds Mark
+- ./build/3c_Run-time-Polymorphism_ADT_Complete-interface.out dh Bjorn
+- etc.
+
+## Expected output (using default arguments, "mh Freida red")
 
 ```
 // source/main.c
 int
-main( void )
-{    
-    printf("|__Creating duck and mallard objects\n");         -->    |__Creating duck and mallard objects
+main( int argc, char * argv[] )
+{   
+    printf("|__Creating duck object\n");          -->  |__Creating duck object
 
-    Duck George = duckCreate(duckFromStaticMem, "George");
-    Duck Bill = duckCreate(mallardFromHeapMem, "Bill", WHITE);
-    
-    printf("|__Quacking duck and mallard objects:\n");        -->    |__Quacking duck and mallard objects:
-    
-    duckQuack(George);                                        -->        George: Quack!
-    duckQuack(Bill);                                          -->        Bill: Quack!
-    
-    printf("|__Showing duck and mallard objects:\n");         -->    |__Showing duck and mallard objects:
-    
-    duckShow(George);                                         -->        Hi! I'm a medium rubber duck. My name is George.
-    duckShow(Bill);                                           -->        Hi! I'm a mallard duck. My name is Bill. I have brown feathers.
+    Duck myDuck = duckFromCliArgs( argc, argv );  -->      Initializing duck with name: Freida
+                                                           Initializing mallard duck with name: Freida
 
-    printf("|__Destroying duck and mallard objects:\n");      -->    |__Destroying duck and mallard objects
+    printf("|__Quacking duck object:\n");         -->  |__Quacking duck object:
+    
+    duckQuack(myDuck);                            -->      Freida: Quack!
+    
+    printf("|__Showing duck object:\n");          -->  |__Showing duck object:
+    
+    duckShow(myDuck);                             -->      Hi! I'm a mallard duck. My name is Freida. I have red feathers.
 
-    duckDestroy(George);                                      -->        Deinitializing Rubber Duck object with name: George
-                                                                         Deinitializing Duck object with name: George
-    duckDestroy(Bill);                                        -->        Deinitializing Mallard object with name: Bill
-                                                                         Deinitializing Duck object with name: Bill
+    printf("|__Destroying duck object\n");        -->  |__Destroying duck object
+
+    duckDestroy(myDuck);                          -->      Deinitializing Mallard object with name: Freida
+                                                           Deinitializing Duck object with name: Freida
     
     return 0;
 }
 ```
 
 ## References
+- ["Variadic Functions"](https://www.gnu.org/software/libc/manual/html_node/Variadic-Functions.html) (GCC Manual)
+- ["How do varargs work in C?"](https://jameshfisher.com/2016/11/23/c-varargs/) (James Fisher)
+- ["Comparing Variadic Functions: C vs C++"](https://embeddedartistry.com/blog/2017/07/14/comparing-variadic-functions-c-vs-c/) (Embedded Artistry)
+- ["Command line arguments in C/C++"](https://www.geeksforgeeks.org/command-line-arguments-in-c-cpp/) (GeeksforGeeks)
+- ["C - Command Line Arguments"](https://www.tutorialspoint.com/cprogramming/c_command_line_arguments.htm) (tutorialspoint)

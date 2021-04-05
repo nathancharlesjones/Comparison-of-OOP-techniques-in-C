@@ -46,7 +46,7 @@ current_dir := $(notdir $(patsubst %/,%,$(dir $(mkfile_path))))
 
 # Default all rule will build the target, which here is an executable
 all: $(BUILD_FOLDER)/$(current_dir).out
-	$(BUILD_FOLDER)/$(current_dir).out
+	$(BUILD_FOLDER)/$(current_dir).out mh Freida red
 
 # The rule for building the target executable.
 $(BUILD_FOLDER)/$(current_dir).out: $(SRC_OBJ_FILES) | $(BUILD_TREE)
