@@ -9,7 +9,7 @@ While the second project introduced the concept of simple inheritance (the idea 
 
 Projects 3a/3b/3c solved these two problems, but only by restricting the base class to an "abstract data type", whose implementation was fulfilled by one of many derived classes, with the layers of derived classes only going one level deep. In this project, we're going to backtrack a bit on our solution in order to create a framework that's truly inheritable. The final result will still behave polymorphically, but it go back to requiring explicit casts. Solving both problems at the same time will be left to Project 5.
 
-Consider the memory layout of Project 2 again, with the base class "embedded" as the first element in a derived class.
+Consider the memory layout of the `Duck_t` object from Project 2 again.
 
 ```
 +---------------+--------+---------+
