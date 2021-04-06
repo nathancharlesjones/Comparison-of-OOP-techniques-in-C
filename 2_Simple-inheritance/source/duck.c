@@ -16,7 +16,7 @@ static duckMemoryPool_t duckMemoryPool[MAX_NUM_DUCK_OBJS] = {0};
 Duck
 duckCreate_dynamic( void )
 {
-    Duck newDuck = (Duck)malloc(sizeof(Duck_t));
+    Duck newDuck = (Duck)calloc(1, sizeof(Duck_t));
     // TODO: Check for null pointer on malloc failure
 
     return newDuck;
@@ -49,6 +49,18 @@ duckInit( Duck thisDuck, char * name )
 }
 
 void
+duckSetName( Duck thisDuck, char * name )
+{
+    strcpy(thisDuck->name, name, MAX_CHARS_NAME);
+}
+
+char *
+duckGetName( Duck thisDuck )
+{
+    return thisDuck->name;
+}
+
+void
 duckShow( Duck thisDuck )
 {
     printf("\tHi! My name is %s.\n", thisDuck->name);
@@ -77,6 +89,7 @@ duckDestroy_static( Duck thisDuck )
         {
             duckMemoryPool[i].used = false;
             thisDuck = NULL;
+            memset(&duckMemoryPool[i].thisDuck, 0, sizeof(Duck_t));
             break;
         }
     }

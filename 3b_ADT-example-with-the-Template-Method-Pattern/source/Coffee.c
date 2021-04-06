@@ -21,7 +21,7 @@ static coffeeMemoryPool_t coffeeMemoryPool[MAX_NUM_COFFEE_OBJS] = {0};
 static const CaffeinatedBeverage_Interface_Struct interface_dynamic;
 static const CaffeinatedBeverage_Interface_Struct interface_static;
 
-void
+static void
 coffeeInit( Coffee thisCoffee, CaffeinatedBeverage_Interface interface, char * name){
     printf("\tInitializing new coffee drink with name: %s\n", name);
 
@@ -30,7 +30,7 @@ coffeeInit( Coffee thisCoffee, CaffeinatedBeverage_Interface interface, char * n
 }
 
 CaffeinatedBeverage newCoffee_dynamic( char * name ) {
-    Coffee newCoffee = (Coffee)malloc(sizeof(CoffeeStruct));
+    Coffee newCoffee = (Coffee)calloc(1, sizeof(CoffeeStruct));
     coffeeInit(newCoffee, &interface_dynamic, name);
     return (CaffeinatedBeverage)newCoffee;
 }
@@ -64,15 +64,16 @@ static void Coffee_addWhip(CaffeinatedBeverage super) {
     printf("\tAdding whip.\n\r");
 }
 
-void coffeeDestroy_dynamic( CaffeinatedBeverage super ) {
+static void coffeeDestroy_dynamic( CaffeinatedBeverage super ) {
     free(super);
 }
 
-void coffeeDestroy_static( CaffeinatedBeverage super ) {
+static void coffeeDestroy_static( CaffeinatedBeverage super ) {
     for( int i = 0; i < MAX_NUM_COFFEE_OBJS; i++)
     {
         if( (Coffee)super == &coffeeMemoryPool[i].thisCoffee )
         {
+            memset(&coffeeMemoryPool[i].thisCoffee, 0, sizeof(CoffeeStruct));
             coffeeMemoryPool[i].used = false;
             super = NULL;
             break;

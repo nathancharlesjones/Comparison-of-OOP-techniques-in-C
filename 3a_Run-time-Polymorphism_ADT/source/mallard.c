@@ -25,7 +25,7 @@ static mallardMemoryPool_t mallardMemoryPool[MAX_NUM_MALLARD_OBJS] = {0};
 static const Duck_Interface_Struct interface_dynamic;
 static const Duck_Interface_Struct interface_static;
 
-void
+static void
 mallardInit( Mallard thisMallard, Duck_Interface interface, char * name, featherColor color )
 {
     printf("\tInitializing new mallard duck with name: %s\n", name);
@@ -38,7 +38,7 @@ mallardInit( Mallard thisMallard, Duck_Interface interface, char * name, feather
 Duck
 mallardCreate_dynamic( char * name, featherColor color )
 {
-    Mallard newMallard = (Mallard)malloc(sizeof(Mallard_t));
+    Mallard newMallard = (Mallard)calloc(1, sizeof(Mallard_t));
     // TODO: Check for null pointer on malloc failure
 
     mallardInit( newMallard, &interface_dynamic, name, color);
@@ -80,13 +80,13 @@ mallardDeinit( Duck thisDuck )
     ((Mallard)thisDuck)->myColor = 0;
 }
 
-void
+static void
 mallardDestroy_dynamic( Duck thisDuck )
 {
     free((Mallard)thisDuck);
 }
 
-void
+static void
 mallardDestroy_static( Duck thisDuck )
 {
     for( int i = 0; i < MAX_NUM_MALLARD_OBJS; i++)
@@ -94,6 +94,7 @@ mallardDestroy_static( Duck thisDuck )
         if( (Mallard)thisDuck == &mallardMemoryPool[i].thisMallard )
         {
             mallardMemoryPool[i].used = false;
+            memset(&mallardMemoryPool[i].thisMallard, 0, sizeof(Mallard_t));
             thisDuck = NULL;
             break;
         }

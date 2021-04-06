@@ -51,7 +51,7 @@ void CaffeinatedBeverage_prepare(CaffeinatedBeverage _self) {
     CaffeinatedBeverage_addWhip(_self);
 }
 
-void caffeinatedBeverageDeinit( CaffeinatedBeverage _self ) {
+static void caffeinatedBeverageDeinit( CaffeinatedBeverage _self ) {
     memset(_self->name,0,sizeof(char)*MAX_CHARS_NAME);
 }
 

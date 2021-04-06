@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdarg.h>
+#include <string.h>
 #include "duck.h"
 #include "duck.r"
 #include "mallard.h"
@@ -22,16 +23,16 @@ typedef struct mallardMemoryPool_t
 
 static mallardMemoryPool_t mallardMemoryPool[MAX_NUM_MALLARD_OBJS] = {0};
 
-Duck
+static Duck
 mallardCreate_dynamic( void )
 {
-    Mallard newMallard = (Mallard)malloc(sizeof(Mallard_t));
+    Mallard newMallard = (Mallard)calloc(1, sizeof(Mallard_t));
     // TODO: Check for null pointer on malloc failure
 
     return (Duck)newMallard;
 }
 
-Duck
+static Duck
 mallardCreate_static( void )
 {
     Mallard newMallard = NULL;
@@ -42,13 +43,14 @@ mallardCreate_static( void )
         {
             mallardMemoryPool[i].used = true;
             newMallard = &mallardMemoryPool[i].thisMallard;
+            break;
         }
     }
 
     return (Duck)newMallard;
 }
 
-void
+static void
 mallardInit( Duck thisDuck, va_list * args )
 {
     printf("\tInitializing mallard duck with name: %s\n", thisDuck->name);
@@ -65,7 +67,7 @@ mallardShow( Duck thisDuck )
     printf("\tHi! I'm a mallard duck. My name is %s. I have %s feathers.\n", thisMallard->parentDuck.name, colorNames[thisMallard->myColor]);
 }
 
-void
+static void
 mallardDeinit( Duck thisMallard )
 {
     printf("\tDeinitializing Mallard object with name: %s\n", thisMallard->name);
@@ -73,26 +75,28 @@ mallardDeinit( Duck thisMallard )
     ((Mallard)thisMallard)->myColor = 0;
 }
 
-void
+static void
 mallardDestroy_dynamic( Duck thisMallard )
 {
     free((Mallard)thisMallard);
 }
 
-void
+static void
 mallardDestroy_static( Duck thisMallard )
 {
     for( int i = 0; i < MAX_NUM_MALLARD_OBJS; i++)
     {
         if( (Mallard)thisMallard == &mallardMemoryPool[i].thisMallard )
         {
+            memset(&mallardMemoryPool[i].thisMallard, 0, sizeof(Mallard_t));
             mallardMemoryPool[i].used = false;
             thisMallard = NULL;
+            break;
         }
     }
 }
 
-Duck_Interface_Struct mallardDynamic = {
+const Duck_Interface_Struct mallardDynamic = {
     .create=mallardCreate_dynamic,
     .init=mallardInit,
     .show=mallardShow,
@@ -102,7 +106,7 @@ Duck_Interface_Struct mallardDynamic = {
 
 Duck_Interface mallardFromHeapMem = &mallardDynamic;
 
-Duck_Interface_Struct mallardStatic = {
+const Duck_Interface_Struct mallardStatic = {
     .create=mallardCreate_static,
     .init=mallardInit,
     .show=mallardShow,

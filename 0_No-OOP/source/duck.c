@@ -6,7 +6,7 @@
 Duck_t *
 duckCreate( void )
 {
-    Duck_t * newDuck = (Duck_t *)malloc(sizeof(Duck_t));
+    Duck_t * newDuck = (Duck_t *)calloc(1, sizeof(Duck_t));
     // TODO: Check for null pointer on malloc failure
 
     return newDuck;
@@ -17,6 +17,7 @@ duckInit( Duck_t * thisDuck, char * name )
 {
     printf("\tInitializing new duck with name: %s\n", name);
 
+    memset(thisDuck, 0, sizeof(Duck_t));
     strncpy(thisDuck->name, name, MAX_CHARS_NAME);
 }
 

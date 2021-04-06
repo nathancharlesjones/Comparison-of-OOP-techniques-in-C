@@ -5,10 +5,11 @@
 #include "duck.h"
 
 #define MAX_CHARS_NAME 10
+#define MAX_CHARS_NAME_WITH_NUL (MAX_CHARS_NAME+1)
 
 typedef struct Duck_t
 {
-    char name[MAX_CHARS_NAME];
+    char name[MAX_CHARS_NAME_WITH_NUL];
 } Duck_t;
 
 typedef struct duckMemoryPool_t
@@ -22,7 +23,7 @@ static duckMemoryPool_t duckMemoryPool[MAX_NUM_DUCK_OBJS] = {0};
 Duck
 duckCreate_dynamic( void )
 {
-    Duck newDuck = (Duck)malloc(sizeof(Duck_t));
+    Duck newDuck = (Duck)calloc(1, sizeof(Duck_t));
     // TODO: Check for null pointer on malloc failure
 
     return newDuck;
@@ -51,7 +52,20 @@ duckInit( Duck thisDuck, char * name )
 {
     printf("\tInitializing new duck with name: %s\n", name);
 
+    memset(thisDuck, 0, sizeof(Duck_t));
     strncpy(thisDuck->name, name, MAX_CHARS_NAME);
+}
+
+void
+duckSetName( Duck thisDuck, char * name )
+{
+    strcpy(thisDuck->name, name, MAX_CHARS_NAME);
+}
+
+char *
+duckGetName( Duck thisDuck )
+{
+    return thisDuck->name;
 }
 
 void

@@ -5,10 +5,11 @@
 #include "servoController.h"
 
 #define MAX_CHARS_NAME 10
+#define MAX_CHARS_NAME_WITH_NUL (MAX_CHARS_NAME+1)
 
 typedef struct servoController_t
 {
-    char name[MAX_CHARS_NAME];
+    char name[MAX_CHARS_NAME_WITH_NUL];
     int angle;
 } servoController_t;
 
@@ -23,7 +24,7 @@ static servoControllerMemoryPool_t servoControllerMemoryPool[MAX_NUM_SERVO_CONTR
 servoController
 servoControllerCreate_dynamic( void )
 {
-    servoController newServoController = (servoController)malloc(sizeof(servoController_t));
+    servoController newServoController = (servoController)calloc(1, sizeof(servoController_t));
     // TODO: Check for null pointer on malloc failure
 
     return newServoController;

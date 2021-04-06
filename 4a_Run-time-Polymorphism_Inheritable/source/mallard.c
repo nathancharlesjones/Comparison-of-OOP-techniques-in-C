@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 #include "duck.h"
 #include "duck.r"
 #include "mallard.h"
@@ -16,7 +17,7 @@ typedef struct mallardMemoryPool_t
 
 static mallardMemoryPool_t mallardMemoryPool[MAX_NUM_MALLARD_OBJS] = {0};
 
-void
+static void
 mallardShow( Duck thisDuck )
 {
     Mallard thisMallard = (Mallard)thisDuck;
@@ -36,7 +37,7 @@ mallardMigrate( Mallard thisMallard )
     }
 }
 
-void
+static void
 mallardDeinit( Duck thisDuck )
 {
     Mallard thisMallard = (Mallard)thisDuck;
@@ -48,19 +49,20 @@ mallardDeinit( Duck thisDuck )
     duckDeinit((Duck)thisMallard);
 }
 
-void
+static void
 mallardDestroy_dynamic( Duck thisDuck )
 {
     free(thisDuck);
 }
 
-void
+static void
 mallardDestroy_static( Duck thisDuck )
 {
     for( int i = 0; i < MAX_NUM_MALLARD_OBJS; i++)
     {
         if( (Mallard)thisDuck == &mallardMemoryPool[i].thisMallard )
         {
+            memset(&mallardMemoryPool[i].thisMallard, 0, sizeof(Mallard_t));
             mallardMemoryPool[i].used = false;
             thisDuck = NULL;
             break;
@@ -70,8 +72,8 @@ mallardDestroy_static( Duck thisDuck )
 
 const Mallard_Interface_Struct mallardDynamic = {
     .duckInterface = { .show=mallardShow,
-                         .deinit=mallardDeinit,
-                         .destroy=mallardDestroy_dynamic },
+                       .deinit=mallardDeinit,
+                       .destroy=mallardDestroy_dynamic },
     .migrate = 0
 };
 
@@ -79,8 +81,8 @@ Mallard_Interface mallardFromHeapMem = &mallardDynamic;
 
 const Mallard_Interface_Struct mallardStatic = {
     .duckInterface = { .show=mallardShow,
-                         .deinit=mallardDeinit,
-                         .destroy=mallardDestroy_static },
+                       .deinit=mallardDeinit,
+                       .destroy=mallardDestroy_static },
     .migrate = 0
 };
 
@@ -89,7 +91,7 @@ Mallard_Interface mallardFromStaticMem = &mallardStatic;
 Mallard
 mallardCreate_dynamic( char * name, featherColor color )
 {
-    Mallard newMallard = (Mallard)malloc(sizeof(Mallard_t));
+    Mallard newMallard = (Mallard)calloc(1, sizeof(Mallard_t));
     // TODO: Check for null pointer on malloc failure
 
     mallardInit(newMallard, name, color);
@@ -118,7 +120,7 @@ mallardCreate_static( char * name, featherColor color )
     return newMallard;
 }
 
-void
+static void
 mallardInit( Mallard thisMallard, char * name, featherColor color )
 {
     duckInit((Duck)thisMallard, name);

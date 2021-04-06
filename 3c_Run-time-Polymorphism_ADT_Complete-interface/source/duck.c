@@ -48,7 +48,7 @@ duckCreate( Duck_Interface newDuckType, char * name, ... )
 static Duck
 duckCreate_dynamic( void )
 {
-    Duck newDuck = (Duck)malloc(sizeof(Duck_t));
+    Duck newDuck = (Duck)calloc(1, sizeof(Duck_t));
 
     return newDuck;
 }
@@ -123,6 +123,7 @@ duckDestroy_static( Duck thisDuck )
     {
         if( thisDuck == &duckMemoryPool[i].thisDuck )
         {
+            memset(&duckMemoryPool[i].thisDuck, 0, sizeof(Duck_t));
             duckMemoryPool[i].used = false;
             thisDuck = NULL;
             break;

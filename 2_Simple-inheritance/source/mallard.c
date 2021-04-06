@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 #include "duck.h"
 #include "duck.r"
 #include "mallard.h"
@@ -24,7 +25,7 @@ static mallardMemoryPool_t mallardMemoryPool[MAX_NUM_MALLARD_OBJS] = {0};
 Mallard
 mallardCreate_dynamic( void )
 {
-    Mallard newMallard = (Mallard)malloc(sizeof(Mallard_t));
+    Mallard newMallard = (Mallard)calloc(1, sizeof(Mallard_t));
     // TODO: Check for null pointer on malloc failure
 
     return newMallard;
@@ -54,20 +55,19 @@ mallardInit( Mallard thisMallard, char * name, featherColor color )
     printf("\tInitializing new mallard duck with name: %s\n", name);
 
     duckInit( &thisMallard->parentDuck, name );
-
     thisMallard->myColor = color;
 }
 
 void
 mallardShow( Mallard thisMallard )
 {
-    printf("\tHi! I'm a mallard duck. My name is %s. I have %s feathers.\n", thisMallard->parentDuck.name, colorNames[thisMallard->myColor]);
+    printf("\tHi! I'm a mallard duck. My name is %s. I have %s feathers.\n", duckGetName(thisMallard->parentDuck), colorNames[thisMallard->myColor]);
 }
 
 void
 mallardDeinit( Mallard thisMallard )
 {
-    printf("\tDeinitializing Mallard object with name: %s\n", thisMallard->parentDuck.name);
+    printf("\tDeinitializing Mallard object with name: %s\n", duckGetName(thisMallard->parentDuck));
     
     thisMallard->myColor = 0;
     
@@ -88,6 +88,7 @@ mallardDestroy_static( Mallard thisMallard )
         if( thisMallard == &mallardMemoryPool[i].thisMallard )
         {
             mallardMemoryPool[i].used = false;
+            memset(&mallardMemoryPool[i].thisMallard, 0, sizeof(Mallard_t));
             thisMallard = NULL;
             break;
         }

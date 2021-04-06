@@ -23,7 +23,7 @@ static robotArmMemoryPool_t robotArmMemoryPool[MAX_NUM_ROBOT_ARM_OBJS] = {0};
 robotArm
 robotArmCreate_dynamic( void )
 {
-    robotArm newRobotArm = (robotArm)malloc(sizeof(robotArm_t));
+    robotArm newRobotArm = (robotArm)calloc(1, sizeof(robotArm_t));
     // TODO: Check for null pointer on malloc failure
 
     return newRobotArm;

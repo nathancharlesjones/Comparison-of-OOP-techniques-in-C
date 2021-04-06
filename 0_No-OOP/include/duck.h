@@ -2,10 +2,11 @@
 #define DUCK_H
 
 #define MAX_CHARS_NAME 10
+#define MAX_CHARS_NAME_WITH_NUL (MAX_CHARS_NAME+1)
 
 typedef struct Duck_t
 {
-    char name[MAX_CHARS_NAME];
+    char name[MAX_CHARS_NAME_WITH_NUL];
 } Duck_t;
 
 Duck_t * duckCreate( void );

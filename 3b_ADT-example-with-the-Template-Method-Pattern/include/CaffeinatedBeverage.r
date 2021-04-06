@@ -2,12 +2,13 @@
 #define CAFFEINATED_BEVERAGE_R
 
 #define MAX_CHARS_NAME 20
+#define MAX_CHARS_NAME_WITH_NUL (MAX_CHARS_NAME+1)
 
 typedef struct CaffeinatedBeverage_Interface_Struct const * CaffeinatedBeverage_Interface;
 
 typedef struct CaffeinatedBeverage_Data_Struct {
     CaffeinatedBeverage_Interface interface;
-    char name[MAX_CHARS_NAME];
+    char name[MAX_CHARS_NAME_WITH_NUL];
 } CaffeinatedBeverage_Data_Struct;
 
 typedef struct CaffeinatedBeverage_Interface_Struct {
