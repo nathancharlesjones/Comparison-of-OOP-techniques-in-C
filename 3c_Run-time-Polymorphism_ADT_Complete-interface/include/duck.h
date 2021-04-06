@@ -1,11 +1,10 @@
 #ifndef DUCK_H
 #define DUCK_H
 
-#include "duck.r"
-
 #define MAX_NUM_DUCK_OBJS 10
 
 typedef struct Duck_t * Duck;
+typedef struct Duck_Interface_Struct const * Duck_Interface;
 
 extern Duck_Interface duckFromHeapMem;
 extern Duck_Interface duckFromStaticMem; 

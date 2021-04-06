@@ -1,9 +1,16 @@
 #ifndef DUCK_H
 #define DUCK_H
 
-void * duckCreate( void );
-void duckInit( void * thisDuck, char * name );
+#define MAX_NUM_DUCK_OBJS 10
+
+extern void * duckFromHeapMem;
+extern void * duckFromStaticMem;
+
+void * duckCreate( void * newDuckType, char * name, ... );
+void duckSetName( void * thisDuck, char * name );
+char * duckGetName( void * thisDuck );
 void duckQuack( void * thisDuck );
 void duckShow( void * thisDuck );
+void duckDestroy( void * thisDuck );
 
 #endif // DUCK_H

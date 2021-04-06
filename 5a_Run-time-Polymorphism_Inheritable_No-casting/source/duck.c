@@ -7,14 +7,13 @@
 #include "duck.h"
 #include "duck.r"
 
-static void _duckShow( void * thisDuck );
+typedef struct duckMemoryPool_t
+{
+    bool used;
+    Duck_t thisDuck;
+} duckMemoryPool_t;
 
-Duck_Interface_Struct duckDef = {
-    { NULL },
-    _duckShow
-};
-
-Duck_Interface Duck = &duckDef;
+static duckMemoryPool_t duckMemoryPool[MAX_NUM_DUCK_OBJS] = {0};
 
 bool
 isDuck( void * thisDuck )
@@ -36,26 +35,71 @@ isDuck( void * thisDuck )
 }
 
 void *
-duckCreate( void )
+duckCreate( void * newDuckType, char * name, ... )
 {
-    Duck_t * newDuck = (Duck_t *)malloc(sizeof(Duck_t));
+    va_list args;
+    va_start(args, newDuckType);
+
+    Duck newDuck = NULL;
+    Duck_Interface newInterface = (Duck_Interface)newDuckType;
+    
+    if( newInterface && newInterface->baseInterface.create )
+    {
+        newDuck = newInterface->baseInterface.create();
+    }
+    
+    if( newDuck )
+    {
+        if ( newDuck && newDuck->vtable && newDuck->vtable->baseInterface.init )
+        {
+            newDuck->vtable->baseInterface.init((void *)newDuck, newDuckType, &args);
+        }
+    }
+
+    va_end(args);
+
+    return (void *)newDuck;
+}
+
+void *
+duckCreate_dynamic( void )
+{
+    Duck newDuck = (Duck)malloc(sizeof(Duck_t));
     // TODO: Check for null pointer on malloc failure
 
     return (void *)newDuck;
 }
 
+static void *
+duckCreate_static( void )
+{
+    Duck newDuck = NULL;
+
+    for( int i = 0; i < MAX_NUM_DUCK_OBJS; i++)
+    {
+        if( duckMemoryPool[i].used == false )
+        {
+            duckMemoryPool[i].used = true;
+            newDuck = &duckMemoryPool[i].thisDuck;
+            break;
+        }
+    }
+
+    return (void *)newDuck;
+}
+
 void
-duckInit( void * thisDuck, char * name )
+duckInit( void * thisDuck, void * duckInterface, va_list * args )
 {
     ASSERT(thisDuck);
-    ASSERT(name);
 
-    Duck_t * _thisDuck = (Duck_t *)thisDuck;
+    Duck _thisDuck = (Duck)thisDuck;
+    char * name = va_arg(args, char *);
 
     printf("\tInitializing duck with name: %s\n", name);
 
-    _thisDuck->vtable = Duck;
     strncpy(_thisDuck->name, name, MAX_CHARS_NAME);
+    _thisDuck->vtable = (Duck_Interface)duckInterface;
 }
 
 void
@@ -67,7 +111,7 @@ duckQuack( void * thisDuck )
     // This should probably be an ASSERT, like above
     if( isDuck(thisDuck) )
     {
-        Duck_t * _thisDuck = (Duck_t *)thisDuck;
+        Duck _thisDuck = (Duck)thisDuck;
 
         printf("\t%s: Quack!\n", _thisDuck->name);
     }
@@ -82,23 +126,26 @@ duckShow( void * thisDuck )
     // This should probably be an ASSERT, like above
     if( isDuck(thisDuck) )
     {    
-        Duck_t * _thisDuck = (Duck_t *)thisDuck;
+        Duck _thisDuck = (Duck)thisDuck;
 
         if ( _thisDuck && _thisDuck->vtable && _thisDuck->vtable->show )
         {
             _thisDuck->vtable->show(thisDuck);
         }
+        else
+        {
+            printf("\tHi! My name is %s.\n", _thisDuck->name);
+        }
     }
 }
 
-static void
-_duckShow( void * thisDuck )
-{
-    ASSERT(thisDuck);
-    // ASSERT(isDuck(thisDuck)) should be unnecessary since this function is only ever called
-    // by way of "duckShow()", which confirms that the object is a Duck.
+const Duck_Interface_Struct duckDynamic = {
+    .baseclass = { NULL },
+    .create = duckCreate_dynamic,
+    .init = duckInit,
+    .show = 0,
+    .deinit = 0,
+    .destroy = duckDestroy_dynamic
+};
 
-    Duck_t * _thisDuck = (Duck_t *)thisDuck;
-
-    printf("\tHi! My name is %s.\n", _thisDuck->name);
-}
+void * duckFromHeapMem = (void *)&duckDynamic;

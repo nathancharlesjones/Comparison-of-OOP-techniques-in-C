@@ -1,11 +1,17 @@
 #ifndef BASE_CLASS_R
 #define BASE_CLASS_R
 
+#include <stdarg.h>
+
 typedef struct BaseClass_Interface_Struct * BaseClass_Interface;
 
 typedef struct BaseClass_Interface_Struct
 {
     void * baseClass;
+    void * (*create)( void );
+    void (*init)( void * self, void * interface, va_list * args );
+    void (*deinit)( void * self );
+    void (*destroy)( void * self );
 } BaseClass_Interface_Struct;
 
 #endif // BASE_CLASS_R

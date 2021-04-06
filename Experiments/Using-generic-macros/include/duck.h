@@ -10,5 +10,4 @@ char * _duckGetName( Duck thisDuck );
 void _duckQuack( Duck thisDuck );
 void _duckShow( Duck thisDuck );
 
-
 #endif // DUCK_H

@@ -5,11 +5,11 @@
 #define SERVO_SPECIAL
 #ifdef SERVO_SPECIAL
 #   include "servoController_special.h"
-#   define servoController                      servoController_special
-#   define servoControllerCreate()              servoController_specialCreate()
-#   define servoControllerInit(...)             servoController_specialInit(__VA_ARGS__)
-#   define servoControllerGetCurrentAngle(...)  servoController_specialGetCurrentAngle(__VA_ARGS__)
-#   define servoControllerMoveTo(...)           servoController_specialMoveTo(__VA_ARGS__)
+#   define servoController                 servoController_special
+#   define servoControllerCreate           servoController_specialCreate
+#   define servoControllerInit             servoController_specialInit
+#   define servoControllerGetCurrentAngle  servoController_specialGetCurrentAngle
+#   define servoControllerMoveTo           servoController_specialMoveTo
 #else
 #   include "servoController.h"
 #endif

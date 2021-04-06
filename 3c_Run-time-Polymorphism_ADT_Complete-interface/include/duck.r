@@ -2,11 +2,10 @@
 #define DUCK_R
 
 #include <stdarg.h>
+#include "duck.h"
 
 #define MAX_CHARS_NAME 10
 #define MAX_CHARS_NAME_WITH_NUL (MAX_CHARS_NAME+1)
-
-typedef struct Duck_Interface_Struct const * Duck_Interface;
 
 typedef struct Duck_t
 {
