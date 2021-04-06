@@ -168,7 +168,16 @@ mallardMigrate( Mallard thisMallard )
 }
 ```
 
-Second, every class needs to have some type of "init" and "deinit" functions declared in the private header file. This is because derived classes are responsible for allocating the memory space for their objects but they have to call their base class's `init()` function before completing their own initialization (since their attributes may require valid attributes from the base class). Every initialization function works this way: call the `init()` function for _its_ base class and then initialize its attributes. For example, when an object of type `redMallard` is created, `redMallardCreate_XXX()` handles the memory allocation and then calls `redMallardInit()`, which calls `mallardInit()`, which calls `duckInit()`. `duckInit()` sets the object's name and returns to `mallardInit()`. `mallardInit()` sets the object's `featherColor` and then returns to `redMallardInit()`, which does nothing (at the moment). I'm not a fan of declaring functions in the private header files (I'm not a huge fan of the private header files in the first place<sup>1</sup>), but this is the best way of communicating to future developers that the `init()` and `deinit()` functions are only to be called by derived classes, not by the code that uses the objects in question.
+Second, every class needs to have some type of "init" and "deinit" functions declared in the private header file. This is because derived classes are responsible for allocating the memory space for their objects but they have to call their base class's `init()` function before completing their own initialization (since their attributes may require valid attributes from the base class). Every initialization function works this way: call the `init()` function for _its_ base class and then initialize its own attributes. For example, when an object of type `redMallard` is created:
+
+1. `redMallardCreate_XXX()` handles the memory allocation and then calls `redMallardInit()`,
+2. which calls `mallardInit()`,
+3. which calls `duckInit()`.
+4. `duckInit()` sets the object's name and returns to `mallardInit()`.
+5. `mallardInit()` sets the object's `featherColor` and then returns to `redMallardInit()`,
+6. which does nothing (at the moment).
+
+I'm not a fan of declaring functions in the private header files (I'm not a huge fan of the private header files in the first place<sup>1</sup>), but this is the best way of communicating to future developers that the `init()` and `deinit()` functions are only to be called by derived classes, not by the code that uses the objects in question.
 
 ### Notes
 
