@@ -109,31 +109,31 @@ typedef struct Mallard_Interface_Struct
 Now our memory layout for a `Mallard` object looks like this:
 
 ```
-+------------------+---------------+------------------+                    +-----------------+----------+--------------------+
-|                  |               |     vtable       |  +-------------->  |                 | *show    |                    |
-|                  |               +--------+---------+                    | Duck_Interface_ +----------+                    |
-|                  |               |        | name[0] |  vtable points to  | Struct object   | *deinit  | Mallard_Interface_ |
-|                  |               |        +---------+  a Duck_Interface_ |                 +----------+ Struct object      |
-|                  |               |        | name[1] |  Struct object     |                 | *destroy |                    |
-|                  |               |        +---------+                    +-----------------+----------+                    |
-|                  |               |        | name[2] |                    |           *migrate         |                    |
-|                  |               |        +---------+                    +----------------------------+--------------------+
-|                  |               |        | name[3] |
-|                  |               |        +---------+
-|                  | Duck_t object | name[] | name[4] |
-| Mallard_t object |               |        +---------+
-|                  |               |        | name[5] |
-|                  |               |        +---------+
-|                  |               |        | name[6] |
-|                  |               |        +---------+
-|                  |               |        | name[7] |
-|                  |               |        +---------+
-|                  |               |        | name[8] |
-|                  |               |        +---------+
-|                  |               |        | name[9] |
-|                  +---------------+--------+---------+
-|                  |            featherColor          |
-+------------------+----------------------------------+
++-----------+--------+------------------+                    +-----------------+----------+--------------------+
+|           |        |     vtable       |  +-------------->  |                 | *show    |                    |
+|           |        +--------+---------+                    | Duck_Interface_ +----------+                    |
+|           |        |        | name[0] |  vtable points to  | Struct object   | *deinit  | Mallard_Interface_ |
+|           |        |        +---------+  a Duck_Interface_ |                 +----------+ Struct object      |
+|           |        |        | name[1] |  Struct object     |                 | *destroy |                    |
+|           |        |        +---------+                    +-----------------+----------+                    |
+|           |        |        | name[2] |                    |           *migrate         |                    |
+|           |        |        +---------+                    +----------------------------+--------------------+
+|           |        |        | name[3] |
+|           |        |        +---------+
+|           | Duck_t | name[] | name[4] |
+| Mallard_t | object |        +---------+
+| object    |        |        | name[5] |
+|           |        |        +---------+
+|           |        |        | name[6] |
+|           |        |        +---------+
+|           |        |        | name[7] |
+|           |        |        +---------+
+|           |        |        | name[8] |
+|           |        |        +---------+
+|           |        |        | name[9] |
+|           +--------+--------+---------+
+|           |       featherColor        |
++-----------+---------------------------+
 ```
 
 By selectively casting `vtable` to the correct data type (e.g. casting to `Duck_Interface` to call the `show()`, `deinit()`, and `destroy()` functions and casting to `Mallard_Interface` to call the `migrate()` function), we can create a hierarchy of objects with limitless levels of inheritance.
