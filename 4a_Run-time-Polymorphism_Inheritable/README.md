@@ -136,7 +136,7 @@ Now our memory layout for a `Mallard` object looks like this:
 +------------------+----------------------------------+
 ```
 
-By selecting casting to the correct data type (e.g. casting to `Duck_Interface` to call the `show()`, `deinit()`, and `destroy()` functions and casting to `Mallard_Interface` to call the `migrate()` function), we can create a hierarchy of objects with limitless levels of inheritance.
+By selectively casting `vtable` to the correct data type (e.g. casting to `Duck_Interface` to call the `show()`, `deinit()`, and `destroy()` functions and casting to `Mallard_Interface` to call the `migrate()` function), we can create a hierarchy of objects with limitless levels of inheritance.
 
 Although the code for Project 3a was used as a base for this project, a few other changes have been made in order for this to work.
 
