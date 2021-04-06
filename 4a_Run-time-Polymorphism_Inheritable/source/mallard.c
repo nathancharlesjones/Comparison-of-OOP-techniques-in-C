@@ -37,7 +37,7 @@ mallardMigrate( Mallard thisMallard )
     }
 }
 
-static void
+void
 mallardDeinit( Duck thisDuck )
 {
     Mallard thisMallard = (Mallard)thisDuck;
@@ -120,7 +120,7 @@ mallardCreate_static( char * name, featherColor color )
     return newMallard;
 }
 
-static void
+void
 mallardInit( Mallard thisMallard, char * name, featherColor color )
 {
     duckInit((Duck)thisMallard, name);

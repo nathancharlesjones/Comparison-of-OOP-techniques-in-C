@@ -190,7 +190,45 @@ Download or clone this repository. Navigate to this folder and then run "make" o
 ## Expected output
 
 ```
+int
+main( void )
+{
+    printf("|__Creating duck and mallard objects:\n");          +->  |__Creating duck and mallard objects:
 
+    Duck George = duckCreate_dynamic("George");                 +->      Initializing duck object with name: George
+    Mallard Bill = mallardCreate_static("Bill", BROWN);         +->      Initializing duck object with name: Bill
+                                                                         Initializing mallard duck with name: Bill
+    redMallard Mary = redMallardCreate_dynamic("Mary", WHITE);  +->      Initializing duck object with name: Mary
+                                                                         Initializing mallard duck with name: Mary
+                                                                         Initializing red-breasted mallard with name: Mary
+
+    printf("|__Quacking duck and mallard objects:\n");          +->  |__Quacking duck and mallard objects:
+
+    duckQuack(George);                                          +->      George: Quack!
+    duckQuack((Duck)Bill);                                      |->      Bill: Quack!
+    duckQuack((Duck)Mary);                                      +->      Mary: Quack!
+
+    printf("|__Showing duck and mallard objects:\n");           +->  |__Showing duck and mallard objects:
+
+    duckShow(George);                                           +->      Hi! My name is George.
+    duckShow((Duck)Bill);                                       |->      Hi! I'm a mallard duck. My name is Bill. I have brown feathers.
+    duckShow((Duck)Mary);                                       +->      Hi! I'm a red-breasted mallard duck. My name is Mary. I have white feathers.
+
+    printf("|__Migrating mallard objects:\n");                  +->  |__Migrating mallard objects:
+
+    mallardMigrate(Bill);                                       +->      Bill: I'm migrating!
+    mallardMigrate((Mallard)Mary);                              +->      Mary: I'm migrating from North to South America with my fellow red-breasted mallards!
+
+    printf("|__Destroying duck and mallard objects\n");         +->  |__Destroying duck and mallard objects
+
+    duckDestroy(George);                                        +->      Deinitializing duck object with name: George
+    duckDestroy((Duck)Bill);                                    +->      Deinitializing mallard object with name: Bill
+                                                                         Deinitializing duck object with name: Bill
+    duckDestroy((Duck)Mary);                                    +->      Deinitializing red mallard object with name: Mary
+                                                                         Deinitializing mallard object with name: Mary
+    return 0;                                                            Deinitializing duck object with name: Mary
+}
 ```
 
 ## References
+- None specific to this project, though the [references for Project 2](https://github.com/nathancharlesjones/Comparison-of-OOP-techniques-in-C/tree/main/2_Simple-inheritance#references) discuss the idea of "inheriting" an object by placing it as the first data element in another object.

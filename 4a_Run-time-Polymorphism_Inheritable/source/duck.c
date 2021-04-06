@@ -14,7 +14,7 @@ typedef struct duckMemoryPool_t
 
 static duckMemoryPool_t duckMemoryPool[MAX_NUM_DUCK_OBJS] = {0};
 
-static void
+void
 duckDeinit( Duck thisDuck )
 {
     printf("\tDeinitializing duck object with name: %s\n", thisDuck->name);
