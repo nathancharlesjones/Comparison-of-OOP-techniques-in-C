@@ -109,15 +109,15 @@ typedef struct Mallard_Interface_Struct
 Now our memory layout for a `Mallard` object looks like this:
 
 ```
-+------------------+---------------+------------------+                    +--------------------+-----------------+----------+
-|                  |               |     vtable       |  +-------------->  |                    |                 | *show    |
-|                  |               +--------+---------+  vtable points to  |                    | Duck_Interface_ +----------+
-|                  |               |        | name[0] |  a Mallard_        |                    | Struct object   | *deinit  |
-|                  |               |        +---------+  Interface_Struct  | Mallard_Interface_ |                 +----------+
-|                  |               |        | name[1] |  object            | Struct object      |                 | *destroy |
-|                  |               |        +---------+                    |                    +-----------------+----------+
-|                  |               |        | name[2] |                    |                    |           *migrate         |
-|                  |               |        +---------+                    +--------------------+----------------------------+
++------------------+---------------+------------------+                    +-----------------+----------+--------------------+
+|                  |               |     vtable       |  +-------------->  |                 | *show    |                    |
+|                  |               +--------+---------+                    | Duck_Interface_ +----------+                    |
+|                  |               |        | name[0] |  vtable points to  | Struct object   | *deinit  | Mallard_Interface_ |
+|                  |               |        +---------+  a Duck_Interface_ |                 +----------+ Struct object      |
+|                  |               |        | name[1] |  Struct object     |                 | *destroy |                    |
+|                  |               |        +---------+                    +-----------------+----------+                    |
+|                  |               |        | name[2] |                    |           *migrate         |                    |
+|                  |               |        +---------+                    +----------------------------+--------------------+
 |                  |               |        | name[3] |
 |                  |               |        +---------+
 |                  | Duck_t object | name[] | name[4] |
