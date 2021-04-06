@@ -40,9 +40,9 @@ In project 3a, we added the conept of a "vtable" to allow derived classes the ab
 ```
 +---------------+------------------+                    +-----------------+----------+
 |               |     vtable       |  +-------------->  |                 | *show    |
-|               +--------+---------+                    | Duck_Interface_ +----------+
-|               |        | name[0] |  vtable points to  | Struct object   | *deinit  |
-|               |        +---------+  a Duck_Interface  |                 +----------+
+|               +--------+---------+  vtable points to  | Duck_Interface_ +----------+
+|               |        | name[0] |  a Duck_Interface_ | Struct object   | *deinit  |
+|               |        +---------+  Struct object     |                 +----------+
 |               |        | name[1] |                    |                 | *destroy |
 |               |        +---------+                    +-----------------+----------+
 |               |        | name[2] |
@@ -68,9 +68,9 @@ We then created a derived class, `Mallard`, that "inherited" from the base class
 ```
 +------------------+---------------+------------------+                    +-----------------+----------+
 |                  |               |     vtable       |  +-------------->  |                 | *show    |
-|                  |               +--------+---------+                    | Duck_Interface_ +----------+
-|                  |               |        | name[0] |  vtable points to  | Struct object   | *deinit  |
-|                  |               |        +---------+  a Duck_Interface  |                 +----------+
+|                  |               +--------+---------+  vtable points to  | Duck_Interface_ +----------+
+|                  |               |        | name[0] |  a Duck_Interface_ | Struct object   | *deinit  |
+|                  |               |        +---------+  Struct object     |                 +----------+
 |                  |               |        | name[1] |                    |                 | *destroy |
 |                  |               |        +---------+                    +-----------------+----------+
 |                  |               |        | name[2] |
@@ -111,10 +111,10 @@ Now our memory layout for a `Mallard` object looks like this:
 ```
 +------------------+---------------+------------------+                    +--------------------+-----------------+----------+
 |                  |               |     vtable       |  +-------------->  |                    |                 | *show    |
-|                  |               +--------+---------+                    |                    | Duck_Interface_ +----------+
-|                  |               |        | name[0] |  vtable points to  |                    | Struct object   | *deinit  |
-|                  |               |        +---------+  a Duck_Interface  | Mallard_Interface_ |                 +----------+
-|                  |               |        | name[1] |                    | Struct object      |                 | *destroy |
+|                  |               +--------+---------+  vtable points to  |                    | Duck_Interface_ +----------+
+|                  |               |        | name[0] |  a Mallard_        |                    | Struct object   | *deinit  |
+|                  |               |        +---------+  Interface_Struct  | Mallard_Interface_ |                 +----------+
+|                  |               |        | name[1] |  object            | Struct object      |                 | *destroy |
 |                  |               |        +---------+                    |                    +-----------------+----------+
 |                  |               |        | name[2] |                    |                    |           *migrate         |
 |                  |               |        +---------+                    +--------------------+----------------------------+
