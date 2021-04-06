@@ -52,7 +52,7 @@ robotArm_moveShoulderTo( robotArm thisRobotArm, int angle )
 
 ### Notes
 
-1) A "design pattern" is a "general repeatable solution to a commonly occurring problem in software design" ([Source Making](https://sourcemaking.com/design_patterns)). The seminal book on design patterns was ["Design Patterns"](https://www.amazon.com/Design-Patterns-Object-Oriented-Addison-Wesley-Professional-ebook/dp/B000SEIBB8), affectionately referred to as the "Gang of Four" or "GoF", in reference to the four authors of said book, but I started with ["Head First Design Patterns"](https://www.amazon.com/Head-First-Design-Patterns-Brain-Friendly/dp/0596007124), which seemed more approachable. Design patterns can supercharge your programming but they almost always assume that the developer is working with an OOP language, which C is not (by default).
+1. A "design pattern" is a "general repeatable solution to a commonly occurring problem in software design" ([Source Making](https://sourcemaking.com/design_patterns)). The seminal book on design patterns was ["Design Patterns"](https://www.amazon.com/Design-Patterns-Object-Oriented-Addison-Wesley-Professional-ebook/dp/B000SEIBB8), affectionately referred to as the "Gang of Four" or "GoF", in reference to the four authors of said book, but I started with ["Head First Design Patterns"](https://www.amazon.com/Head-First-Design-Patterns-Brain-Friendly/dp/0596007124), which seemed more approachable. Design patterns can supercharge your programming but they almost always assume that the developer is working with an OOP language, which C is not (by default).
 
 ## How do I run it?
 
