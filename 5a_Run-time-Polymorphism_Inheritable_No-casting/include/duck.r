@@ -1,6 +1,7 @@
 #ifndef DUCK_R
 #define DUCK_R
 
+#include <stdarg.h>
 #include "baseClass.r"
 #include "duck.h"
 
@@ -20,5 +21,8 @@ typedef struct Duck_Interface_Struct
     BaseClass_Interface_Struct baseInterface;
     void (*show)( Duck thisDuck );
 } Duck_Interface_Struct;
+
+void duckInit( Duck thisDuck, va_list * args );
+void duckDeinit( Duck thisDuck );
 
 #endif // DUCK_R

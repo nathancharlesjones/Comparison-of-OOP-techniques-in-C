@@ -18,4 +18,7 @@ typedef struct Mallard_Interface_Struct
     void (*migrate)( void * thisMallard );
 } Mallard_Interface_Struct;
 
+void mallardInit( Mallard thisMallard, va_list * args );
+void mallardDeinit( Mallard thisMallard );
+
 #endif //MALLARD_R

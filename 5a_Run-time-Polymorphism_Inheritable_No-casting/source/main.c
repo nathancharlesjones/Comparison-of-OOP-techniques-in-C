@@ -33,5 +33,10 @@ main( void )
 
     mallardMigrate(George);
 
+    printf("|__Destroying duck and mallard objects:\n");
+
+    duckDestroy(George);
+    duckDestroy(Bill);
+
     return 0;
 }

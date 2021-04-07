@@ -3,7 +3,6 @@
 #include <string.h>    // For strncpy, memset
 #include <stdbool.h>   // For bool
 #include <stdarg.h>    // For variadic macros (va_list, va_start, va_arg, va_end)
-#include "oopUtils.h"
 #include "assert.h"
 #include "duck.h"
 #include "duck.r"
@@ -17,21 +16,36 @@ typedef struct duckMemoryPool_t
 static duckMemoryPool_t duckMemoryPool[MAX_NUM_DUCK_OBJS] = {0};
 
 bool
-isDuck( void * thisDuck )
+typeIsDuck( void * thisType )
 {
-    printf("Inside isDuck\n");
+    bool ret = false;
+
+    while( thisType && thisType != duckFromHeapMem && thisType != duckFromStaticMem )
+    {
+        thisType = ((BaseClass_Interface)thisType)->getParentInterface();
+    }
+
+    if( ( thisType == duckFromHeapMem ) || ( thisType == duckFromStaticMem ) ) ret = true;
+
+    return ret;
+}
+
+bool
+parentIsDuck( void * thisType )
+{
+    return typeIsDuck(thisType);
+}
+
+bool
+objIsDuck( void * thisDuck )
+{
     bool ret = false;
 
     ASSERT(thisDuck);
 
-    void * thisType = GET_TYPE_FROM_OBJ(thisDuck);
+    void * thisType = *(BaseClass_Interface *)thisDuck;
 
-    while( thisType && ( ( thisType != duckFromHeapMem ) || ( thisType != duckFromHeapMem ) ) )
-    {
-        thisType = (void *)GET_PARENT_FROM_TYPE(thisType);
-    }
-
-    if( ( thisType == duckFromHeapMem ) || ( thisType == duckFromHeapMem ) ) ret = true;
+    if( ( thisType == duckFromHeapMem ) || ( thisType == duckFromStaticMem ) || parentIsDuck(thisType) ) ret = true;
 
     return ret;
 }
@@ -43,21 +57,18 @@ duckCreate( void * newDuckType, ... )
     va_start(args, newDuckType);
 
     Duck newDuck = NULL;
+
+    ASSERT(typeIsDuck(newDuckType));
     Duck_Interface newInterface = (Duck_Interface)newDuckType;
     
     if( newInterface && newInterface->baseInterface.create )
     {
-        newDuck = newInterface->baseInterface.create();
+        newDuck = newInterface->baseInterface.create(&args);
     }
     
     if( newDuck )
     {
         newDuck->vtable = newInterface;
-
-        if ( newDuck && newDuck->vtable && newDuck->vtable->baseInterface.init )
-        {
-            newDuck->vtable->baseInterface.init((void *)newDuck, &args);
-        }
     }
 
     va_end(args);
@@ -66,16 +77,18 @@ duckCreate( void * newDuckType, ... )
 }
 
 static void *
-duckCreate_dynamic( void )
+duckCreate_dynamic( va_list * args )
 {
     Duck newDuck = (Duck)calloc(1, sizeof(Duck_t));
     // TODO: Check for null pointer on malloc failure
+
+    duckInit(newDuck,args);
 
     return (void *)newDuck;
 }
 
 static void *
-duckCreate_static( void )
+duckCreate_static( va_list * args )
 {
     Duck newDuck = NULL;
 
@@ -85,6 +98,7 @@ duckCreate_static( void )
         {
             duckMemoryPool[i].used = true;
             newDuck = &duckMemoryPool[i].thisDuck;
+            duckInit(newDuck, args);
             break;
         }
     }
@@ -92,17 +106,16 @@ duckCreate_static( void )
     return (void *)newDuck;
 }
 
-static void
-duckInit( void * thisDuck, va_list * args )
+void
+duckInit( Duck thisDuck, va_list * args )
 {
     ASSERT(thisDuck);
 
-    Duck _thisDuck = (Duck)thisDuck;
     char * name = va_arg(*args, char *);
     
     printf("\tInitializing duck with name: %s\n", name);
 
-    strncpy(_thisDuck->name, name, MAX_CHARS_NAME);
+    strncpy(thisDuck->name, name, MAX_CHARS_NAME);
 }
 
 static void *
@@ -128,14 +141,12 @@ duckGetName( void * thisDuck )
 void
 duckQuack( void * thisDuck )
 {
-    printf("Inside duckQuack\n");
     ASSERT(thisDuck);
     //ASSERT(isDuck(thisDuck));
     
     // This should probably be an ASSERT, like above
-    if( isDuck(thisDuck) )
+    if( objIsDuck(thisDuck) )
     {
-        printf("Inside if stmt\n");
         Duck _thisDuck = (Duck)thisDuck;
 
         printf("\t%s: Quack!\n", _thisDuck->name);
@@ -149,7 +160,7 @@ duckShow( void * thisDuck )
     //ASSERT(isDuck(thisDuck));
     
     // This should probably be an ASSERT, like above
-    if( isDuck(thisDuck) )
+    if( objIsDuck(thisDuck) )
     {    
         Duck _thisDuck = (Duck)thisDuck;
 
@@ -164,17 +175,36 @@ duckShow( void * thisDuck )
     }
 }
 
-static void
-duckDeinit( void * thisDuck )
+void
+duckDestroy( void * thisDuck )
 {
-    Duck _thisDuck = (Duck)thisDuck;
-    printf("\tDeinitializing duck object with name: %s\n", _thisDuck->name);
-    memset(_thisDuck->name, 0, sizeof(char)*MAX_CHARS_NAME);
+    ASSERT(thisDuck);
+    //ASSERT(isDuck(thisDuck));
+    
+    // This should probably be an ASSERT, like above
+    if( objIsDuck(thisDuck) )
+    {
+        Duck _thisDuck = (Duck)thisDuck;
+
+        if ( _thisDuck && _thisDuck->vtable && _thisDuck->vtable->baseInterface.destroy )
+        {
+            _thisDuck->vtable->baseInterface.destroy(thisDuck);
+        }
+    }
+}
+
+void
+duckDeinit( Duck thisDuck )
+{
+    printf("\tDeinitializing duck object with name: %s\n", thisDuck->name);
+    memset(thisDuck->name, 0, sizeof(char)*MAX_CHARS_NAME);
 }
 
 static void
 duckDestroy_dynamic( void * thisDuck )
 {
+    duckDeinit((Duck)thisDuck);
+
     free((Duck)thisDuck);
 }
 
@@ -185,6 +215,8 @@ duckDestroy_static( void * thisDuck )
     {
         if( (Duck)thisDuck == &duckMemoryPool[i].thisDuck )
         {
+            duckDeinit((Duck)thisDuck);
+
             memset(&duckMemoryPool[i].thisDuck, 0, sizeof(Duck_t));
             duckMemoryPool[i].used = false;
             thisDuck = NULL;
@@ -196,8 +228,6 @@ duckDestroy_static( void * thisDuck )
 const Duck_Interface_Struct duckDynamic = {
     .baseInterface = { .getParentInterface = duckGetParent,
                        .create = duckCreate_dynamic,
-                       .init = duckInit,
-                       .deinit = duckDeinit,
                        .destroy = duckDestroy_dynamic },
     .show = 0
 };
@@ -207,8 +237,6 @@ void * duckFromHeapMem = (void *)&duckDynamic;
 const Duck_Interface_Struct duckStatic = {
     .baseInterface = { .getParentInterface = duckGetParent,
                        .create = duckCreate_static,
-                       .init = duckInit,
-                       .deinit = duckDeinit,
                        .destroy = duckDestroy_static },
     .show = 0
 };
