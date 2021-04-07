@@ -72,14 +72,27 @@ mallardInit( void * thisMallard, va_list * args )
     ASSERT(thisMallard);
 
     Mallard _thisMallard = (Mallard)thisMallard;
-    *_thisMallard = (Mallard_t)duckFromHeapMem;
 
-    //GET_PARENT_FROM_OBJ(_thisMallard)->init(thisMallard, args);
+    BaseClass_Interface parentInterface = ((BaseClass_Interface)(_thisMallard->parentDuck.vtable))->getParentInterface();
+    printf("After parentInterface defined\n");
+    parentInterface->init(thisMallard, args);
     
     printf("\tInitializing new mallard duck with name: %s\n", duckGetName(&_thisMallard->parentDuck));
 
     featherColor color = va_arg(*args, featherColor);
     _thisMallard->myColor = color;
+}
+
+static void *
+mallardGetParent_dynamic( void )
+{
+    return duckFromHeapMem;
+}
+
+static void *
+mallardGetParent_static( void )
+{
+    return duckFromStaticMem;
 }
 
 void
@@ -174,7 +187,7 @@ mallardDestroy_static( void * thisMallard )
 }
 
 const Mallard_Interface_Struct mallardDynamic = {
-    .duckInterface = { .baseInterface = { .baseClass = NULL,
+    .duckInterface = { .baseInterface = { .getParentInterface = mallardGetParent_dynamic,
                                           .create = mallardCreate_dynamic,
                                           .init = mallardInit,
                                           .deinit = mallardDeinit,
@@ -186,7 +199,7 @@ const Mallard_Interface_Struct mallardDynamic = {
 void * mallardFromHeapMem = (void *)&mallardDynamic;
 
 const Mallard_Interface_Struct mallardStatic = {
-    .duckInterface = { .baseInterface = { .baseClass = NULL,
+    .duckInterface = { .baseInterface = { .getParentInterface = mallardGetParent_static,
                                           .create = mallardCreate_static,
                                           .init = mallardInit,
                                           .deinit = mallardDeinit,

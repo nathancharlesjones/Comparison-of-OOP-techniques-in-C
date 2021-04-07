@@ -19,6 +19,7 @@ static duckMemoryPool_t duckMemoryPool[MAX_NUM_DUCK_OBJS] = {0};
 bool
 isDuck( void * thisDuck )
 {
+    printf("Inside isDuck\n");
     bool ret = false;
 
     ASSERT(thisDuck);
@@ -104,6 +105,12 @@ duckInit( void * thisDuck, va_list * args )
     strncpy(_thisDuck->name, name, MAX_CHARS_NAME);
 }
 
+static void *
+duckGetParent( void )
+{
+    return NULL;
+}
+
 void
 duckSetName( void * thisDuck, char * name )
 {
@@ -121,12 +128,14 @@ duckGetName( void * thisDuck )
 void
 duckQuack( void * thisDuck )
 {
+    printf("Inside duckQuack\n");
     ASSERT(thisDuck);
     //ASSERT(isDuck(thisDuck));
     
     // This should probably be an ASSERT, like above
     if( isDuck(thisDuck) )
     {
+        printf("Inside if stmt\n");
         Duck _thisDuck = (Duck)thisDuck;
 
         printf("\t%s: Quack!\n", _thisDuck->name);
@@ -185,7 +194,7 @@ duckDestroy_static( void * thisDuck )
 }
 
 const Duck_Interface_Struct duckDynamic = {
-    .baseInterface = { .baseClass = NULL,
+    .baseInterface = { .getParentInterface = duckGetParent,
                        .create = duckCreate_dynamic,
                        .init = duckInit,
                        .deinit = duckDeinit,
@@ -196,7 +205,7 @@ const Duck_Interface_Struct duckDynamic = {
 void * duckFromHeapMem = (void *)&duckDynamic;
 
 const Duck_Interface_Struct duckStatic = {
-    .baseInterface = { .baseClass = NULL,
+    .baseInterface = { .getParentInterface = duckGetParent,
                        .create = duckCreate_static,
                        .init = duckInit,
                        .deinit = duckDeinit,
