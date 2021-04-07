@@ -6,32 +6,28 @@
 int
 main( void )
 {    
-    void * George = duckCreate();
-    void * Bill = mallardCreate();
-    void * Mary = redMallardCreate();
+    printf("|__Creating duck object\n");
+
+    void * George = duckCreate(duckFromHeapMem, "George");
+    void * Bill = duckCreate(mallardFromStaticMem, "Bill", BROWN);
+    //void * Mary = redMallardCreate();
     
-    printf("|__Initializing duck and mallard objects:\n");
-
-    duckInit(George, "George");
-    mallardInit(Bill, "Bill", BROWN);
-    redMallardInit(Mary, "Mary", WHITE);
-
     printf("|__Quacking duck and mallard objects:\n");
     
     duckQuack(George);
     duckQuack(Bill);
-    duckQuack(Mary);
+    //duckQuack(Mary);
 
     printf("|__Showing duck and mallard objects:\n");
     
     duckShow(George);
     duckShow(Bill);
-    duckShow(Mary);
+    //duckShow(Mary);
 
     printf("|__Migrating mallard objects:\n");
 
     mallardMigrate(Bill);
-    mallardMigrate(Mary);
+    //mallardMigrate(Mary);
 
     printf("|__Intentionally calling mallard functions on duck objects:\n");
 

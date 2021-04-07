@@ -7,9 +7,9 @@ typedef struct BaseClass_Interface_Struct * BaseClass_Interface;
 
 typedef struct BaseClass_Interface_Struct
 {
-    void * baseClass;
+    BaseClass_Interface baseClass;
     void * (*create)( void );
-    void (*init)( void * self, void * interface, va_list * args );
+    void (*init)( void * self, va_list * args );
     void (*deinit)( void * self );
     void (*destroy)( void * self );
 } BaseClass_Interface_Struct;

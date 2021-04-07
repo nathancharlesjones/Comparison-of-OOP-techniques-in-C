@@ -1,11 +1,19 @@
 #ifndef MALLARD_H
 #define MALLARD_H
 
-typedef enum {RED, BROWN, WHITE} featherColor;
-extern const char * colorNames[];
+#define MAX_NUM_MALLARD_OBJS 10
 
-void * mallardCreate( void );
-void mallardInit( void * thisMallard, char * name, featherColor color );
+typedef enum {RED, BROWN, WHITE} featherColor;
+
+extern void * mallardFromHeapMem;
+extern void * mallardFromStaticMem;
+
+// "Create" function requires a featherColor. E.g.:
+// Duck Bill = duckCreate(mallardFromHeapMem, "Bill", WHITE);
+
+void mallardSetFeatherColor( void * thisMallard, featherColor color );
+featherColor mallardGetFeatherColor( void * thisMallard );
+const char * mallardGetFeatherColorName( void * thisMallard );
 void mallardMigrate( void * thisMallard );
 
 #endif // MALLARD_H

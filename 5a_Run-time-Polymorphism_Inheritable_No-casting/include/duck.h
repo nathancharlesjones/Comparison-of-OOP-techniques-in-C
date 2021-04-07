@@ -6,7 +6,7 @@
 extern void * duckFromHeapMem;
 extern void * duckFromStaticMem;
 
-void * duckCreate( void * newDuckType, char * name, ... );
+void * duckCreate( void * newDuckType, ... );
 void duckSetName( void * thisDuck, char * name );
 char * duckGetName( void * thisDuck );
 void duckQuack( void * thisDuck );

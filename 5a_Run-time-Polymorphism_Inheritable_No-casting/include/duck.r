@@ -1,7 +1,6 @@
 #ifndef DUCK_R
 #define DUCK_R
 
-#include <stdarg.h>
 #include "baseClass.r"
 #include "duck.h"
 

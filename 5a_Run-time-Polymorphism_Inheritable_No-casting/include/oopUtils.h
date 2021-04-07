@@ -5,5 +5,6 @@
 
 #define GET_TYPE_FROM_OBJ(X) (*(BaseClass_Interface *)X)
 #define GET_PARENT_FROM_TYPE(X) (*(BaseClass_Interface *)X)
+#define GET_PARENT_FROM_OBJ(X) (GET_PARENT_FROM_TYPE(GET_TYPE_FROM_OBJ(X)))
 
 #endif // OOP_UTILS_H
