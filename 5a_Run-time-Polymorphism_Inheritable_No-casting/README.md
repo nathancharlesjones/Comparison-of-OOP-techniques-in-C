@@ -2,7 +2,14 @@
 
 ## Description
 
+Project 4 provided a solution to achieve full inheritance at the cost of having to explicitly cast objects to different types based on the functions being called. Near as I can tell, there isn't a way to direct the C compiler to treat two or more data types as being equivalent (in the sense that a "Mallard" IS A "Duck"). However, there IS a way to treat a data type as a "non type": casting it to "void *". "void *", a pointer to void, is basically a "pointer to nothing" or, perhaps more accurately, a "pointer to anything". (The kerword "void", used for functions that either take no arguments or return no values (or both), is similar in the sense that we're not referring to a particular data type, but it isn't exactly the same. The C compiler won't let you create a variable of type "void" for instance, but a variable of type "void *" is perfectly valid.) If a function lists a void pointer as an input parameter, that function can, effectively receive a pointer to any data type.
 
+If you're thinking, "Sweet! All we need to do is change all of our 'Duck', 'Mallard', and 'redMallard' objects to 'void *' and we're done!", you'd be right! Sort of. Making [that change _does_ work](https://github.com/nathancharlesjones/Comparison-of-OOP-techniques-in-C/tree/main/Experiments/Run-time-Polymorphism_Inheritable_No-type-checking), but at the cost of completely circumventing the built-in type-checking that the C compiler was doing in the first place to prevent us from being able to use our polymorphic functions without explicit casts. This has serious implications for program stability if not safety or security: if we change our functions to, quite literally, accept any argument and then modify memory values at that location or treat the values as function pointers (since our objects _do_ have a vtable with a list of function pointers which we are executing), then any mistake in calling a function with a different object or a pointer to something else entirely could result in a system-halting error (at best) or an error that creates a security vulnerability or safety hazard (at worst). I think, if we're to make this change, we need to add in our own type-checking in some form or fashion. This project does just that.
+
+- BaseClass and getParentInterface
+- objIsDuck / parentIsDuck / typeIsDuck
+- change all public objects to void *
+- Add "init"/"deinit" function declarations to private header file
 
 ## How do I run it?
 
