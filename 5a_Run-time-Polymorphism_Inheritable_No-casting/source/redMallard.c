@@ -2,92 +2,178 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdarg.h>
 #include "assert.h"
-#include "oopUtils.h"
-#include "duck.h"
 #include "mallard.h"
 #include "redMallard.h"
 #include "redMallard.r"
 
-static void redMallardShow( void *thisDuck );
-static void redMallardMigrate( void * thisMallard );
+typedef struct redMallardMemoryPool_t
+{
+    bool used;
+    redMallard_t thisRedMallard;
+} redMallardMemoryPool_t;
 
-redMallard_Interface_Struct redMallardDef = {
-/*  /----------------------Mallard_t-----------------------\
-      /--------------Duck_t-----------\
-        /--BaseClass-\                                      */
-    { { { &mallardDef }, redMallardShow}, redMallardMigrate }
-};
-
-redMallard_Interface redMallard = &redMallardDef;
+static redMallardMemoryPool_t redMallardMemoryPool[MAX_NUM_RED_MALLARD_OBJS] = {0};
 
 bool
-isRedMallard( void * thisRedMallard )
+typeIsRedMallard( void * thisType )
+{
+    bool ret = false;
+
+    while( thisType && thisType != redMallardFromHeapMem && thisType != redMallardFromStaticMem )
+    {
+        thisType = ((BaseClass_Interface)thisType)->getParentInterface();
+    }
+
+    if( ( thisType == redMallardFromHeapMem ) || ( thisType == redMallardFromStaticMem ) ) ret = true;
+
+    return ret;
+}
+
+bool
+parentIsRedMallard( void * thisType )
+{
+    return typeIsRedMallard(thisType);
+}
+
+bool
+objIsRedMallard( void * thisRedMallard )
 {
     bool ret = false;
 
     ASSERT(thisRedMallard);
 
-    void * thisType = GET_TYPE_FROM_OBJ(thisRedMallard);
+    void * thisType = *(BaseClass_Interface *)thisRedMallard;
 
-    while( thisType && thisType != redMallard )
-    {
-        thisType = (void *)GET_PARENT_FROM_TYPE(thisType);
-    }
-
-    if( thisType == redMallard ) ret = true;
+    if( ( thisType == redMallardFromHeapMem ) || ( thisType == redMallardFromStaticMem ) || parentIsRedMallard(thisType) ) ret = true;
 
     return ret;
 }
 
-void *
-redMallardCreate( void )
+void
+redMallardInit( redMallard thisRedMallard, va_list * args )
 {
-    void * newRedMallard = (redMallard_t *)malloc(sizeof(redMallard_t));
+    ASSERT(thisRedMallard);
+
+    mallardInit((Mallard)thisRedMallard, args);
+    
+    printf("\tInitializing new red-breasted mallard with name: %s\n", duckGetName(&thisRedMallard->parentMallard.parentDuck));
+}
+
+static void *
+redMallardCreate_dynamic( va_list * args )
+{
+    redMallard newRedMallard = (redMallard)calloc(1, sizeof(redMallard_t));
     // TODO: Check for null pointer on malloc failure
 
-    return newRedMallard;
+    redMallardInit(newRedMallard, args);
+
+    return (void *)newRedMallard;
+}
+
+static void *
+redMallardCreate_static( va_list * args )
+{
+    redMallard newRedMallard = NULL;
+
+    for( int i = 0; i < MAX_NUM_RED_MALLARD_OBJS; i++)
+    {
+        if( redMallardMemoryPool[i].used == false )
+        {
+            redMallardMemoryPool[i].used = true;
+            newRedMallard = &redMallardMemoryPool[i].thisRedMallard;
+            redMallardInit(newRedMallard, args);
+            break;
+        }
+    }
+
+    return (void *)newRedMallard;
+}
+
+static void *
+redMallardGetParent_dynamic( void )
+{
+    return mallardFromHeapMem;
+}
+
+static void *
+redMallardGetParent_static( void )
+{
+    return mallardFromStaticMem;
+}
+
+static void
+redMallardShow( Duck thisDuck )
+{
+    ASSERT(thisDuck);
+    ASSERT(objIsRedMallard(thisDuck));
+
+    Mallard thisMallard = (Mallard)thisDuck;
+    printf("\tHi! I'm a red-breasted mallard duck. My name is %s. I have %s feathers.\n", duckGetName((void *)(&thisMallard->parentDuck)), mallardGetFeatherColorName(thisMallard));
 }
 
 void
-redMallardInit( void * thisRedMallard, char * name, featherColor color )
-{
-    ASSERT(thisRedMallard);
-    ASSERT(name);
-
-    redMallard_t * _thisRedMallard = (redMallard_t *)thisRedMallard;
-
-    printf("\tInitializing new red-breasted mallard with name: %s\n", name);
-
-    mallardInit( &_thisRedMallard->parentMallard, name, color );
-
-    _thisRedMallard->parentMallard.parentDuck.vtable = (Duck_Interface)redMallard;
-}
-
-static void
-redMallardShow( void * thisDuck )
-{
-    ASSERT(thisDuck);
-    ASSERT(isRedMallard(thisDuck));
-
-    // Once ASSERT has been replaced with something that will actually
-    // halt program execution, this guard clause could/should be
-    // removed.
-    if( isRedMallard(thisDuck) )
-    {
-        Mallard_t * thisMallard = (Mallard_t *)thisDuck;
-        printf("\tHi! I'm a red-breasted mallard duck. My name is %s. I have %s feathers.\n", thisMallard->parentDuck.name, colorNames[thisMallard->myColor]);
-    }
-}
-
-static void
 redMallardMigrate( void * thisMallard )
 {
     ASSERT(thisMallard);
-    ASSERT(isRedMallard(thisMallard)); //should be unnecessary since this function is only ever called
-    // by way of "mallardMigrate()", which confirms that the object is a Mallard. I leave it in
-    // because it "feels" right.
+    ASSERT(objIsRedMallard(thisMallard));
 
-    Duck_t * thisDuck = (Duck_t *)thisMallard;
-    printf("\t%s: I'm migrating from North to South America with my fellow red-breasted mallards!\n", thisDuck->name);
+    Mallard _thisMallard = (Mallard)thisMallard;
+    printf("\t%s: I'm migrating from North to South America with my fellow red-breasted mallards!\n", duckGetName( (void *)(&_thisMallard->parentDuck) ) );
 }
+
+void
+redMallardDeinit( redMallard thisRedMallard )
+{
+    printf("\tDeinitializing Red Mallard object with name: %s\n", duckGetName((void *)(&thisRedMallard->parentMallard.parentDuck)));
+
+    // Insert redMallard deinitialization here (if attributes are added to the redMallard_t struct in the future)
+
+    mallardDeinit((Mallard)thisRedMallard);
+}
+
+static void
+redMallardDestroy_dynamic( void * thisRedMallard )
+{
+    redMallardDeinit((redMallard)thisRedMallard);
+
+    free((redMallard)thisRedMallard);
+}
+
+static void
+redMallardDestroy_static( void * thisRedMallard )
+{
+    for( int i = 0; i < MAX_NUM_MALLARD_OBJS; i++)
+    {
+        if( (redMallard)thisRedMallard == &redMallardMemoryPool[i].thisRedMallard )
+        {
+            redMallardDeinit((redMallard)thisRedMallard);
+
+            memset(&redMallardMemoryPool[i].thisRedMallard, 0, sizeof(Mallard_t));
+            redMallardMemoryPool[i].used = false;
+            thisRedMallard = NULL;
+            break;
+        }
+    }
+}
+
+const redMallard_Interface_Struct redMallardDynamic = {
+    .mallardInterface = { .duckInterface = { .baseInterface = { .getParentInterface = redMallardGetParent_dynamic,
+                                                                .create = redMallardCreate_dynamic,
+                                                                .destroy = redMallardDestroy_dynamic },
+                                             .show = redMallardShow },
+                          .migrate = redMallardMigrate }
+};
+
+void * redMallardFromHeapMem = (void *)&redMallardDynamic;
+
+const redMallard_Interface_Struct redMallardStatic = {
+    .mallardInterface = { .duckInterface = { .baseInterface = { .getParentInterface = redMallardGetParent_static,
+                                                                .create = redMallardCreate_static,
+                                                                .destroy = redMallardDestroy_static },
+                                             .show = redMallardShow },
+                          .migrate = redMallardMigrate }
+};
+
+void * redMallardFromStaticMem = (void *)&redMallardStatic;

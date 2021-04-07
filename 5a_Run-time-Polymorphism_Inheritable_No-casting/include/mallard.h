@@ -8,8 +8,8 @@ typedef enum {RED, BROWN, WHITE} featherColor;
 extern void * mallardFromHeapMem;
 extern void * mallardFromStaticMem;
 
-// "Create" function requires a featherColor. E.g.:
-// Duck Bill = duckCreate(mallardFromHeapMem, "Bill", WHITE);
+// "Create" function requires a featherColor in addition to requirements for Ducks. E.g.:
+// void * Bill = duckCreate(mallardFromHeapMem, "Bill", WHITE);
 
 void mallardSetFeatherColor( void * thisMallard, featherColor color );
 featherColor mallardGetFeatherColor( void * thisMallard );

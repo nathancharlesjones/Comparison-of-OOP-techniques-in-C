@@ -4,7 +4,6 @@
 #include <stdbool.h>
 #include <stdarg.h>
 #include "assert.h"
-#include "oopUtils.h"
 #include "duck.h"
 #include "mallard.h"
 #include "mallard.r"
@@ -135,14 +134,8 @@ mallardShow( Duck thisDuck )
     ASSERT(thisDuck);
     ASSERT(objIsMallard(thisDuck));
 
-    // Once ASSERT has been replaced with something that will actually
-    // halt program execution, this guard clause could/should be
-    // removed.
-    if( objIsMallard(thisDuck) )
-    {
-        Mallard thisMallard = (Mallard)thisDuck;
-        printf("\tHi! I'm a mallard duck. My name is %s. I have %s feathers.\n", duckGetName((void *)(&thisMallard->parentDuck)), colorNames[thisMallard->myColor]);
-    }
+    Mallard thisMallard = (Mallard)thisDuck;
+    printf("\tHi! I'm a mallard duck. My name is %s. I have %s feathers.\n", duckGetName((void *)(&thisMallard->parentDuck)), colorNames[thisMallard->myColor]);
 }
 
 void
@@ -151,21 +144,15 @@ mallardMigrate( void * thisMallard )
     ASSERT(thisMallard);
     ASSERT(objIsMallard(thisMallard));
 
-    // Once ASSERT has been replaced with something that will actually
-    // halt program execution, this guard clause could/should be
-    // removed.
-    if( objIsMallard(thisMallard) )
-    {
-        Mallard _thisMallard = (Mallard)thisMallard;
+    Mallard _thisMallard = (Mallard)thisMallard;
 
-        if ( _thisMallard && _thisMallard->parentDuck.vtable && ((Mallard_Interface)(_thisMallard->parentDuck.vtable))->migrate )
-        {
-            ((Mallard_Interface)(_thisMallard->parentDuck.vtable))->migrate(thisMallard);
-        }
-        else
-        {
-            printf("\t%s: I'm migrating!\n", duckGetName( (void *)(&_thisMallard->parentDuck) ) );
-        }
+    if ( _thisMallard && _thisMallard->parentDuck.vtable && ((Mallard_Interface)(_thisMallard->parentDuck.vtable))->migrate )
+    {
+        ((Mallard_Interface)(_thisMallard->parentDuck.vtable))->migrate(thisMallard);
+    }
+    else
+    {
+        printf("\t%s: I'm migrating!\n", duckGetName( (void *)(&_thisMallard->parentDuck) ) );
     }
 }
 

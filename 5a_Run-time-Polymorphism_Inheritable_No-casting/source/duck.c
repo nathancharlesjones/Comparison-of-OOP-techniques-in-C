@@ -142,36 +142,28 @@ void
 duckQuack( void * thisDuck )
 {
     ASSERT(thisDuck);
-    //ASSERT(isDuck(thisDuck));
+    ASSERT(objIsDuck(thisDuck));
     
-    // This should probably be an ASSERT, like above
-    if( objIsDuck(thisDuck) )
-    {
-        Duck _thisDuck = (Duck)thisDuck;
+    Duck _thisDuck = (Duck)thisDuck;
 
-        printf("\t%s: Quack!\n", _thisDuck->name);
-    }
+    printf("\t%s: Quack!\n", _thisDuck->name);
 }
 
 void
 duckShow( void * thisDuck )
 {
     ASSERT(thisDuck);
-    //ASSERT(isDuck(thisDuck));
+    ASSERT(objIsDuck(thisDuck));
     
-    // This should probably be an ASSERT, like above
-    if( objIsDuck(thisDuck) )
-    {    
-        Duck _thisDuck = (Duck)thisDuck;
+    Duck _thisDuck = (Duck)thisDuck;
 
-        if ( _thisDuck && _thisDuck->vtable && _thisDuck->vtable->show )
-        {
-            _thisDuck->vtable->show(thisDuck);
-        }
-        else
-        {
-            printf("\tHi! My name is %s.\n", _thisDuck->name);
-        }
+    if ( _thisDuck && _thisDuck->vtable && _thisDuck->vtable->show )
+    {
+        _thisDuck->vtable->show(thisDuck);
+    }
+    else
+    {
+        printf("\tHi! My name is %s.\n", _thisDuck->name);
     }
 }
 
@@ -179,17 +171,13 @@ void
 duckDestroy( void * thisDuck )
 {
     ASSERT(thisDuck);
-    //ASSERT(isDuck(thisDuck));
+    ASSERT(objIsDuck(thisDuck));
     
-    // This should probably be an ASSERT, like above
-    if( objIsDuck(thisDuck) )
-    {
-        Duck _thisDuck = (Duck)thisDuck;
+    Duck _thisDuck = (Duck)thisDuck;
 
-        if ( _thisDuck && _thisDuck->vtable && _thisDuck->vtable->baseInterface.destroy )
-        {
-            _thisDuck->vtable->baseInterface.destroy(thisDuck);
-        }
+    if ( _thisDuck && _thisDuck->vtable && _thisDuck->vtable->baseInterface.destroy )
+    {
+        _thisDuck->vtable->baseInterface.destroy(thisDuck);
     }
 }
 

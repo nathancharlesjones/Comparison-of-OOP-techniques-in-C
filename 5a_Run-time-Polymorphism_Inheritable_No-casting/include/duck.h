@@ -6,7 +6,10 @@
 extern void * duckFromHeapMem;
 extern void * duckFromStaticMem;
 
+// "Create" function requires a string literal name. E.g.:
+// void * Bill = duckCreate(duckFromHeapMem, "Bill");
 void * duckCreate( void * newDuckType, ... );
+
 void duckSetName( void * thisDuck, char * name );
 char * duckGetName( void * thisDuck );
 void duckQuack( void * thisDuck );

@@ -8,13 +8,14 @@ typedef struct redMallard_Interface_Struct * redMallard_Interface;
 typedef struct redMallard_t
 {
     Mallard_t parentMallard;
-} redMallard_t;
+} redMallard_t, *redMallard;
 
 typedef struct redMallard_Interface_Struct
 {
-    Mallard_Interface_Struct parentMallard;
+    Mallard_Interface_Struct mallardInterface;
 } redMallard_Interface_Struct;
 
-extern redMallard_Interface_Struct redMallardDef;
+void redMallardInit( redMallard thisRedMallard, va_list * args );
+void redMallardDeinit( redMallard thisRedMallard );
 
 #endif // RED_MALLARD_R
