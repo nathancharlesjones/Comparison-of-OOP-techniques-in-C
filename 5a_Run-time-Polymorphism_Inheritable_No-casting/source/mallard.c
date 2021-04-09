@@ -19,13 +19,13 @@ typedef struct mallardMemoryPool_t
 static mallardMemoryPool_t mallardMemoryPool[MAX_NUM_MALLARD_OBJS] = {0};
 
 bool
-typeIsMallard( void * thisType )
+typeIsMallard( void const * thisType )
 {
     bool ret = false;
 
     while( thisType && thisType != mallardFromHeapMem && thisType != mallardFromStaticMem )
     {
-        thisType = ((BaseClass_Interface)thisType)->getParentInterface();
+        thisType = ((Duck_Interface)thisType)->getParentInterface();
     }
 
     if( ( thisType == mallardFromHeapMem ) || ( thisType == mallardFromStaticMem ) ) ret = true;
@@ -34,7 +34,7 @@ typeIsMallard( void * thisType )
 }
 
 bool
-parentIsMallard( void * thisType )
+parentIsMallard( void const * thisType )
 {
     return typeIsMallard(thisType);
 }
@@ -46,7 +46,7 @@ objIsMallard( void * thisMallard )
 
     ASSERT(thisMallard);
 
-    void * thisType = *(BaseClass_Interface *)thisMallard;
+    void const * thisType = *(Mallard_Interface *)thisMallard;
 
     if( ( thisType == mallardFromHeapMem ) || ( thisType == mallardFromStaticMem ) || parentIsMallard(thisType) ) ret = true;
 
@@ -192,9 +192,9 @@ mallardDestroy_static( void * thisMallard )
 }
 
 const Mallard_Interface_Struct mallardDynamic = {
-    .duckInterface = { .baseInterface = { .getParentInterface = mallardGetParent_dynamic,
-                                          .create = mallardCreate_dynamic,
-                                          .destroy = mallardDestroy_dynamic },
+    .duckInterface = { .getParentInterface = mallardGetParent_dynamic,
+                       .create = mallardCreate_dynamic,
+                       .destroy = mallardDestroy_dynamic,
                        .show = mallardShow },
     .migrate = 0
 };
@@ -202,9 +202,9 @@ const Mallard_Interface_Struct mallardDynamic = {
 void * mallardFromHeapMem = (void *)&mallardDynamic;
 
 const Mallard_Interface_Struct mallardStatic = {
-    .duckInterface = { .baseInterface = { .getParentInterface = mallardGetParent_static,
-                                          .create = mallardCreate_static,
-                                          .destroy = mallardDestroy_static },
+    .duckInterface = { .getParentInterface = mallardGetParent_static,
+                       .create = mallardCreate_static,
+                       .destroy = mallardDestroy_static,
                        .show = mallardShow },
     .migrate = 0
 };

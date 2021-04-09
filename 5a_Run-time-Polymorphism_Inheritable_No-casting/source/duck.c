@@ -16,13 +16,16 @@ typedef struct duckMemoryPool_t
 static duckMemoryPool_t duckMemoryPool[MAX_NUM_DUCK_OBJS] = {0};
 
 bool
-typeIsDuck( void * thisType )
+typeIsDuck( void const * thisType )
 {
     bool ret = false;
 
+    printf("Inside typeIsDuck\n");
+    printf("thisType: %p\tduckFromHeapMem: %p\tduckFromStaticMem: %p\n", thisType, duckFromHeapMem, duckFromStaticMem);
     while( thisType && thisType != duckFromHeapMem && thisType != duckFromStaticMem )
     {
-        thisType = ((BaseClass_Interface)thisType)->getParentInterface();
+        thisType = ((Duck_Interface)thisType)->getParentInterface();
+        printf("thisType: %p\n", thisType);
     }
 
     if( ( thisType == duckFromHeapMem ) || ( thisType == duckFromStaticMem ) ) ret = true;
@@ -31,7 +34,7 @@ typeIsDuck( void * thisType )
 }
 
 bool
-parentIsDuck( void * thisType )
+parentIsDuck( void const * thisType )
 {
     return typeIsDuck(thisType);
 }
@@ -43,7 +46,7 @@ objIsDuck( void * thisDuck )
 
     ASSERT(thisDuck);
 
-    void * thisType = *(BaseClass_Interface *)thisDuck;
+    void const * thisType = *(Duck_Interface *)thisDuck;
 
     if( ( thisType == duckFromHeapMem ) || ( thisType == duckFromStaticMem ) || parentIsDuck(thisType) ) ret = true;
 
@@ -61,9 +64,9 @@ duckCreate( void * newDuckType, ... )
     ASSERT(typeIsDuck(newDuckType));
     Duck_Interface newInterface = (Duck_Interface)newDuckType;
     
-    if( newInterface && newInterface->baseInterface.create )
+    if( newInterface && newInterface->create )
     {
-        newDuck = newInterface->baseInterface.create(&args);
+        newDuck = newInterface->create(&args);
     }
     
     if( newDuck )
@@ -179,9 +182,9 @@ duckDestroy( void * thisDuck )
     
     Duck _thisDuck = (Duck)thisDuck;
 
-    if ( _thisDuck && _thisDuck->vtable && _thisDuck->vtable->baseInterface.destroy )
+    if ( _thisDuck && _thisDuck->vtable && _thisDuck->vtable->destroy )
     {
-        _thisDuck->vtable->baseInterface.destroy(thisDuck);
+        _thisDuck->vtable->destroy(thisDuck);
     }
 }
 
@@ -218,18 +221,18 @@ duckDestroy_static( void * thisDuck )
 }
 
 const Duck_Interface_Struct duckDynamic = {
-    .baseInterface = { .getParentInterface = duckGetParent,
-                       .create = duckCreate_dynamic,
-                       .destroy = duckDestroy_dynamic },
+    .getParentInterface = duckGetParent,
+    .create = duckCreate_dynamic,
+    .destroy = duckDestroy_dynamic,
     .show = 0
 };
 
 void * duckFromHeapMem = (void *)&duckDynamic;
 
 const Duck_Interface_Struct duckStatic = {
-    .baseInterface = { .getParentInterface = duckGetParent,
-                       .create = duckCreate_static,
-                       .destroy = duckDestroy_static },
+    .getParentInterface = duckGetParent,
+    .create = duckCreate_static,
+    .destroy = duckDestroy_static,
     .show = 0
 };
 

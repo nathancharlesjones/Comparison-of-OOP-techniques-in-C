@@ -2,7 +2,6 @@
 #define DUCK_R
 
 #include <stdarg.h>
-#include "baseClass.r"
 #include "duck.h"
 
 #define MAX_CHARS_NAME 10
@@ -18,7 +17,9 @@ typedef struct Duck_t
 
 typedef struct Duck_Interface_Struct
 {
-    BaseClass_Interface_Struct baseInterface;
+    void * (*getParentInterface)( void );
+    void * (*create)( va_list * args );
+    void (*destroy)( void * self );
     void (*show)( Duck thisDuck );
 } Duck_Interface_Struct;
 

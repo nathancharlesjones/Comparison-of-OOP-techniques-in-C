@@ -17,13 +17,13 @@ typedef struct redMallardMemoryPool_t
 static redMallardMemoryPool_t redMallardMemoryPool[MAX_NUM_RED_MALLARD_OBJS] = {0};
 
 bool
-typeIsRedMallard( void * thisType )
+typeIsRedMallard( void const * thisType )
 {
     bool ret = false;
 
     while( thisType && thisType != redMallardFromHeapMem && thisType != redMallardFromStaticMem )
     {
-        thisType = ((BaseClass_Interface)thisType)->getParentInterface();
+        thisType = ((Duck_Interface)thisType)->getParentInterface();
     }
 
     if( ( thisType == redMallardFromHeapMem ) || ( thisType == redMallardFromStaticMem ) ) ret = true;
@@ -32,7 +32,7 @@ typeIsRedMallard( void * thisType )
 }
 
 bool
-parentIsRedMallard( void * thisType )
+parentIsRedMallard( void const * thisType )
 {
     return typeIsRedMallard(thisType);
 }
@@ -44,7 +44,7 @@ objIsRedMallard( void * thisRedMallard )
 
     ASSERT(thisRedMallard);
 
-    void * thisType = *(BaseClass_Interface *)thisRedMallard;
+    void const * thisType = *(redMallard_Interface *)thisRedMallard;
 
     if( ( thisType == redMallardFromHeapMem ) || ( thisType == redMallardFromStaticMem ) || parentIsRedMallard(thisType) ) ret = true;
 
@@ -159,9 +159,9 @@ redMallardDestroy_static( void * thisRedMallard )
 }
 
 const redMallard_Interface_Struct redMallardDynamic = {
-    .mallardInterface = { .duckInterface = { .baseInterface = { .getParentInterface = redMallardGetParent_dynamic,
-                                                                .create = redMallardCreate_dynamic,
-                                                                .destroy = redMallardDestroy_dynamic },
+    .mallardInterface = { .duckInterface = { .getParentInterface = redMallardGetParent_dynamic,
+                                             .create = redMallardCreate_dynamic,
+                                             .destroy = redMallardDestroy_dynamic,
                                              .show = redMallardShow },
                           .migrate = redMallardMigrate }
 };
@@ -169,9 +169,9 @@ const redMallard_Interface_Struct redMallardDynamic = {
 void * redMallardFromHeapMem = (void *)&redMallardDynamic;
 
 const redMallard_Interface_Struct redMallardStatic = {
-    .mallardInterface = { .duckInterface = { .baseInterface = { .getParentInterface = redMallardGetParent_static,
-                                                                .create = redMallardCreate_static,
-                                                                .destroy = redMallardDestroy_static },
+    .mallardInterface = { .duckInterface = { .getParentInterface = redMallardGetParent_static,
+                                             .create = redMallardCreate_static,
+                                             .destroy = redMallardDestroy_static,
                                              .show = redMallardShow },
                           .migrate = redMallardMigrate }
 };
