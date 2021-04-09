@@ -57,19 +57,22 @@ void
 mallardInit( Mallard thisMallard, va_list * args )
 {
     ASSERT(thisMallard);
+    ASSERT(objIsMallard(thisMallard));
 
     duckInit((Duck)thisMallard, args);
     
-    printf("\tInitializing new mallard duck with name: %s\n", duckGetName(&thisMallard->parentDuck));
+    printf("\tInitializing mallard duck with name: %s\n", duckGetName(&thisMallard->parentDuck));
 
     thisMallard->myColor = va_arg(*args, featherColor);
 }
 
 static void *
-mallardCreate_dynamic( va_list * args )
+mallardCreate_dynamic( Duck_Interface thisDuckInterface, va_list * args )
 {
     Mallard newMallard = (Mallard)calloc(1, sizeof(Mallard_t));
     // TODO: Check for null pointer on malloc failure
+
+    *(Duck_Interface *)newMallard = thisDuckInterface;
 
     mallardInit(newMallard, args);
 
@@ -77,7 +80,7 @@ mallardCreate_dynamic( va_list * args )
 }
 
 static void *
-mallardCreate_static( va_list * args )
+mallardCreate_static( Duck_Interface thisDuckInterface, va_list * args )
 {
     Mallard newMallard = NULL;
 
@@ -87,6 +90,7 @@ mallardCreate_static( va_list * args )
         {
             mallardMemoryPool[i].used = true;
             newMallard = &mallardMemoryPool[i].thisMallard;
+            *(Duck_Interface *)newMallard = thisDuckInterface;
             mallardInit(newMallard, args);
             break;
         }
@@ -110,6 +114,9 @@ mallardGetParent_static( void )
 void
 mallardSetFeatherColor( void * thisMallard, featherColor color )
 {
+    ASSERT(thisMallard);
+    ASSERT(objIsMallard(thisMallard));
+
     Mallard _thisMallard = (Mallard)thisMallard;
     _thisMallard->myColor = color;
 }
@@ -117,6 +124,9 @@ mallardSetFeatherColor( void * thisMallard, featherColor color )
 featherColor
 mallardGetFeatherColor( void * thisMallard )
 {
+    ASSERT(thisMallard);
+    ASSERT(objIsMallard(thisMallard));
+    
     Mallard _thisMallard = (Mallard)thisMallard;
     return _thisMallard->myColor;
 }
@@ -124,6 +134,9 @@ mallardGetFeatherColor( void * thisMallard )
 const char *
 mallardGetFeatherColorName( void * thisMallard )
 {
+    ASSERT(thisMallard);
+    ASSERT(objIsMallard(thisMallard));
+    
     Mallard _thisMallard = (Mallard)thisMallard;
     return colorNames[_thisMallard->myColor];
 }

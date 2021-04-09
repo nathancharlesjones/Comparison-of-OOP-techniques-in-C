@@ -8,7 +8,7 @@ If you're thinking, "Sweet! All we need to do is change all of our 'Duck', 'Mall
 
 We'll start by building off of the interface variables from Project 3c (e.g. `duckFromHeapMem`, `mallardFromStaticMem`, etc). Those variables pointed to the exact interfaces (i.e. list of functions) that defined each type of object and was used by the `duckCreate()` function in order to create and initialize the desired object (a.k.a. the Factory pattern). Testing to see if an object's vtable points to a specific interface is sufficient to tell if an object is of that type. For example, every `Mallard` object has, as it's first data element, a pointer to either `mallardFromHeapMem` or `mallardFromStaticMem`. So if our input argument, which is of type `void *`, _also_ happens to have, as it's first data element, a pointer to either `mallardFromHeapMem` or `mallardFromStaticMem`, then we can be reasonably confident that this object of type `void *` is actually of type `Mallard`.
 
-You can see this added to our project in the form of a helper function, `objIsDuck()` (also, `objIsMallard()` and `objIsRedMallard()`, one for each class). Every `Duck` function first asserts that the input argument is a `Duck` by testing if it points to a `Duck` interface.
+You can see this added to our project in the form of a helper function, `objIsDuck()` (also, `objIsMallard()` and `objIsRedMallard()`, one for each class). Every `Duck` function first asserts that the input argument is a `Duck` by testing if it points to a `Duck` interface. `objIsDuck()` checks if our `void *` object happens to have a pointer to either `duckFromHeapMem` or `duckFromStaticMem`, which would make it a `Duck` object (and it also checks if the object in question is derived from the `Duck` class; more on that later).
 
 ```
 // source/duck.c
@@ -17,6 +17,8 @@ objIsDuck( void * thisDuck )
 {
     bool ret = false;
     ...
+    void const * thisType = *(Duck_Interface *)thisDuck;
+
     if( ( thisType == duckFromHeapMem ) || ( thisType == duckFromStaticMem ) || parentIsDuck(thisType) ) ret = true;
 
     return ret;
@@ -24,14 +26,6 @@ objIsDuck( void * thisDuck )
 
 void
 duckSetName( void * thisDuck, char * name )
-{
-    ...
-    ASSERT(objIsDuck(thisDuck));
-    ...
-}
-
-char *
-duckGetName( void * thisDuck )
 {
     ...
     ASSERT(objIsDuck(thisDuck));
@@ -46,18 +40,10 @@ duckQuack( void * thisDuck )
     ...
 }
 
-void
-duckShow( void * thisDuck )
-{
-    ...
-    ASSERT(objIsDuck(thisDuck));
-    ...
-}
+...etc
 ```
 
-We can't forget, though, that we want derived objects to also pass the "is duck" test. They don't point to a `Duck` interface, so we'll need to figure out a way for them to hold information about the fact that they're derived froms the `Duck` class. After a bit of trial and error, I decided on adding a function to each interface called `getParentInterface()`, which returns the interface of the base class from which the current class is derived. For example, all objects of type `Mallard` are derived from `Duck`, so the `getParentInterface()` for a `Mallard` would return a `Duck` interface. (If an object sits at the top of the heirarchy, like `Duck`, then it's `getParentInterface()` function returns `NULL`.) That's why the `objIsDuck()` function above checks not only that the object itself is a `Duck` but also calls `parentIsDuck()` to see if this object is at all derived from the `Duck` class.
-
-The `parentisDuck()` function just wraps another fuction called `typeIsDuck()`, which repeatedly calls the `getParentInterface()` function on an object until the result is either `NULL` (meaning we've reached the top of our hierarchy of classes) or a `Duck` interface.
+So what happens if the object is of type `Mallard`? We want derived objects to also pass the "is duck" test. They don't point to a `Duck` interface, though, so we'll need to figure out a way for them to hold information about the fact that they're derived froms the `Duck` class. After a bit of trial and error, I decided on adding a function to the Duck interface called `getParentInterface()`, which returns the interface of the base class from which the current class is derived. Objects of type `redMallard` return a pointer to one of the `Mallard` interfaces, `Mallard` objects return a pointer to one of the `Duck` interfaces, and `Duck` objects return `NULL` (since they sit at the top of the class hierarchy and have no base class). Thus, we can traverse an object's entire chain of parent classes by repeatedly calling the `getParentInterface()` on each new interface. In this manner, we can say that an object is of type `Duck` if either IT points to a `Duck` interface OR if it's parent interface points to a `Duck` interface (or the parent's parent interface is a `Duck`, or the parent's parent's parent interface is a `Duck`, or... ). 
 
 ```
 bool
@@ -67,7 +53,7 @@ typeIsDuck( void * thisType )
 
     while( thisType && thisType != duckFromHeapMem && thisType != duckFromStaticMem )
     {
-        thisType = ((BaseClass_Interface)thisType)->getParentInterface();
+        thisType = ((Duck_Interface)thisType)->getParentInterface();
     }
 
     if( ( thisType == duckFromHeapMem ) || ( thisType == duckFromStaticMem ) ) ret = true;
@@ -80,6 +66,66 @@ parentIsDuck( void * thisType )
 {
     return typeIsDuck(thisType);
 }
+```
+
+Let's pause and inspect what this all looks like in memory. An object of type `Duck` looks like this:
+
+```
++--------+------------------+                    +------------+---------------------+             +------+
+|        |     vtable       |  +-------------->  |            | *getParentInterface | +---------> | NULL |
+|        +--------+---------+  vtable points to  |            +---------------------+ Fcn returns +------+
+|        |        | name[0] |  a Duck_Interface_ | Duck_      | *create             | NULL
+|        |        +---------+  Struct object     | Interface_ +---------------------+
+|        |        | name[1] |                    | Struct obj | *destroy            |
+|        |        +---------+                    |            +---------------------+
+|        |        | name[2] |                    |            | *show               |
+|        |        +---------+                    +------------+---------------------+
+|        |        | name[3] |
+|        |        +---------+
+| Duck_t | name[] | name[4] |
+| obj    |        +---------+
+|        |        | name[5] |
+|        |        +---------+
+|        |        | name[6] |
+|        |        +---------+
+|        |        | name[7] |
+|        |        +---------+
+|        |        | name[8] |
+|        |        +---------+
+|        |        | name[9] |
++--------+--------+---------+
+```
+
+An object of type `Mallard` might looks like this:
+
+```
+                                                                                   Fcn returns pointer to Duck interface
+                                                                                  +-------------------------------------v
++-----------+--------+------------------+                    +------------+----------------------------------+   +------------+---------------------+             +------+
+|           |        |     vtable       |  +-------------->  |            | *getParentInterface |            |   |            | *getParentInterface | +---------> | NULL |
+|           |        +--------+---------+  vtable points to  |            +---------------------+            |   |            +---------------------+ Fcn returns +------+
+|           |        |        | name[0] |  a Duck_Interface_ | Duck_      | *create             | Mallard_   |   | Duck_      | *create             | NULL
+|           |        |        +---------+  Struct object     | Interface_ +---------------------+ Interface_ |   | Interface_ +---------------------+
+|           |        |        | name[1] |                    | Struct obj | *destroy            | Struct obj |   | Struct obj | *destroy            |
+|           |        |        +---------+                    |            +---------------------+            |   |            +---------------------+
+|           |        |        | name[2] |                    |            | *show               |            |   |            | *show               |
+|           |        |        +---------+                    +------------+---------------------+            |   +------------+---------------------+
+|           |        |        | name[3] |                    |              *migrate            |            |
+|           |        |        +---------+                    +----------------------------------+------------+
+| Mallard_t | Duck_t | name[] | name[4] |
+| obj       | obj    |        +---------+
+|           |        |        | name[5] |
+|           |        |        +---------+
+|           |        |        | name[6] |
+|           |        |        +---------+
+|           |        |        | name[7] |
+|           |        |        +---------+
+|           |        |        | name[8] |
+|           |        |        +---------+
+|           |        |        | name[9] |
+|           +--------+--------+---------+
+|           |       featherColor        |
++-----------+---------------------------+
 ```
 
 - BaseClass and getParentInterface

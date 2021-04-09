@@ -58,14 +58,16 @@ redMallardInit( redMallard thisRedMallard, va_list * args )
 
     mallardInit((Mallard)thisRedMallard, args);
     
-    printf("\tInitializing new red-breasted mallard with name: %s\n", duckGetName(&thisRedMallard->parentMallard.parentDuck));
+    printf("\tInitializing red-breasted mallard with name: %s\n", duckGetName(&thisRedMallard->parentMallard.parentDuck));
 }
 
 static void *
-redMallardCreate_dynamic( va_list * args )
+redMallardCreate_dynamic( Duck_Interface thisDuckInterface, va_list * args )
 {
     redMallard newRedMallard = (redMallard)calloc(1, sizeof(redMallard_t));
     // TODO: Check for null pointer on malloc failure
+
+    *(Duck_Interface *)newRedMallard = thisDuckInterface;
 
     redMallardInit(newRedMallard, args);
 
@@ -73,7 +75,7 @@ redMallardCreate_dynamic( va_list * args )
 }
 
 static void *
-redMallardCreate_static( va_list * args )
+redMallardCreate_static( Duck_Interface thisDuckInterface, va_list * args )
 {
     redMallard newRedMallard = NULL;
 
@@ -83,6 +85,7 @@ redMallardCreate_static( va_list * args )
         {
             redMallardMemoryPool[i].used = true;
             newRedMallard = &redMallardMemoryPool[i].thisRedMallard;
+            *(Duck_Interface *)newRedMallard = thisDuckInterface;
             redMallardInit(newRedMallard, args);
             break;
         }

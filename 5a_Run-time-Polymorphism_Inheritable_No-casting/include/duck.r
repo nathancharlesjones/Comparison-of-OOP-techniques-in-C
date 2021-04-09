@@ -18,7 +18,7 @@ typedef struct Duck_t
 typedef struct Duck_Interface_Struct
 {
     void * (*getParentInterface)( void );
-    void * (*create)( va_list * args );
+    void * (*create)( Duck_Interface newDuckType, va_list * args );
     void (*destroy)( void * self );
     void (*show)( Duck thisDuck );
 } Duck_Interface_Struct;

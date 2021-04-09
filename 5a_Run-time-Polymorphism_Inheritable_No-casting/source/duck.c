@@ -20,12 +20,12 @@ typeIsDuck( void const * thisType )
 {
     bool ret = false;
 
-    printf("Inside typeIsDuck\n");
-    printf("thisType: %p\tduckFromHeapMem: %p\tduckFromStaticMem: %p\n", thisType, duckFromHeapMem, duckFromStaticMem);
+    //printf("Inside typeIsDuck\n");
+    //printf("thisType: %p\tduckFromHeapMem: %p\tduckFromStaticMem: %p\n", thisType, duckFromHeapMem, duckFromStaticMem);
     while( thisType && thisType != duckFromHeapMem && thisType != duckFromStaticMem )
     {
         thisType = ((Duck_Interface)thisType)->getParentInterface();
-        printf("thisType: %p\n", thisType);
+        //printf("thisType: %p\n", thisType);
     }
 
     if( ( thisType == duckFromHeapMem ) || ( thisType == duckFromStaticMem ) ) ret = true;
@@ -66,7 +66,7 @@ duckCreate( void * newDuckType, ... )
     
     if( newInterface && newInterface->create )
     {
-        newDuck = newInterface->create(&args);
+        newDuck = newInterface->create(newInterface, &args);
     }
     
     if( newDuck )
@@ -80,10 +80,12 @@ duckCreate( void * newDuckType, ... )
 }
 
 static void *
-duckCreate_dynamic( va_list * args )
+duckCreate_dynamic( Duck_Interface thisDuckInterface, va_list * args )
 {
     Duck newDuck = (Duck)calloc(1, sizeof(Duck_t));
     // TODO: Check for null pointer on malloc failure
+
+    newDuck->vtable = thisDuckInterface;
 
     duckInit(newDuck,args);
 
@@ -91,7 +93,7 @@ duckCreate_dynamic( va_list * args )
 }
 
 static void *
-duckCreate_static( va_list * args )
+duckCreate_static( Duck_Interface thisDuckInterface, va_list * args )
 {
     Duck newDuck = NULL;
 
@@ -101,6 +103,7 @@ duckCreate_static( va_list * args )
         {
             duckMemoryPool[i].used = true;
             newDuck = &duckMemoryPool[i].thisDuck;
+            newDuck->vtable = thisDuckInterface;
             duckInit(newDuck, args);
             break;
         }
@@ -113,6 +116,7 @@ void
 duckInit( Duck thisDuck, va_list * args )
 {
     ASSERT(thisDuck);
+    ASSERT(objIsDuck(thisDuck));
 
     char * name = va_arg(*args, char *);
     
