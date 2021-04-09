@@ -71,15 +71,15 @@ parentIsDuck( void * thisType )
 Let's pause and inspect what this all looks like in memory. An object of type `Duck` looks like this:
 
 ```
-+--------+------------------+                    +------------+---------------------+             +------+
-|        |     vtable       |  +-------------->  |            | *getParentInterface | +---------> | NULL |
-|        +--------+---------+  vtable points to  |            +---------------------+ Fcn returns +------+
-|        |        | name[0] |  a Duck_Interface_ | Duck_      | *create             | NULL
-|        |        +---------+  Struct object     | Interface_ +---------------------+
-|        |        | name[1] |                    | Struct obj | *destroy            |
-|        |        +---------+                    |            +---------------------+
-|        |        | name[2] |                    |            | *show               |
-|        |        +---------+                    +------------+---------------------+
++--------+------------------+                    +----------------------+---------------------+             +------+
+|        |     vtable       |  +-------------->  |                      | *getParentInterface | +---------> | NULL |
+|        +--------+---------+  vtable points to  |                      +---------------------+ Fcn returns +------+
+|        |        | name[0] |  a Duck_Interface_ | Duck_Interface_      | *create             | NULL
+|        |        +---------+  Struct object     | Struct object        +---------------------+
+|        |        | name[1] |                    |                      | *destroy            |
+|        |        +---------+                    | e.g. duckFromHeapMem +---------------------+
+|        |        | name[2] |                    |                      | *show               |
+|        |        +---------+                    +----------------------+---------------------+
 |        |        | name[3] |
 |        |        +---------+
 | Duck_t | name[] | name[4] |
@@ -96,22 +96,22 @@ Let's pause and inspect what this all looks like in memory. An object of type `D
 +--------+--------+---------+
 ```
 
-An object of type `Mallard` might looks like this:
+An object of type `Mallard` looks like this:
 
 ```
                                                                                    Fcn returns pointer to Duck interface
-                                                                                  +-------------------------------------v
-+-----------+--------+------------------+                    +------------+----------------------------------+   +------------+---------------------+             +------+
-|           |        |     vtable       |  +-------------->  |            | *getParentInterface |            |   |            | *getParentInterface | +---------> | NULL |
-|           |        +--------+---------+  vtable points to  |            +---------------------+            |   |            +---------------------+ Fcn returns +------+
-|           |        |        | name[0] |  a Duck_Interface_ | Duck_      | *create             | Mallard_   |   | Duck_      | *create             | NULL
-|           |        |        +---------+  Struct object     | Interface_ +---------------------+ Interface_ |   | Interface_ +---------------------+
-|           |        |        | name[1] |                    | Struct obj | *destroy            | Struct obj |   | Struct obj | *destroy            |
-|           |        |        +---------+                    |            +---------------------+            |   |            +---------------------+
-|           |        |        | name[2] |                    |            | *show               |            |   |            | *show               |
-|           |        |        +---------+                    +------------+---------------------+            |   +------------+---------------------+
-|           |        |        | name[3] |                    |              *migrate            |            |
-|           |        |        +---------+                    +----------------------------------+------------+
+                                                                                  +----------------------------------------------------v
++-----------+--------+------------------+                    +------------+-------------------------------------------------+   +----------------------+---------------------+             +------+
+|           |        |     vtable       |  +-------------->  |            | *getParentInterface |                           |   |                      | *getParentInterface | +---------> | NULL |
+|           |        +--------+---------+  vtable points to  | Duck_      +---------------------+                           |   |                      +---------------------+ Fcn returns +------+
+|           |        |        | name[0] |  a Duck_Interface_ | Interface_ | *create             |                           |   | Duck_Interface_      | *create             | NULL
+|           |        |        +---------+  Struct object     | Struct obj +---------------------+ Mallard_Interface_Struct  |   | Struct object        +---------------------+
+|           |        |        | name[1] |                    |            | *destroy            | object                    |   |                      | *destroy            |
+|           |        |        +---------+                    |            +---------------------+                           |   | e.g. duckFromHeapMem +---------------------+
+|           |        |        | name[2] |                    |            | *show               | e.g. mallardFromStaticMem |   |                      | *show               |
+|           |        |        +---------+                    +------------+---------------------+                           |   +----------------------+---------------------+
+|           |        |        | name[3] |                    |              *migrate            |                           |
+|           |        |        +---------+                    +----------------------------------+---------------------------+
 | Mallard_t | Duck_t | name[] | name[4] |
 | obj       | obj    |        +---------+
 |           |        |        | name[5] |
@@ -128,10 +128,11 @@ An object of type `Mallard` might looks like this:
 +-----------+---------------------------+
 ```
 
-- BaseClass and getParentInterface
-- objIsDuck / parentIsDuck / typeIsDuck
-- change all public objects to void *
-- Add "init"/"deinit" function declarations to private header file
+In this manner, the objects of all derived classes point the way up through their individual class hierarchy.
+
+**IT'S REALLY IMPORTANT TO NOTE** that although we've implemented a basic form of type-checking at this point, our framework still isn't completely safe from garbage arguments causing it to run off the rails. In following the chain of `getParentInterfaces()`, we're still assuming that the `void *` object being passed to a function actually implements the `getParentInterface()` function. In essence, if we call a `Duck` method on something that is not an object of any type (e.g. a pointer to an integer), it will fail the test of whether it points to a pointer to a `Duck` interface (`if( ( thisType == duckFromHeapMem ) || ( thisType == duckFromStaticMem )...`) and then our framework will **assume** that the first memory value of the interface is a function pointer (to a function that _should_ return the memory address of the parent interface) and then **jump to that location and start executing code**. This is a huge flaw, mitigated only by the thought that calling a class function on something that isn't an object (of that or any other class) shouldn't ever really happen.
+
+The last change to note is that each classes' `init()` and `deinit()` have been put back in their private header files. It's possible to put them in the base class interface, but referencing them from their was a bit convoluted and also unnecessary. Since each class already knows which `init()`/`deinit()` functions to call, there isn't really a need to put them into the interface.
 
 ## How do I run it?
 
