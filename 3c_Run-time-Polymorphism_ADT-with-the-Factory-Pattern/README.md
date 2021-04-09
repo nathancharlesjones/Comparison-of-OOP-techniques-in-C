@@ -1,8 +1,8 @@
-# Run-time Polymorphism (ADT), Complete Interface
+# Run-time Polymorphism (ADT with Factory Pattern)
 
 ## Description
 
-Our first attempt at run-time polymorphism (Projects [3a](https://github.com/nathancharlesjones/Comparison-of-OOP-techniques-in-C/tree/main/3a_Run-time-Polymorphism_ADT)/[3b](https://github.com/nathancharlesjones/Comparison-of-OOP-techniques-in-C/tree/main/3b_ADT-example-with-the-Template-Method-Pattern)) succeeded in allowing for a consistent interface once an object has been created. We could call `duckQuack()`, `duckShow()`, and `duckDestroy()` on any object that implemented the `Duck` base class, but _only after the object had already been created_ and we required a unique `Create()` function for each type of object we wanted to interact with in our code (`duckCreate_dynamic()`, `duckCreate_static()`, `mallardCreate_dynamic()`, and `mallardCreate_static()`). In some cases it might be useful to have a single `Create()` function which we can overload depending on the object we're trying to create (similar to the "vtable" in the base class that allows for derived classes to override the base class implementation of other functions). A function could then create an object which was defined on the command line or in an argument to the function and fully operate on that object without needing to know it's exact implementation. Accomplishing this involves a few modifications to our existing code.
+Our first attempt at run-time polymorphism (Projects [3a](https://github.com/nathancharlesjones/Comparison-of-OOP-techniques-in-C/tree/main/3a_Run-time-Polymorphism_ADT)/[3b](https://github.com/nathancharlesjones/Comparison-of-OOP-techniques-in-C/tree/main/3b_ADT-example-with-the-Template-Method-Pattern)) succeeded in allowing for a consistent interface once an object has been created. We could call `duckQuack()`, `duckShow()`, and `duckDestroy()` on any object that implemented the `Duck` base class, but _only after the object had already been created_ and we required a unique `Create()` function for each type of object we wanted to interact with in our code (`duckCreate_dynamic()`, `duckCreate_static()`, `mallardCreate_dynamic()`, and `mallardCreate_static()`). In some cases it might be useful to have a single `Create()` function which we can overload depending on the object we're trying to create (similar to the "vtable" in the base class that allows for derived classes to override the base class implementation of other functions). This is also known as the "Factory" design pattern: we create a class (`Duck`) that doesn't create concrete objects, but defers object creation to a derived class. A function could then create an object which was defined on the command line or in an argument to the function and fully operate on that object without needing to know it's exact implementation. Accomplishing this involves a few modifications to our existing code.
 
 First, consider that we want to take the four create functions listed above and condense them into a single overarching create function, like below. It will have to take some kind of input argument to inform it which object it needs to create.
 
@@ -76,7 +76,7 @@ We don't actually need any of these variable arguments in this function, but we 
 newDuck->vtable->init(newDuck, &args); // Line 39
 ```
 
-To accept this argument, the derived class's `init()` function needs to be defined to take an input of `va_list`.
+To accept this argument, the derived class's `init()` function needs to be defined to take an input of `va_list *`.
 
 ```
 // source/mallard.c
@@ -90,7 +90,7 @@ To pull out these arguments, we use the `va_arg()` macro, which takes in a `va_l
 thisMallard->myColor = va_arg(*args, featherColor); // Line 58
 ```
 
-And with that, our solution is complete! Our `main` function can now call a single create function, `duckCreate()`, with parameters that entirely define what type of object to create. It's interaction with this object is entirely through the interface, allowing it to operate exactly the same on different objects of different types (provided they all have a base class of `Duck`). Additionally, we can use the same calling code for any new type of derived class we come up with without changing the calling code, provided the new class inherits from `Duck` and implements at least the `create()` and `destroy()` functions.
+And with that, our solution with the Factory pattern is complete! Our `main` function can now call a single create function, `duckCreate()`, with parameters that entirely define what type of object to create. It's interaction with this object is entirely through the interface, allowing it to operate exactly the same on different objects of different types (provided they all have a base class of `Duck`). Additionally, we can use the same calling code for any new type of derived class we come up with without changing the calling code, provided the new class inherits from `Duck` and implements at least the `create()` and `destroy()` functions.
 
 To demonstrate the utility of this, I've rewritten our typical `main` function so that it accepts a few command line arguments that allow the user to define what type of object they want created. See [How do I run it?](https://github.com/nathancharlesjones/Comparison-of-OOP-techniques-in-C/tree/main/3c_Run-time-Polymorphism_ADT_Complete-interface#how-do-i-run-it) for an explanation.
 

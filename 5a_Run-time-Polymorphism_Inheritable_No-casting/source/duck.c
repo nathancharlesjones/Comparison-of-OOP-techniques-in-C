@@ -127,6 +127,8 @@ duckGetParent( void )
 void
 duckSetName( void * thisDuck, char * name )
 {
+    ASSERT(thisDuck);
+    ASSERT(objIsDuck(thisDuck));
     Duck _thisDuck = (Duck)thisDuck;
     strncpy(_thisDuck->name, name, MAX_CHARS_NAME);
 }
@@ -134,6 +136,8 @@ duckSetName( void * thisDuck, char * name )
 char *
 duckGetName( void * thisDuck )
 {
+    ASSERT(thisDuck);
+    ASSERT(objIsDuck(thisDuck));
     Duck _thisDuck = (Duck)thisDuck;
     return _thisDuck->name;
 }

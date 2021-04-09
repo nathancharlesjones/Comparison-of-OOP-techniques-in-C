@@ -6,12 +6,80 @@ Project 4 provided a solution to achieve full inheritance at the cost of having 
 
 If you're thinking, "Sweet! All we need to do is change all of our 'Duck', 'Mallard', and 'redMallard' objects to 'void *' and we're done!", you'd be right! Sort of. Making [that change _does_ work](https://github.com/nathancharlesjones/Comparison-of-OOP-techniques-in-C/tree/main/Experiments/Run-time-Polymorphism_Inheritable_No-type-checking), but at the cost of completely circumventing the built-in type-checking that the C compiler was doing in the first place to prevent us from being able to use our polymorphic functions without explicit casts. This has serious implications for, at least, program stability, if not also safety or security: if we change our functions to, quite literally, accept any argument and then modify memory values at that location or treat the values as function pointers (since our objects _do_ have a vtable with a list of function pointers that we are executing), then any mistake in calling a function with a different object or a pointer to something else entirely could result in a system-halting error (at best) or an error that creates a security vulnerability or safety hazard (at worst). I think, if we're to make this change, we need to add in our own type-checking in some form or fashion. This project does just that.
 
-We'll start by building off of the interface variables from Project 3c (e.g. `duckFromHeapMem`, `mallardFromStaticMem`, etc). Those variables pointed to the exact interfaces (i.e. list of functions) that defined each type of object and was used by the single "Create" function in order to create and initialize the desired object. Testing to see if an object's vtable points to a specific interface is sufficient to tell if an object is of that type. For example, every `Mallard` object has, as it's first data element, a pointer to either `mallardFromHeapMem` or `mallardFromStaticMem`. So if our input argument, which is of type `void *`, _also_ happens to have, as it's first data element, a pointer to either `mallardFromHeapMem` or `mallardFromStaticMem`, then we can be reasonably confident that this object of type `void *` is actually of type `Mallard`.
+We'll start by building off of the interface variables from Project 3c (e.g. `duckFromHeapMem`, `mallardFromStaticMem`, etc). Those variables pointed to the exact interfaces (i.e. list of functions) that defined each type of object and was used by the `duckCreate()` function in order to create and initialize the desired object (a.k.a. the Factory pattern). Testing to see if an object's vtable points to a specific interface is sufficient to tell if an object is of that type. For example, every `Mallard` object has, as it's first data element, a pointer to either `mallardFromHeapMem` or `mallardFromStaticMem`. So if our input argument, which is of type `void *`, _also_ happens to have, as it's first data element, a pointer to either `mallardFromHeapMem` or `mallardFromStaticMem`, then we can be reasonably confident that this object of type `void *` is actually of type `Mallard`.
 
-You can see this added to our project in the form of a helper function, `objIsDuck()`, which is used with an `ASSERT` macro. Every `Duck` function first asserts that the input argument is a `Duck` by testing if it points to a `Duck` interface.
+You can see this added to our project in the form of a helper function, `objIsDuck()` (also, `objIsMallard()` and `objIsRedMallard()`, one for each class). Every `Duck` function first asserts that the input argument is a `Duck` by testing if it points to a `Duck` interface.
 
 ```
+// source/duck.c
+bool
+objIsDuck( void * thisDuck )
+{
+    bool ret = false;
+    ...
+    if( ( thisType == duckFromHeapMem ) || ( thisType == duckFromStaticMem ) || parentIsDuck(thisType) ) ret = true;
 
+    return ret;
+}
+
+void
+duckSetName( void * thisDuck, char * name )
+{
+    ...
+    ASSERT(objIsDuck(thisDuck));
+    ...
+}
+
+char *
+duckGetName( void * thisDuck )
+{
+    ...
+    ASSERT(objIsDuck(thisDuck));
+    ...
+}
+
+void
+duckQuack( void * thisDuck )
+{
+    ...
+    ASSERT(objIsDuck(thisDuck));
+    ...
+}
+
+void
+duckShow( void * thisDuck )
+{
+    ...
+    ASSERT(objIsDuck(thisDuck));
+    ...
+}
+```
+
+We can't forget, though, that we want derived objects to also pass the "is duck" test. They don't point to a `Duck` interface, so we'll need to figure out a way for them to hold information about the fact that they're derived froms the `Duck` class. After a bit of trial and error, I decided on adding a function to each interface called `getParentInterface()`, which returns the interface of the base class from which the current class is derived. For example, all objects of type `Mallard` are derived from `Duck`, so the `getParentInterface()` for a `Mallard` would return a `Duck` interface. (If an object sits at the top of the heirarchy, like `Duck`, then it's `getParentInterface()` function returns `NULL`.) That's why the `objIsDuck()` function above checks not only that the object itself is a `Duck` but also calls `parentIsDuck()` to see if this object is at all derived from the `Duck` class.
+
+The `parentisDuck()` function just wraps another fuction called `typeIsDuck()`, which repeatedly calls the `getParentInterface()` function on an object until the result is either `NULL` (meaning we've reached the top of our hierarchy of classes) or a `Duck` interface.
+
+```
+bool
+typeIsDuck( void * thisType )
+{
+    bool ret = false;
+
+    while( thisType && thisType != duckFromHeapMem && thisType != duckFromStaticMem )
+    {
+        thisType = ((BaseClass_Interface)thisType)->getParentInterface();
+    }
+
+    if( ( thisType == duckFromHeapMem ) || ( thisType == duckFromStaticMem ) ) ret = true;
+
+    return ret;
+}
+
+bool
+parentIsDuck( void * thisType )
+{
+    return typeIsDuck(thisType);
+}
 ```
 
 - BaseClass and getParentInterface
