@@ -2,6 +2,8 @@
 
 A collection of ways to use OOP techniques in C, organized from least to most complicated. Each folder demonstrates and briefly describes a different technique which (mostly) build upon one another.
 
+The complexity skyrockets after Project 3c, so that's probably the last one I would consider using in any of my projects (if I have to debug something, I want it to be the thing I'm trying to build, not the framework I'm relying on to work). This limits any OOP-style programming to just abstract data types (as opposed to a full inheritance structure), but so far I haven't found a strong need for the latter.
+
 ## References
 
 - "OOP in C" by Miro Samek
