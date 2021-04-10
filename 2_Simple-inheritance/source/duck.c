@@ -51,7 +51,7 @@ duckInit( Duck thisDuck, char * name )
 void
 duckSetName( Duck thisDuck, char * name )
 {
-    strcpy(thisDuck->name, name, MAX_CHARS_NAME);
+    strncpy(thisDuck->name, name, MAX_CHARS_NAME);
 }
 
 char *

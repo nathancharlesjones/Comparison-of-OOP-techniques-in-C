@@ -53,11 +53,11 @@ CaffeinatedBeverage newTea_static( char * name ) {
     return (CaffeinatedBeverage)newTea;
 }
 
-static void Tea_brew(CaffeinatedBeverage super) {
+static void Tea_brew(CaffeinatedBeverage super __attribute__((unused))) {
     printf("\tSteeping the tea.\n\r");
 }
 
-static void Tea_addCondiments(CaffeinatedBeverage super) {
+static void Tea_addCondiments(CaffeinatedBeverage super __attribute__((unused))) {
     printf("\tAdding lemon.\n\r");
 }
 

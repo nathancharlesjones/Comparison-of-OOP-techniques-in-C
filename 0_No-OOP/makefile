@@ -1,70 +1,89 @@
-# Source files common to all targets.
-SRC_FILES := \
-	source/main.c \
-	source/duck.c
+# Project-specific variables
+app_src_dir := \
+    source
+inc_dir := \
+    include
+CFLAGS := -Wall -Wextra
 
-# Generate a list of .o files from the .c files. Prefix them with the build
-# folder to output the files there. These variables are recursive because
-# the variable BUILD_FOLDER isn't assigned until later in the Makefile.
-SRC_OBJ_FILES = $(addprefix $(BUILD_FOLDER)/,$(SRC_FILES:.c=.o))
+# External variables
+TARGET ?= $(lastword $(subst /,$(space),$(shell pwd)))
+BUILD_DIR = build
 
-# List of include dirs. These are put into CFLAGS.
-INCLUDE_DIRS := \
-    include/
+# Functions / "Constant" variables
+getfiles = $(foreach DIR,$(1),$(wildcard $(DIR)/*$(2)))
+comma:= ,
+empty:=
+space:= $(empty) $(empty)
 
-# Set the default compiler
-CC := gcc
+# vpaths
+vpath %.c $(app_src_dir) $(lib_src_dir)
 
-# The CFLAGS variable below is recursively expanded since the variable
-# COMMON_FLAGS isn't defined until later in the Makefile.
-CFLAGS = \
-	$(COMMON_FLAGS)
+# Source files
+app_src_list := $(call getfiles,$(app_src_dir),.c)
 
-# Prefix the include dirs with '-I' when passing them to the compiler
-CFLAGS += $(addprefix -I,$(INCLUDE_DIRS))
+# Object files
+app_obj_list := $(addprefix $(BUILD_DIR)/,$(notdir $(app_src_list:.c=.o) ) )
 
-# Compiler/assembler flags common to all builds and targets. COMMON_FLAGS is recursively
-# expanded because it includes the variable for the first prerequisite ($<); the variable
-# __FILENAME__ is defined here in order for it to be used by an implementation of assert.
-COMMON_FLAGS = \
-	-std=c11 \
-    -Wall \
-    -ffunction-sections \
-    -fdata-sections
+# Include list
+inc := $(addprefix -I,$(inc_dir))
 
-BUILD_FOLDER := build
+# Dependecy lists
+DEPFLAGS = -MT $@ -MMD -MP -MF $(BUILD_DIR)/$*.d
+app_dep_list := $(app_obj_list:.o=.d)
 
-# Generate the build tree (list of folders for all output files) based on
-# the directory information from the list of objects. "sort" is used to
-# remove duplicate files from the resulting list, not necessarily because
-# the list needs to be sorted.
-BUILD_TREE := $(sort $(dir $(SRC_OBJ_FILES)) $(dir $(ASM_OBJ_FILES)))
+# Library files
+vpath %.d $(BUILD_DIR)
 
-mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
-current_dir := $(notdir $(patsubst %/,%,$(dir $(mkfile_path))))
+# Verbosity
+VERBOSE ?= 1
+ifeq ($(VERBOSE),0)
+Q = @
+else
+Q = 
+endif
 
-# Default all rule will build the target, which here is an executable
-all: $(BUILD_FOLDER)/$(current_dir).out
-	$(BUILD_FOLDER)/$(current_dir).out
+.PHONY: all
+all: $(BUILD_DIR)/$(TARGET).out
 
-# The rule for building the target executable.
-$(BUILD_FOLDER)/$(current_dir).out: $(SRC_OBJ_FILES) | $(BUILD_TREE)
-	@echo Linking $(notdir $@)
-	$(GCC_PREFIX)$(CC) $(LDFLAGS) $^ $(LDLIB_DIRS) $(LDLIBS) -o $@
-	$(GCC_PREFIX)size $@
-
-# The rule for compiling the SRC_FILES into OBJ_FILES
-$(BUILD_FOLDER)/%.o: %.c | $(BUILD_TREE)
-	@echo Compiling $(notdir $<)
-	$(Q) $(GCC_PREFIX)$(CC) $(CFLAGS) -c $< -o $@
-
-# Create the directory structure into which all build artifacts will be placed.
-$(BUILD_TREE):
+$(BUILD_DIR)/$(TARGET).out: $(app_obj_list)
+	$(Q) $(CC) $(app_obj_list) $(inc) -o $@
+	./$@
+	
+$(BUILD_DIR)/%.o: %.c %.d | $(BUILD_DIR)
+	$(Q) $(CC) $(CFLAGS) $(DEPFLAGS) $(inc) -c $< -o $@
+	
+$(BUILD_DIR):
 	$(Q) mkdir -p $@
-
-# Since all our generated output is placed into the build folder, our clean rule
-# is simple. Prefix the recipe line with '-' to not error if the build folder
-# doesn't exist (the -f flag for rm also has this effect)
+	
+.PHONY: help
+help:
+	$(info Makefile template for a simple out-of-source build with flattened output (i.e. all output files are placed in a single build folder called TARGET).)
+	$(info - Run make or make all to build and run the executable.)
+	$(info - Run make clean to remove all object and dependecy files from each of the build folders.)
+	$(info - Run make purify to remove entire build folder.)
+	$(info - Command line options:)
+	$(info -- TARGET: String; Sets the name of the library, executable, and build folder. Default: folder name where this Makefile resides.)
+	$(info -- VERBOSE: [0,1]; Setting to 0 quiets the output of make. Default: 1.)
+	
+.PHONY: print
+print:
+	@echo TARGET $(TARGET)
+	@echo BUILD_DIR $(BUILD_DIR)
+	@echo app_src_dir $(app_src_dir)
+	@echo app_src_list $(app_src_list)
+	@echo app_obj_list $(app_obj_list)
+	@echo app_dep_list $(app_dep_list)
+	@echo inc $(inc)
+	
 .PHONY: clean
 clean:
-	$(Q) $(RM) -r $(BUILD_FOLDER)/
+	$(Q) $(RM) $(addsuffix *.o, $(shell ls -d build/*/) )
+	$(Q) $(RM) $(addsuffix *.d, $(shell ls -d build/*/) )
+	
+.PHONY: purify
+purify: 
+	$(Q) $(RM) -r build
+	
+$(app_dep_list):
+	
+include $(wildcard $(app_dep_list) )

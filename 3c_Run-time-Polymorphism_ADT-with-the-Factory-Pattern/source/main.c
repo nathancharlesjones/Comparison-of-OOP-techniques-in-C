@@ -28,7 +28,7 @@ main( int argc, char * argv[] )
 }
 
 Duck
-duckFromCliArgs( int argc, char * argv[] )
+duckFromCliArgs( int argc __attribute__((unused)), char * argv[] )
 {
     Duck newDuck = NULL;
 

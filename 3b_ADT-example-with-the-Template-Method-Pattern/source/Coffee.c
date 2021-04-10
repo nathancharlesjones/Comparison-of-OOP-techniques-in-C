@@ -52,15 +52,15 @@ CaffeinatedBeverage newCoffee_static( char * name ) {
     return (CaffeinatedBeverage)newCoffee;
 }
 
-static void Coffee_brew(CaffeinatedBeverage super) {
+static void Coffee_brew(CaffeinatedBeverage super __attribute__((unused))) {
     printf("\tDripping coffee through filter.\n\r");
 }
 
-static void Coffee_addCondiments(CaffeinatedBeverage super) {
+static void Coffee_addCondiments(CaffeinatedBeverage super __attribute__((unused))) {
     printf("\tAdding sugar and milk.\n\r");
 }
 
-static void Coffee_addWhip(CaffeinatedBeverage super) {
+static void Coffee_addWhip(CaffeinatedBeverage super __attribute__((unused))) {
     printf("\tAdding whip.\n\r");
 }
 

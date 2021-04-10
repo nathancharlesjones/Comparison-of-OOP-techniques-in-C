@@ -61,13 +61,13 @@ mallardInit( Mallard thisMallard, char * name, featherColor color )
 void
 mallardShow( Mallard thisMallard )
 {
-    printf("\tHi! I'm a mallard duck. My name is %s. I have %s feathers.\n", duckGetName(thisMallard->parentDuck), colorNames[thisMallard->myColor]);
+    printf("\tHi! I'm a mallard duck. My name is %s. I have %s feathers.\n", duckGetName(&thisMallard->parentDuck), colorNames[thisMallard->myColor]);
 }
 
 void
 mallardDeinit( Mallard thisMallard )
 {
-    printf("\tDeinitializing Mallard object with name: %s\n", duckGetName(thisMallard->parentDuck));
+    printf("\tDeinitializing Mallard object with name: %s\n", duckGetName(&thisMallard->parentDuck));
     
     thisMallard->myColor = 0;
     
