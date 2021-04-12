@@ -4,14 +4,6 @@ SERVO ?=
 # Project-specific variables
 app_src_dir := \
     source
-ifeq ($(SERVO),normal)
-app_src_dir += source/servoController
-else ifeq ($(SERVO),special)
-app_src_dir += source/servoController_special
-else
-$(error SERVO variable not defined. Options are normal or special.)
-endif
-
 inc_dir := \
     include
 CFLAGS := -Wall -Wextra
@@ -27,10 +19,19 @@ empty:=
 space:= $(empty) $(empty)
 
 # vpaths
-vpath %.c $(app_src_dir) $(lib_src_dir)
+vpath %.c $(app_src_dir)
 
 # Source files
-app_src_list := $(call getfiles,$(app_src_dir),.c)
+app_src_list := \
+	($app_src_dir)/main.c \
+	($app_src_dir)/robotArm.c
+ifeq ($(SERVO),normal)
+app_src_list += ($app_src_dir)/servoController.c
+else ifeq ($(SERVO),special)
+app_src_list += ($app_src_dir)/servoController_special.c
+else
+$(error SERVO variable not defined. Options are normal or special.)
+endif
 
 # Object files
 app_obj_list := $(addprefix $(BUILD_DIR)/,$(notdir $(app_src_list:.c=.o) ) )

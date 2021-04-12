@@ -16,7 +16,7 @@ empty:=
 space:= $(empty) $(empty)
 
 # vpaths
-vpath %.c $(app_src_dir) $(lib_src_dir)
+vpath %.c $(app_src_dir)
 
 # Source files
 app_src_list := $(call getfiles,$(app_src_dir),.c)

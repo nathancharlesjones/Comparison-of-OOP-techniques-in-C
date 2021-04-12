@@ -175,3 +175,5 @@ main( void )
             - [X10LightDriver.h](https://github.com/jwgrenning/tddec-code/blob/master/code-t3/include/devices/X10LightDriver.h) | [X10LightDriver.c](https://github.com/jwgrenning/tddec-code/blob/master/code-t3/src/devices/X10LightDriver.c)
 - ["OOP in C", Section 3](https://www.state-machine.com/doc/AN_OOP_in_C.pdf), Miro Samek
     - [Code example](https://github.com/QuantumLeaps/OOP-in-C/tree/master/polymorphism)
+- ["OOP in ANSI C"](https://www.cs.rit.edu/~ats/books/ooc.pdf), Chapters 2/4
+    - Code examples: [Ch 2](https://github.com/shichao-an/ooc/tree/master/02) | [Ch 4](https://github.com/shichao-an/ooc/tree/master/04)

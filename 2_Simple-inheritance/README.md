@@ -141,3 +141,5 @@ main( void )
 ## References
 - ["OOP in C", Section 2](https://www.state-machine.com/doc/AN_OOP_in_C.pdf), Miro Samek
     - [Code example](https://github.com/QuantumLeaps/OOP-in-C/tree/master/inheritance)
+- Axel Schreiner discusses the idea of object inheritance in ["OOP in ANSI C"](https://www.cs.rit.edu/~ats/books/ooc.pdf), Chapter 4, though at that point in the book he's already discussed the idea of vtables (which we'll get to next), so it might more sense after Project 3c.
+    - [Code example](https://github.com/shichao-an/ooc/tree/master/04)

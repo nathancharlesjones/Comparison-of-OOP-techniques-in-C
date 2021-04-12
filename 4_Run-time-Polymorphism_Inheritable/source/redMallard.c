@@ -90,7 +90,7 @@ redMallardInit( redMallard thisRedMallard, char * name, featherColor color )
 redMallard
 redMallardCreate_dynamic( char * name, featherColor color )
 {
-    redMallard newRedMallard = (redMallard)malloc(sizeof(redMallard_t));
+    redMallard newRedMallard = (redMallard)calloc(1, sizeof(redMallard_t));
     // TODO: Check for null pointer on malloc failure
 
     redMallardInit(newRedMallard, name, color);

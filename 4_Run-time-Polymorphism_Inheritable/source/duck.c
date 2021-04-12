@@ -78,7 +78,7 @@ Duck_Interface duckFromStaticMem = &duckStatic;
 Duck
 duckCreate_dynamic( char * name )
 {
-    Duck newDuck = (Duck)malloc(sizeof(Duck_t));
+    Duck newDuck = (Duck)calloc(1, sizeof(Duck_t));
 
     duckInit(newDuck, name);
     newDuck->vtable = duckFromHeapMem;

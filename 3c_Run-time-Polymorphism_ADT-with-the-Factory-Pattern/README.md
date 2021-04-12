@@ -137,6 +137,8 @@ main( int argc, char * argv[] )
 ```
 
 ## References
+- ["OOP in ANSI C"](https://www.cs.rit.edu/~ats/books/ooc.pdf), Chapters 2/4
+    - Code examples: [Ch 2](https://github.com/shichao-an/ooc/tree/master/02) | [Ch 4](https://github.com/shichao-an/ooc/tree/master/04)
 - ["Variadic Functions"](https://www.gnu.org/software/libc/manual/html_node/Variadic-Functions.html) (GCC Manual)
 - ["How do varargs work in C?"](https://jameshfisher.com/2016/11/23/c-varargs/) (James Fisher)
 - ["Comparing Variadic Functions: C vs C++"](https://embeddedartistry.com/blog/2017/07/14/comparing-variadic-functions-c-vs-c/) (Embedded Artistry)
