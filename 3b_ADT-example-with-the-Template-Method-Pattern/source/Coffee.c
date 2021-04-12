@@ -6,7 +6,7 @@
 #include "Coffee.h"
 
 typedef struct CoffeeStruct {
-    CaffeinatedBeverage_Data_Struct base;
+    const CaffeinatedBeverage_Data_Struct base;
     //other class data
 } CoffeeStruct;
 
@@ -26,7 +26,7 @@ coffeeInit( Coffee thisCoffee, CaffeinatedBeverage_Interface interface, char * n
     printf("\tInitializing new coffee drink with name: %s\n", name);
 
     CaffeinatedBeverage_setName((CaffeinatedBeverage)thisCoffee,name);
-    thisCoffee->base.interface = interface;
+    ((CaffeinatedBeverage)thisCoffee)->interface = interface;
 }
 
 CaffeinatedBeverage newCoffee_dynamic( char * name ) {

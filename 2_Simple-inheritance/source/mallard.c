@@ -10,7 +10,7 @@ const char * colorNames[] = {"red", "brown", "white"};
 
 typedef struct Mallard_t
 {
-    Duck_t parentDuck;
+    const Duck_t parentDuck;
     featherColor myColor;
 } Mallard_t;
 
@@ -54,20 +54,20 @@ mallardInit( Mallard thisMallard, char * name, featherColor color )
 {
     printf("\tInitializing new mallard duck with name: %s\n", name);
 
-    duckInit(&thisMallard->parentDuck, name);
+    duckInit((Duck)thisMallard, name);
     thisMallard->myColor = color;
 }
 
 void
 mallardShow( Mallard thisMallard )
 {
-    printf("\tHi! I'm a mallard duck. My name is %s. I have %s feathers.\n", duckGetName(&thisMallard->parentDuck), colorNames[thisMallard->myColor]);
+    printf("\tHi! I'm a mallard duck. My name is %s. I have %s feathers.\n", duckGetName((Duck)thisMallard), colorNames[thisMallard->myColor]);
 }
 
 void
 mallardDeinit( Mallard thisMallard )
 {
-    printf("\tDeinitializing Mallard object with name: %s\n", duckGetName(&thisMallard->parentDuck));
+    printf("\tDeinitializing Mallard object with name: %s\n", duckGetName((Duck)thisMallard));
     
     thisMallard->myColor = 0;
     

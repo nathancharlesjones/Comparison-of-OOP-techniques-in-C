@@ -10,7 +10,7 @@ const char * colorNames[] = {"red", "brown", "white"};
 
 typedef struct Mallard_t
 {
-    Duck_t parentDuck;
+    const Duck_t parentDuck;
     featherColor myColor;
 } Mallard_t, *Mallard;
 
@@ -31,7 +31,7 @@ mallardInit( Mallard thisMallard, Duck_Interface interface, char * name, feather
     printf("\tInitializing new mallard duck with name: %s\n", name);
 
     duckSetName((Duck)thisMallard, name);
-    thisMallard->parentDuck.vtable = interface;
+    ((Duck)thisMallard)->vtable = interface;
     thisMallard->myColor = color;
 }
 
@@ -41,7 +41,7 @@ mallardCreate_dynamic( char * name, featherColor color )
     Mallard newMallard = (Mallard)calloc(1, sizeof(Mallard_t));
     // TODO: Check for null pointer on malloc failure
 
-    mallardInit( newMallard, &interface_dynamic, name, color);
+    mallardInit(newMallard, &interface_dynamic, name, color);
 
     return (Duck)newMallard;
 }

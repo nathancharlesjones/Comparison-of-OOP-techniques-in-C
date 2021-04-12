@@ -10,7 +10,7 @@ const char * sizeNames[] = {"small", "medium", "large"};
 
 typedef struct Rubber_t
 {
-    Duck_t parentDuck;
+    const Duck_t parentDuck;
     duck_size size;
 } Rubber_t, *Rubber;
 
@@ -31,7 +31,7 @@ rubberInit( Rubber thisRubber, Duck_Interface interface, char * name, duck_size 
     printf("\tInitializing new rubber duck with name: %s\n", name);
 
     duckSetName((Duck)thisRubber, name);
-    thisRubber->parentDuck.vtable = interface;
+    ((Duck)thisRubber)->vtable = interface;
     thisRubber->size = size;
 }
 
