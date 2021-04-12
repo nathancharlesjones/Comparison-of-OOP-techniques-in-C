@@ -53,7 +53,7 @@ mallardCreate_static( void )
 static void
 mallardInit( Duck thisDuck, va_list * args )
 {
-    printf("\tInitializing mallard duck with name: %s\n", thisDuck->name);
+    printf("\tInitializing mallard duck with name: %s\n", duckGetName(thisDuck));
 
     Mallard thisMallard = (Mallard)thisDuck;
     
@@ -64,13 +64,13 @@ static void
 mallardShow( Duck thisDuck )
 {
     Mallard thisMallard = (Mallard)thisDuck;
-    printf("\tHi! I'm a mallard duck. My name is %s. I have %s feathers.\n", thisMallard->parentDuck.name, colorNames[thisMallard->myColor]);
+    printf("\tHi! I'm a mallard duck. My name is %s. I have %s feathers.\n", duckGetName(&thisMallard->parentDuck), colorNames[thisMallard->myColor]);
 }
 
 static void
 mallardDeinit( Duck thisMallard )
 {
-    printf("\tDeinitializing Mallard object with name: %s\n", thisMallard->name);
+    printf("\tDeinitializing Mallard object with name: %s\n", duckGetName(thisMallard));
 
     ((Mallard)thisMallard)->myColor = 0;
 }

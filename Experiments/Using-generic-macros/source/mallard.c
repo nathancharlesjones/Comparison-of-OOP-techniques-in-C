@@ -34,31 +34,31 @@ mallardInit( Mallard thisMallard, char * name, featherColor color )
 }
 
 char *
-_mallardGetName( Mallard thisMallard )
+mallardGetName( Mallard thisMallard )
 {
     return duckGetName( thisMallard->parentDuck );
 }
 
 void
-_mallardQuack( Mallard thisMallard )
+mallardQuack( Mallard thisMallard )
 {
     printf("\t%s: Quack!\n", duckGetName(thisMallard->parentDuck));
 }
 
 void
-_mallardShow( Mallard thisMallard )
+mallardShow( Mallard thisMallard )
 {
     printf("\tHi! I'm a mallard duck. My name is %s. I have %s feathers.\n", duckGetName(thisMallard->parentDuck), colorNames[thisMallard->myColor]);
 }
 
 const char *
-_mallardGetColor( Mallard thisMallard )
+mallardGetColor( Mallard thisMallard )
 {
     return colorNames[thisMallard->myColor];
 }
 
 void
-_mallardMigrate( Mallard thisMallard )
+mallardMigrate( Mallard thisMallard )
 {
     printf("\t%s: I'm migrating!\n", duckGetName(thisMallard->parentDuck));
 }

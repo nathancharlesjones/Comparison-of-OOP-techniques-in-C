@@ -28,19 +28,19 @@ duckInit( Duck thisDuck, char * name )
 }
 
 char *
-_duckGetName( Duck thisDuck )
+duckGetName( Duck thisDuck )
 {
     return thisDuck->name;
 }
 
 void
-_duckQuack( Duck thisDuck )
+duckQuack( Duck thisDuck )
 {
     printf("\t%s: Quack!\n", thisDuck->name);
 }
 
 void
-_duckShow( Duck thisDuck )
+duckShow( Duck thisDuck )
 {
     printf("\tHi! My name is %s.\n", thisDuck->name);
 }

@@ -8,11 +8,11 @@ typedef struct Mallard_t * Mallard;
 Mallard mallardCreate( void );
 void mallardInit( Mallard thisMallard, char * name, featherColor color );
 
-char * _mallardGetName( Mallard thisMallard );
-void _mallardQuack( Mallard thisMallard );
-void _mallardShow( Mallard thisMallard );
+char * mallardGetName( Mallard thisMallard );
+void mallardQuack( Mallard thisMallard );
+void mallardShow( Mallard thisMallard );
 
-const char * _mallardGetColor( Mallard thisMallard );
-void _mallardMigrate( Mallard thisMallard );
+const char * mallardGetColor( Mallard thisMallard );
+void mallardMigrate( Mallard thisMallard );
 
 #endif // MALLARD_H

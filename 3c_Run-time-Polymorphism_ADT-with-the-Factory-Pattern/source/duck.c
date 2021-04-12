@@ -131,6 +131,18 @@ duckDestroy_static( Duck thisDuck )
     }
 }
 
+void
+duckSetName( Duck thisDuck, char * name )
+{
+    strncpy(thisDuck->name, name, MAX_CHARS_NAME);
+}
+
+char *
+duckGetName( Duck thisDuck )
+{
+    return thisDuck->name;
+}
+
 const Duck_Interface_Struct duckDynamic = {
     .create=duckCreate_dynamic,
     .init=0,
