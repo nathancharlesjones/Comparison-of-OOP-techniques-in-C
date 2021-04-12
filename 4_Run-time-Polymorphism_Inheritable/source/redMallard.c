@@ -25,18 +25,15 @@ redMallardShow( Duck thisDuck )
 static void
 redMallardMigrate( Mallard thisMallard )
 {
-    Duck thisDuck = (Duck)thisMallard;
-    printf("\t%s: I'm migrating from North to South America with my fellow red-breasted mallards!\n", duckGetName(thisDuck));
+    printf("\t%s: I'm migrating from North to South America with my fellow red-breasted mallards!\n", duckGetName((Duck)thisMallard));
 }
 
 void
 redMallardDeinit( Duck thisDuck )
 {
-    redMallard thisRedMallard = (redMallard)thisDuck;
-
-    printf("\tDeinitializing red mallard object with name: %s\n", duckGetName(&thisRedMallard->parentMallard.parentDuck));
+    printf("\tDeinitializing red mallard object with name: %s\n", duckGetName(thisDuck));
     
-    mallardDeinit((Duck)thisRedMallard);
+    mallardDeinit(thisDuck);
 }
 
 static void
@@ -80,7 +77,7 @@ redMallard_Interface redMallardFromStaticMem = &redMallardStatic;
 void
 redMallardInit( redMallard thisRedMallard, char * name, featherColor color )
 {
-    mallardInit(&thisRedMallard->parentMallard, name, color);
+    mallardInit((Mallard)thisRedMallard, name, color);
 
     printf("\tInitializing red-breasted mallard with name: %s\n", name);
 
@@ -94,7 +91,7 @@ redMallardCreate_dynamic( char * name, featherColor color )
     // TODO: Check for null pointer on malloc failure
 
     redMallardInit(newRedMallard, name, color);
-    newRedMallard->parentMallard.parentDuck.vtable = (Duck_Interface)redMallardFromHeapMem;
+    ((Duck)newRedMallard)->vtable = (Duck_Interface)redMallardFromHeapMem;
 
     return newRedMallard;
 }
@@ -111,7 +108,7 @@ redMallardCreate_static( char * name, featherColor color )
             redMallardMemoryPool[i].used = true;
             newRedMallard = &redMallardMemoryPool[i].thisRedMallard;
             redMallardInit(newRedMallard, name, color);
-            newRedMallard->parentMallard.parentDuck.vtable = (Duck_Interface)redMallardFromStaticMem;
+            ((Duck)newRedMallard)->vtable = (Duck_Interface)redMallardFromStaticMem;
             break;
         }
     }

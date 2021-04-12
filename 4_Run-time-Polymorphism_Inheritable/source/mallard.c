@@ -21,19 +21,19 @@ static void
 mallardShow( Duck thisDuck )
 {
     Mallard thisMallard = (Mallard)thisDuck;
-    printf("\tHi! I'm a mallard duck. My name is %s. I have %s feathers.\n", duckGetName(&thisMallard->parentDuck), colorNames[thisMallard->myColor]);
+    printf("\tHi! I'm a mallard duck. My name is %s. I have %s feathers.\n", duckGetName((Duck)thisMallard), colorNames[thisMallard->myColor]);
 }
 
 void
 mallardMigrate( Mallard thisMallard )
 {
-    if ( thisMallard && thisMallard->parentDuck.vtable && ((Mallard_Interface)(thisMallard->parentDuck.vtable))->migrate )
+    if ( thisMallard && thisMallard->parentDuck.vtable && ((Mallard_Interface)((Duck)thisMallard)->vtable)->migrate )
     {
-        ((Mallard_Interface)(thisMallard->parentDuck.vtable))->migrate(thisMallard);
+        ((Mallard_Interface)((Duck)thisMallard)->vtable)->migrate(thisMallard);
     }
     else
     {
-        printf("\t%s: I'm migrating!\n", duckGetName(&thisMallard->parentDuck));
+        printf("\t%s: I'm migrating!\n", duckGetName((Duck)thisMallard));
     }
 }
 
@@ -42,7 +42,7 @@ mallardDeinit( Duck thisDuck )
 {
     Mallard thisMallard = (Mallard)thisDuck;
 
-    printf("\tDeinitializing mallard object with name: %s\n", duckGetName(&thisMallard->parentDuck));
+    printf("\tDeinitializing mallard object with name: %s\n", duckGetName((Duck)thisMallard));
     
     thisMallard->myColor = 0;
     
@@ -95,7 +95,7 @@ mallardCreate_dynamic( char * name, featherColor color )
     // TODO: Check for null pointer on malloc failure
 
     mallardInit(newMallard, name, color);
-    newMallard->parentDuck.vtable = (Duck_Interface)mallardFromHeapMem;
+    ((Duck)newMallard)->vtable = (Duck_Interface)mallardFromHeapMem;
 
     return newMallard;
 }
@@ -112,7 +112,7 @@ mallardCreate_static( char * name, featherColor color )
             mallardMemoryPool[i].used = true;
             newMallard = &mallardMemoryPool[i].thisMallard;
             mallardInit(newMallard, name, color);
-            newMallard->parentDuck.vtable = (Duck_Interface)mallardFromStaticMem;
+            ((Duck)newMallard)->vtable = (Duck_Interface)mallardFromStaticMem;
             break;
         }
     }
