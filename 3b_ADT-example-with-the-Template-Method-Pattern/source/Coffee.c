@@ -26,7 +26,7 @@ coffeeInit( Coffee thisCoffee, CaffeinatedBeverage_Interface interface, char * n
     printf("\tInitializing new coffee drink with name: %s\n", name);
 
     CaffeinatedBeverage_setName((CaffeinatedBeverage)thisCoffee,name);
-    ((CaffeinatedBeverage)thisCoffee)->interface = interface;
+    *(CaffeinatedBeverage_Interface *)thisCoffee = interface;
 }
 
 CaffeinatedBeverage newCoffee_dynamic( char * name ) {

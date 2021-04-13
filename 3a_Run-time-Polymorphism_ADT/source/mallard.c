@@ -31,7 +31,7 @@ mallardInit( Mallard thisMallard, Duck_Interface interface, char * name, feather
     printf("\tInitializing new mallard duck with name: %s\n", name);
 
     duckSetName((Duck)thisMallard, name);
-    ((Duck)thisMallard)->vtable = interface;
+    *(Duck_Interface *)thisMallard = interface;
     thisMallard->myColor = color;
 }
 

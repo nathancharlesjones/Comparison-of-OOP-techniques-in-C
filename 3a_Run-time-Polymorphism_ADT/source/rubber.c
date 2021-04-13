@@ -31,7 +31,7 @@ rubberInit( Rubber thisRubber, Duck_Interface interface, char * name, duck_size 
     printf("\tInitializing new rubber duck with name: %s\n", name);
 
     duckSetName((Duck)thisRubber, name);
-    ((Duck)thisRubber)->vtable = interface;
+    *(Duck_Interface *)thisRubber = interface;
     thisRubber->size = size;
 }
 

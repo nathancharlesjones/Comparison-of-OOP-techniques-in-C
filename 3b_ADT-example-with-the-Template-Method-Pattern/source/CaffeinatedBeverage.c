@@ -16,7 +16,7 @@ CaffeinatedBeverage_getName(CaffeinatedBeverage _self)
     return _self->name;
 }
 
-static void CaffeinatedBeverage_boilWater(CaffeinatedBeverage _self) {
+static void CaffeinatedBeverage_boilWater(CaffeinatedBeverage _self __attribute__((unused))) {
     printf("\tBoiling water.\n\r");
 }
 
@@ -26,7 +26,7 @@ static void CaffeinatedBeverage_brew(CaffeinatedBeverage _self) {
     }
 }
 
-static void CaffeinatedBeverage_pourInCup(CaffeinatedBeverage _self) {
+static void CaffeinatedBeverage_pourInCup(CaffeinatedBeverage _self __attribute__((unused))) {
     printf("\tPouring into cup.\n\r");
 }
 
