@@ -1,0 +1,63 @@
+- [ ] 5a
+    - [ ] Check README (Any other major changes?)
+    - [x] Add magic number
+- [ ] 5b: Write README.
+- [ ] Standardize interfaces? (create/init/deinit/destroy vs deinit/destroy vs destroy ...)
+- [ ] Change references to "vtable" to "*(XXX_Interface *)"
+- [ ] Convert "_OBJ" to "OBJ"
+- [ ] Change "if" to "ASSERT"
+- [ ] Check all READMEs
+- [ ] Do side-by-side comparison of all projects to make sure I didn't miss anything (?)
+- [ ] What are the benefits to Axel's OOP? Ability to call any function without explicitly casting?
+    - [ ] Not sure. "Objects" are the same (all have, at least, a pointer to class/vtable). Class adds pointer to object def (why?) and pointer to base class. Not sure why the latter is needed if the super() function exists, but that's why there are initClass() functions (can't initialize a derived class definition using extern variable).
+    - [ ] Class_ctor() craziness seems to be a requirement of runtime creation of classes (a requirement of having a base class pointer, I think)
+    - [ ] I feel like Point_draw wouldn't be required if draw had the format if (subclass impl) else (default).
+    - [ ] Why is super_draw needed?
+    - [ ] "However, we have decided in chapter 6 that static initialization makes class descriptions hard to maintain: the order of the structure components must agree with all the initializations, and inheritance would force us to reveal dynamically linked methods outside their implementation files." ???
+    - [ ] Implementation feels very efficient: checks only happen where they need to, only 10 LOC needed to implement "Circle" in Ch 9
+- [ ] Possible to use the LL type-independent macro things for polymorphism?
+
+
+- [x] 3b: Match format of 3a. Update README.
+- [x] 1a: Add note about "Design Patterns for Embedded Systems"
+- [x] 3c: Update README
+- [x] Add default assert to generic macro project (how?) -> Couldn't figure it out. Not cleanly, at least.
+- [x] Add build folders to .gitignore and remove from repo. Also .vscode.
+- [x] Check that header dependencies are working (or just simplify the makefile)
+- [x] Check getters/setters
+- [x] Get rid of "extern colorString"
+- [x] Add "const" to interface definitions
+- [x] Check for static functions
+- [x] Check for "breaks"
+- [x] Change MAX_CHARS_NAME to MAX_CHARS_NAME_WITH_NUL
+- [x] Change malloc to calloc
+- [x] Add memset to static destroy
+- [x] 3c: Need *init? -> Would match 5a without, but would require init/deinit function declarations in the private header file.
+- [x] 5a: Get redMallard working. Change assert to exit; remove guard clauses (make dummy object at the end to demonstrate destroy).
+- [x] Add xmacros experiment
+- [x] Possible to expose parts of an ADT/superclass that allow it to remain opaque but still inheritable (i.e. possible to build inheritance without private header files)? Export sizeof? -> No way that I can tell. Inheritance requires that subclasses know either the size or the elements of the superclass. No way to make either visible to a subclass in another source file at compile-time.
+    - [x] This maybe?: https://www.codeproject.com/Articles/108830/Inheritance-and-Polymorphism-in-C -> Not that I can tell. Objects could "forward" function calls to derived objects but the only way they'd know which part of the object holds the right function pointer is if they know the internals of the vtable (sort of defeats the purpose) or they know it's offset (feels dangerous).
+- [x] Is 3c factory pattern? Check and add note.
+- [x] Possible to make all objects void *? Need to be able to tell them apart. Could I use the interface for that?
+    - [x] Or something like #define duckFcn(x) (Duck)x->vtable.Fcn(x)?
+    - [x] Above should work but it exposes too much; it would allow the developer to replace "Fcn" with something else of the same signature.
+    - [x] Const doesn't protect that, right? -> Correct. "Const" directs the compiler to check that the variable isn't updated, but a pointer to the memory location CAN still change the value.
+- [x] 1a: Add OOC, Ch 1, to README
+- [x] typedef union Duck_t * Duck?? --> Nah, this would require every function in the hierarchy to receive a "Duck union" parameter, which is more annoying than just making everything a "Duck_t *" or "Duck" but possibly slightly more type-safe than "void *".
+- [x] 3c: Add OOC, Ch 2/4, to README
+- [x] Test dynamic macro without name change
+- [x] Check use of "const". Add "const" to base structs. Change function calls to just upcast.
+- [x] 2: Add OOC, Ch 4, to README (with warning)
+- [x] 3a: Add OOC, Ch 2/4, to README
+- [x] Possible to use generic macros for polymorphism? -> Sort of. They behave perfectly polymorphically, but they require knowing all of the appropriate function names. Not only does the header organization get circular and very confusing, but now subclasses need to edit their parents' header files in order to "register" themselves.
+- [x] What are the rules for static functions? How do I make private or protected functions? -> Static functions are only callable from other functions in their source file (or by using a function pointer). Private functions are only available to the exact class they're defined in (static functions in source file). Protected functions are only available to derived classes (e.g. functions defined in a private header file).
+- [x] Are macros project-wide? -> No, they're scoped to the file (unless they're defined while invoking the compiler).
+- [x] Miro Samek's isn't really polymorphism, since it only extends one layer deep. Every class method is only ever implemented in the parent class or in a subclass and no subclasses can introduce new functions to be implemented; the vtable has to be the same for all
+- [x] ... Unless... Possible to "inherit" the vtable?
+- [x] Progression
+    - [x] 0: Encapsulation
+    - [x] 1: Composition
+    - [x] 2a: Simple inheritance* (duckShow((Duck)thisMallard) does duck things, not mallard things, but this can be extended ad infinitum)
+    - [x] 2b: ADT* (duckShow(thisMallard) does mallard things (also no explicit cast), but only goes one level deep)
+    - [x] 3: Full OOP (for the love of god, just use C++)
+    - [x] *: Requires public struct definitions or "private" header files; Erodes information hiding
