@@ -3,6 +3,7 @@
 #include <string.h>    // For strncpy, memset
 #include <stdbool.h>   // For bool
 #include <stdarg.h>    // For variadic macros (va_list, va_start, va_arg, va_end)
+#include <stdint.h>    // For uint32_t
 #include "assert.h"
 #include "duck.h"
 #include "duck.r"
@@ -20,15 +21,16 @@ typeIsDuck( void const * thisType )
 {
     bool ret = false;
 
-    //printf("Inside typeIsDuck\n");
-    //printf("thisType: %p\tduckFromHeapMem: %p\tduckFromStaticMem: %p\n", thisType, duckFromHeapMem, duckFromStaticMem);
-    while( thisType && thisType != duckFromHeapMem && thisType != duckFromStaticMem )
+    if( *(uint32_t *)thisType == MAGIC )
     {
-        thisType = ((Duck_Interface)thisType)->getParentInterface();
-        //printf("thisType: %p\n", thisType);
-    }
+        while( thisType && thisType != duckFromHeapMem && thisType != duckFromStaticMem )
+        {
+            ASSERT(((Duck_Interface)thisType)->getParentInterface);
+            thisType = ((Duck_Interface)thisType)->getParentInterface();
+        }
 
-    if( ( thisType == duckFromHeapMem ) || ( thisType == duckFromStaticMem ) ) ret = true;
+        if( ( thisType == duckFromHeapMem ) || ( thisType == duckFromStaticMem ) ) ret = true;
+    }
 
     return ret;
 }
@@ -46,9 +48,12 @@ objIsDuck( void * thisDuck )
 
     ASSERT(thisDuck);
 
-    void const * thisType = *(Duck_Interface *)thisDuck;
+    if( ((Duck)thisDuck)->magic_number == MAGIC )
+    {
+        void const * thisType = *(Duck_Interface *)thisDuck;
 
-    if( ( thisType == duckFromHeapMem ) || ( thisType == duckFromStaticMem ) || parentIsDuck(thisType) ) ret = true;
+        if( ( thisType == duckFromHeapMem ) || ( thisType == duckFromStaticMem ) || parentIsDuck(thisType) ) ret = true;
+    }
 
     return ret;
 }
@@ -59,21 +64,12 @@ duckCreate( void * newDuckType, ... )
     va_list args;
     va_start(args, newDuckType);
 
-    Duck newDuck = NULL;
-
     ASSERT(typeIsDuck(newDuckType));
+    Duck newDuck = NULL;
     Duck_Interface newInterface = (Duck_Interface)newDuckType;
+    ASSERT(newInterface->create);
+    newDuck = newInterface->create(newInterface, &args);
     
-    if( newInterface && newInterface->create )
-    {
-        newDuck = newInterface->create(newInterface, &args);
-    }
-    
-    if( newDuck )
-    {
-        *(Duck_Interface *)newDuck = newInterface;
-    }
-
     va_end(args);
 
     return (void *)newDuck;
@@ -86,6 +82,7 @@ duckCreate_dynamic( Duck_Interface thisDuckInterface, va_list * args )
     // TODO: Check for null pointer on malloc failure
 
     *(Duck_Interface *)newDuck = thisDuckInterface;
+    newDuck->magic_number = MAGIC;
 
     duckInit(newDuck,args);
 
@@ -104,6 +101,7 @@ duckCreate_static( Duck_Interface thisDuckInterface, va_list * args )
             duckMemoryPool[i].used = true;
             newDuck = &duckMemoryPool[i].thisDuck;
             *(Duck_Interface *)newDuck = thisDuckInterface;
+            newDuck->magic_number = MAGIC;
             duckInit(newDuck, args);
             break;
         }
@@ -136,6 +134,7 @@ duckSetName( void * thisDuck, char * name )
 {
     ASSERT(thisDuck);
     ASSERT(objIsDuck(thisDuck));
+
     Duck _thisDuck = (Duck)thisDuck;
     strncpy(_thisDuck->name, name, MAX_CHARS_NAME);
 }
@@ -145,7 +144,9 @@ duckGetName( void * thisDuck )
 {
     ASSERT(thisDuck);
     ASSERT(objIsDuck(thisDuck));
+
     Duck _thisDuck = (Duck)thisDuck;
+    
     return _thisDuck->name;
 }
 
@@ -168,7 +169,7 @@ duckShow( void * thisDuck )
     
     Duck _thisDuck = (Duck)thisDuck;
 
-    if ( _thisDuck && *(Duck_Interface *)_thisDuck && (*(Duck_Interface *)_thisDuck)->show )
+    if ( (*(Duck_Interface *)_thisDuck)->show )
     {
         (*(Duck_Interface *)_thisDuck)->show(thisDuck);
     }
@@ -185,16 +186,16 @@ duckDestroy( void * thisDuck )
     ASSERT(objIsDuck(thisDuck));
     
     Duck _thisDuck = (Duck)thisDuck;
-
-    if ( _thisDuck && *((Duck_Interface *)_thisDuck) && (*((Duck_Interface *)_thisDuck))->destroy )
-    {
-        (*((Duck_Interface *)_thisDuck))->destroy(thisDuck);
-    }
+    ASSERT( (*((Duck_Interface *)_thisDuck))->destroy );
+    (*((Duck_Interface *)_thisDuck))->destroy(thisDuck);
 }
 
 void
 duckDeinit( Duck thisDuck )
 {
+    ASSERT(thisDuck);
+    ASSERT(objIsDuck(thisDuck));
+
     printf("\tDeinitializing duck object with name: %s\n", thisDuck->name);
     memset(thisDuck->name, 0, sizeof(char)*MAX_CHARS_NAME);
 }
@@ -202,20 +203,24 @@ duckDeinit( Duck thisDuck )
 static void
 duckDestroy_dynamic( void * thisDuck )
 {
-    duckDeinit((Duck)thisDuck);
+    ASSERT(thisDuck);
+    ASSERT(objIsDuck(thisDuck));
 
+    duckDeinit((Duck)thisDuck);
     free((Duck)thisDuck);
 }
 
 static void
 duckDestroy_static( void * thisDuck )
 {
+    ASSERT(thisDuck);
+    ASSERT(objIsDuck(thisDuck));
+
     for( int i = 0; i < MAX_NUM_DUCK_OBJS; i++)
     {
         if( (Duck)thisDuck == &duckMemoryPool[i].thisDuck )
         {
             duckDeinit((Duck)thisDuck);
-
             memset(&duckMemoryPool[i].thisDuck, 0, sizeof(Duck_t));
             duckMemoryPool[i].used = false;
             thisDuck = NULL;
@@ -225,6 +230,7 @@ duckDestroy_static( void * thisDuck )
 }
 
 const Duck_Interface_Struct duckDynamic = {
+    .magic_number = MAGIC,
     .getParentInterface = duckGetParent,
     .create = duckCreate_dynamic,
     .destroy = duckDestroy_dynamic,
@@ -234,6 +240,7 @@ const Duck_Interface_Struct duckDynamic = {
 void * duckFromHeapMem = (void *)&duckDynamic;
 
 const Duck_Interface_Struct duckStatic = {
+    .magic_number = MAGIC,
     .getParentInterface = duckGetParent,
     .create = duckCreate_static,
     .destroy = duckDestroy_static,

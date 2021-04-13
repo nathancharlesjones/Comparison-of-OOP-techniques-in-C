@@ -15,7 +15,7 @@ typedef struct Mallard_t
 typedef struct Mallard_Interface_Struct
 {
     Duck_Interface_Struct duckInterface;
-    void (*migrate)( void * thisMallard );
+    void (*migrate)( void * thisMallard ); // Optional for derived classes; set to "0" or "NULL" to use the default "Mallard" implementation
 } Mallard_Interface_Struct;
 
 void mallardInit( Mallard thisMallard, va_list * args );
