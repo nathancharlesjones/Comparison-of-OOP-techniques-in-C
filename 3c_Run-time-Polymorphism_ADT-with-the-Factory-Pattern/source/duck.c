@@ -5,6 +5,7 @@
 #include <stdarg.h>     // For variadic macros (va_list, va_start, va_end)
 #include "duck.h"
 #include "duck.r"
+#include "assert.h"
 
 typedef struct duckMemoryPool_t
 {
@@ -22,21 +23,19 @@ duckCreate( Duck_Interface newDuckType, char * name, ... )
 
     Duck newDuck = NULL;
     
-    if( newDuckType->create )
-    {
-        newDuck = newDuckType->create();
-    }
+    ASSERT(newDuckType && newDuckType->create);
+    newDuck = newDuckType->create();
     
     if( newDuck )
     {
         printf("\tInitializing duck with name: %s\n", name);
 
-        newDuck->vtable = newDuckType;
+        *(Duck_Interface *)newDuck = newDuckType;
         strncpy(newDuck->name, name, MAX_CHARS_NAME);
 
-        if ( newDuck && newDuck->vtable && newDuck->vtable->init )
+        if ( (*((Duck_Interface *)newDuck))->init )
         {
-            newDuck->vtable->init(newDuck, &args);
+            (*((Duck_Interface *)newDuck))->init(newDuck, &args);
         }
     }
 
@@ -80,9 +79,10 @@ duckQuack( Duck thisDuck )
 void
 duckShow( Duck thisDuck )
 {
-    if ( thisDuck && thisDuck->vtable && thisDuck->vtable->show )
+    ASSERT( thisDuck && *(Duck_Interface *)thisDuck );
+    if ( (*((Duck_Interface *)thisDuck))->show )
     {
-        thisDuck->vtable->show(thisDuck);
+        (*((Duck_Interface *)thisDuck))->show(thisDuck);
     }
     else
     {
@@ -93,20 +93,18 @@ duckShow( Duck thisDuck )
 void
 duckDestroy( Duck thisDuck )
 {
-    if( thisDuck )
+    ASSERT( thisDuck && *(Duck_Interface *)thisDuck );
+    if ( (*((Duck_Interface *)thisDuck))->deinit )
     {
-        if ( thisDuck->vtable && thisDuck->vtable->deinit )
-        {
-            thisDuck->vtable->deinit(thisDuck);
-        }
+        (*((Duck_Interface *)thisDuck))->deinit(thisDuck);
+    }
 
-        printf("\tDeinitializing Duck object with name: %s\n", thisDuck->name);
-        memset(thisDuck->name, 0, sizeof(char)*MAX_CHARS_NAME);
+    printf("\tDeinitializing Duck object with name: %s\n", thisDuck->name);
+    memset(thisDuck->name, 0, sizeof(char)*MAX_CHARS_NAME);
 
-        if ( thisDuck->vtable && thisDuck->vtable->destroy )
-        {
-            thisDuck->vtable->destroy(thisDuck);
-        }
+    if ( (*((Duck_Interface *)thisDuck))->destroy )
+    {
+        (*((Duck_Interface *)thisDuck))->destroy(thisDuck);
     }
 }
 
@@ -134,12 +132,14 @@ duckDestroy_static( Duck thisDuck )
 void
 duckSetName( Duck thisDuck, char * name )
 {
+    ASSERT(thisDuck && name);
     strncpy(thisDuck->name, name, MAX_CHARS_NAME);
 }
 
 char *
 duckGetName( Duck thisDuck )
 {
+    ASSERT(thisDuck);
     return thisDuck->name;
 }
 
