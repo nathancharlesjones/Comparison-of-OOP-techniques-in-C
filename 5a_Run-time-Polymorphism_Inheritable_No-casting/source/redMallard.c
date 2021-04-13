@@ -58,7 +58,7 @@ redMallardInit( redMallard thisRedMallard, va_list * args )
 
     mallardInit((Mallard)thisRedMallard, args);
     
-    printf("\tInitializing red-breasted mallard with name: %s\n", duckGetName(&thisRedMallard->parentMallard.parentDuck));
+    printf("\tInitializing red-breasted mallard with name: %s\n", duckGetName((Duck)thisRedMallard));
 }
 
 static void *
@@ -113,7 +113,7 @@ redMallardShow( Duck thisDuck )
     ASSERT(objIsRedMallard(thisDuck));
 
     Mallard thisMallard = (Mallard)thisDuck;
-    printf("\tHi! I'm a red-breasted mallard duck. My name is %s. I have %s feathers.\n", duckGetName((void *)(&thisMallard->parentDuck)), mallardGetFeatherColorName(thisMallard));
+    printf("\tHi! I'm a red-breasted mallard duck. My name is %s. I have %s feathers.\n", duckGetName((Duck)thisMallard), mallardGetFeatherColorName(thisMallard));
 }
 
 void
@@ -123,13 +123,13 @@ redMallardMigrate( void * thisMallard )
     ASSERT(objIsRedMallard(thisMallard));
 
     Mallard _thisMallard = (Mallard)thisMallard;
-    printf("\t%s: I'm migrating from North to South America with my fellow red-breasted mallards!\n", duckGetName( (void *)(&_thisMallard->parentDuck) ) );
+    printf("\t%s: I'm migrating from North to South America with my fellow red-breasted mallards!\n", duckGetName((Duck)_thisMallard));
 }
 
 void
 redMallardDeinit( redMallard thisRedMallard )
 {
-    printf("\tDeinitializing Red Mallard object with name: %s\n", duckGetName((void *)(&thisRedMallard->parentMallard.parentDuck)));
+    printf("\tDeinitializing Red Mallard object with name: %s\n", duckGetName((Duck)thisRedMallard));
 
     // Insert redMallard deinitialization here (if attributes are added to the redMallard_t struct in the future)
 

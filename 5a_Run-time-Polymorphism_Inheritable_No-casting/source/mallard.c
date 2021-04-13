@@ -61,7 +61,7 @@ mallardInit( Mallard thisMallard, va_list * args )
 
     duckInit((Duck)thisMallard, args);
     
-    printf("\tInitializing mallard duck with name: %s\n", duckGetName(&thisMallard->parentDuck));
+    printf("\tInitializing mallard duck with name: %s\n", duckGetName((Duck)thisMallard));
 
     thisMallard->myColor = va_arg(*args, featherColor);
 }
@@ -148,7 +148,7 @@ mallardShow( Duck thisDuck )
     ASSERT(objIsMallard(thisDuck));
 
     Mallard thisMallard = (Mallard)thisDuck;
-    printf("\tHi! I'm a mallard duck. My name is %s. I have %s feathers.\n", duckGetName((void *)(&thisMallard->parentDuck)), colorNames[thisMallard->myColor]);
+    printf("\tHi! I'm a mallard duck. My name is %s. I have %s feathers.\n", duckGetName(thisDuck), colorNames[thisMallard->myColor]);
 }
 
 void
@@ -159,20 +159,20 @@ mallardMigrate( void * thisMallard )
 
     Mallard _thisMallard = (Mallard)thisMallard;
 
-    if ( _thisMallard && _thisMallard->parentDuck.vtable && ((Mallard_Interface)(_thisMallard->parentDuck.vtable))->migrate )
+    if ( _thisMallard && *((Mallard_Interface *)_thisMallard) && (*((Mallard_Interface *)_thisMallard))->migrate )
     {
-        ((Mallard_Interface)(_thisMallard->parentDuck.vtable))->migrate(thisMallard);
+        (*((Mallard_Interface *)_thisMallard))->migrate(thisMallard);
     }
     else
     {
-        printf("\t%s: I'm migrating!\n", duckGetName( (void *)(&_thisMallard->parentDuck) ) );
+        printf("\t%s: I'm migrating!\n", duckGetName((Duck)_thisMallard));
     }
 }
 
 void
 mallardDeinit( Mallard thisMallard )
 {
-    printf("\tDeinitializing Mallard object with name: %s\n", duckGetName((void *)(&thisMallard->parentDuck)));
+    printf("\tDeinitializing Mallard object with name: %s\n", duckGetName((Duck)thisMallard));
 
     thisMallard->myColor = 0;
 

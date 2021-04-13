@@ -71,7 +71,7 @@ duckCreate( void * newDuckType, ... )
     
     if( newDuck )
     {
-        newDuck->vtable = newInterface;
+        *(Duck_Interface *)newDuck = newInterface;
     }
 
     va_end(args);
@@ -85,7 +85,7 @@ duckCreate_dynamic( Duck_Interface thisDuckInterface, va_list * args )
     Duck newDuck = (Duck)calloc(1, sizeof(Duck_t));
     // TODO: Check for null pointer on malloc failure
 
-    newDuck->vtable = thisDuckInterface;
+    *(Duck_Interface *)newDuck = thisDuckInterface;
 
     duckInit(newDuck,args);
 
@@ -103,7 +103,7 @@ duckCreate_static( Duck_Interface thisDuckInterface, va_list * args )
         {
             duckMemoryPool[i].used = true;
             newDuck = &duckMemoryPool[i].thisDuck;
-            newDuck->vtable = thisDuckInterface;
+            *(Duck_Interface *)newDuck = thisDuckInterface;
             duckInit(newDuck, args);
             break;
         }
@@ -168,9 +168,9 @@ duckShow( void * thisDuck )
     
     Duck _thisDuck = (Duck)thisDuck;
 
-    if ( _thisDuck && _thisDuck->vtable && _thisDuck->vtable->show )
+    if ( _thisDuck && *(Duck_Interface *)_thisDuck && (*(Duck_Interface *)_thisDuck)->show )
     {
-        _thisDuck->vtable->show(thisDuck);
+        (*(Duck_Interface *)_thisDuck)->show(thisDuck);
     }
     else
     {
@@ -186,9 +186,9 @@ duckDestroy( void * thisDuck )
     
     Duck _thisDuck = (Duck)thisDuck;
 
-    if ( _thisDuck && _thisDuck->vtable && _thisDuck->vtable->destroy )
+    if ( _thisDuck && *((Duck_Interface *)_thisDuck) && (*((Duck_Interface *)_thisDuck))->destroy )
     {
-        _thisDuck->vtable->destroy(thisDuck);
+        (*((Duck_Interface *)_thisDuck))->destroy(thisDuck);
     }
 }
 

@@ -7,7 +7,7 @@ typedef struct redMallard_Interface_Struct * redMallard_Interface;
 
 typedef struct redMallard_t
 {
-    Mallard_t parentMallard;
+    const Mallard_t parentMallard;
 } redMallard_t, *redMallard;
 
 typedef struct redMallard_Interface_Struct

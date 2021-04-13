@@ -8,7 +8,7 @@ typedef struct Mallard_Interface_Struct const * Mallard_Interface;
 
 typedef struct Mallard_t
 {
-    Duck_t parentDuck;
+    const Duck_t parentDuck;
     featherColor myColor;
 } Mallard_t, *Mallard;
 
