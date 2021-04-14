@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include "assert.h"
 #include "CaffeinatedBeverage.h"
 #include "CaffeinatedBeverage.r"
 #include "Tea.h"
@@ -24,6 +25,8 @@ static const CaffeinatedBeverage_Interface_Struct interface_static;
 
 static void
 teaInit( Tea thisTea, CaffeinatedBeverage_Interface interface, char * name){
+    ASSERT(thisTea && interface && name);
+    
     printf("\tInitializing new tea drink with name: %s\n", name);
 
     CaffeinatedBeverage_setName((CaffeinatedBeverage)thisTea,name);
@@ -31,12 +34,16 @@ teaInit( Tea thisTea, CaffeinatedBeverage_Interface interface, char * name){
 }
 
 CaffeinatedBeverage newTea_dynamic( char * name ) {
+    ASSERT(name);
+    
     Tea newTea = (Tea)calloc(1, sizeof(TeaStruct));
     teaInit(newTea, &interface_dynamic, name);
     return (CaffeinatedBeverage)newTea;
 }
 
 CaffeinatedBeverage newTea_static( char * name ) {
+    ASSERT(name);
+    
     Tea newTea = NULL;
 
     for( int i = 0; i < MAX_NUM_TEA_OBJS; i++)
@@ -62,6 +69,8 @@ static void Tea_addCondiments(CaffeinatedBeverage super __attribute__((unused)))
 }
 
 static void Tea_destroyDynamic( CaffeinatedBeverage super ) {
+    ASSERT(super);
+    
     free(super);
 }
 

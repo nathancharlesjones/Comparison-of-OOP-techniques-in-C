@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include "assert.h"
 #include "CaffeinatedBeverage.r"
 #include "Coffee.h"
 
@@ -23,6 +24,8 @@ static const CaffeinatedBeverage_Interface_Struct interface_static;
 
 static void
 coffeeInit( Coffee thisCoffee, CaffeinatedBeverage_Interface interface, char * name){
+    ASSERT(thisCoffee && interface && name);
+    
     printf("\tInitializing new coffee drink with name: %s\n", name);
 
     CaffeinatedBeverage_setName((CaffeinatedBeverage)thisCoffee,name);
@@ -30,12 +33,16 @@ coffeeInit( Coffee thisCoffee, CaffeinatedBeverage_Interface interface, char * n
 }
 
 CaffeinatedBeverage newCoffee_dynamic( char * name ) {
+    ASSERT(name);
+    
     Coffee newCoffee = (Coffee)calloc(1, sizeof(CoffeeStruct));
     coffeeInit(newCoffee, &interface_dynamic, name);
     return (CaffeinatedBeverage)newCoffee;
 }
 
 CaffeinatedBeverage newCoffee_static( char * name ) {
+    ASSERT(name);
+    
     Coffee newCoffee = NULL;
 
     for( int i = 0; i < MAX_NUM_COFFEE_OBJS; i++)
@@ -65,6 +72,8 @@ static void Coffee_addWhip(CaffeinatedBeverage super __attribute__((unused))) {
 }
 
 static void coffeeDestroy_dynamic( CaffeinatedBeverage super ) {
+    ASSERT(super);
+    
     free(super);
 }
 

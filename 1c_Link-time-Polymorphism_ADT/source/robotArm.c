@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include "assert.h"
 #include "robotArm.h"
 #include "servoController.h"
 
@@ -50,6 +51,8 @@ robotArmCreate_static( void )
 void
 robotArmInit( robotArm thisRobotArm, servoController shoulder, servoController elbow, servoController wrist )
 {
+    ASSERT(thisRobotArm && shoulder && elbow && wrist);
+    
     printf("\tInitializing new robot arm\n");
 
     thisRobotArm->shoulder = shoulder;
@@ -60,6 +63,8 @@ robotArmInit( robotArm thisRobotArm, servoController shoulder, servoController e
 void
 robotArm_moveShoulderTo( robotArm thisRobotArm, int angle )
 {
+    ASSERT(thisRobotArm);
+    
     if ( ( servoControllerGetCurrentAngle( thisRobotArm->elbow ) > 155 ) || ( servoControllerGetCurrentAngle( thisRobotArm->elbow ) < 25 ) )
     {
         printf("\tRestricting shoulder movement to [10, 170] degrees when elbow joint is within 25 degrees of its extremes.\n");
@@ -72,6 +77,8 @@ robotArm_moveShoulderTo( robotArm thisRobotArm, int angle )
 void
 robotArm_moveElbowTo( robotArm thisRobotArm, int angle )
 {
+    ASSERT(thisRobotArm);
+    
     if ( ( servoControllerGetCurrentAngle( thisRobotArm->shoulder ) > 170 ) || ( servoControllerGetCurrentAngle( thisRobotArm->shoulder ) < 10 ) )
     {
         printf("\tRestricting elbow movement to [25, 155] degrees when shoulder joint is within 10 degrees of its extremes.\n");
@@ -90,6 +97,8 @@ robotArm_moveElbowTo( robotArm thisRobotArm, int angle )
 void
 robotArm_moveWristTo( robotArm thisRobotArm, int angle )
 {
+    ASSERT(thisRobotArm);
+    
     if ( ( servoControllerGetCurrentAngle( thisRobotArm->elbow ) > 150 ) || ( servoControllerGetCurrentAngle( thisRobotArm->elbow ) < 30 ) )
     {
         printf("\tRestricting wrist movement to [50, 130] degrees when elbow joint is within 30 degrees of its extremes.\n");
@@ -102,6 +111,8 @@ robotArm_moveWristTo( robotArm thisRobotArm, int angle )
 void
 robotArmDestroy_dynamic( robotArm thisRobotArm )
 {
+    ASSERT(thisRobotArm);
+    
     printf("\tDestroying robotArm object\n");
     memset(thisRobotArm, 0, sizeof(robotArm_t));
     free(thisRobotArm);

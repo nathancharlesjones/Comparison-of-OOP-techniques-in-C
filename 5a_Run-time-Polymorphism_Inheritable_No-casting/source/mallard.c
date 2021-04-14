@@ -24,6 +24,8 @@ typeIsMallard( void const * thisType )
 {
     bool ret = false;
 
+    ASSERT(thisType);
+
     if( *(uint32_t *)thisType == MAGIC )
     {
         while( thisType && thisType != mallardFromHeapMem && thisType != mallardFromStaticMem )
@@ -41,6 +43,8 @@ typeIsMallard( void const * thisType )
 bool
 parentIsMallard( void const * thisType )
 {
+    ASSERT(thisType);
+
     return typeIsMallard(thisType);
 }
 
@@ -64,8 +68,7 @@ objIsMallard( void * thisMallard )
 void
 mallardInit( Mallard thisMallard, va_list * args )
 {
-    ASSERT(thisMallard);
-    ASSERT(objIsMallard(thisMallard));
+    ASSERT(thisMallard && objIsMallard(thisMallard) && args);
 
     duckInit((Duck)thisMallard, args);
     
@@ -77,6 +80,8 @@ mallardInit( Mallard thisMallard, va_list * args )
 static void *
 mallardCreate_dynamic( Duck_Interface thisDuckInterface, va_list * args )
 {
+    ASSERT(thisDuckInterface && typeIsMallard(thisDuckInterface) && args);
+
     Mallard newMallard = (Mallard)calloc(1, sizeof(Mallard_t));
     // TODO: Check for null pointer on malloc failure
 
@@ -91,6 +96,8 @@ mallardCreate_dynamic( Duck_Interface thisDuckInterface, va_list * args )
 static void *
 mallardCreate_static( Duck_Interface thisDuckInterface, va_list * args )
 {
+    ASSERT(thisDuckInterface && typeIsMallard(thisDuckInterface) && args);
+
     Mallard newMallard = NULL;
 
     for( int i = 0; i < MAX_NUM_MALLARD_OBJS; i++)
@@ -122,68 +129,65 @@ mallardGetParent_static( void )
 }
 
 void
-mallardSetFeatherColor( void * thisMallard, featherColor color )
+mallardSetFeatherColor( void * _thisMallard, featherColor color )
 {
-    ASSERT(thisMallard);
-    ASSERT(objIsMallard(thisMallard));
+    Mallard thisMallard = (Mallard)_thisMallard;
+    
+    ASSERT(thisMallard && objIsMallard(thisMallard));
 
-    Mallard _thisMallard = (Mallard)thisMallard;
-    _thisMallard->myColor = color;
+    thisMallard->myColor = color;
 }
 
 featherColor
-mallardGetFeatherColor( void * thisMallard )
+mallardGetFeatherColor( void * _thisMallard )
 {
-    ASSERT(thisMallard);
-    ASSERT(objIsMallard(thisMallard));
+    Mallard thisMallard = (Mallard)_thisMallard;
     
-    Mallard _thisMallard = (Mallard)thisMallard;
-    return _thisMallard->myColor;
+    ASSERT(thisMallard && objIsMallard(thisMallard));
+    
+    return thisMallard->myColor;
 }
 
 const char *
-mallardGetFeatherColorName( void * thisMallard )
+mallardGetFeatherColorName( void * _thisMallard )
 {
-    ASSERT(thisMallard);
-    ASSERT(objIsMallard(thisMallard));
+    Mallard thisMallard = (Mallard)_thisMallard;
     
-    Mallard _thisMallard = (Mallard)thisMallard;
-    return colorNames[_thisMallard->myColor];
+    ASSERT(thisMallard && objIsMallard(thisMallard));
+    
+    return colorNames[thisMallard->myColor];
 }
 
 static void
 mallardShow( Duck thisDuck )
 {
-    ASSERT(thisDuck);
-    ASSERT(objIsMallard(thisDuck));
+    ASSERT(thisDuck && objIsMallard(thisDuck));
 
     Mallard thisMallard = (Mallard)thisDuck;
     printf("\tHi! I'm a mallard duck. My name is %s. I have %s feathers.\n", duckGetName(thisDuck), colorNames[thisMallard->myColor]);
 }
 
 void
-mallardMigrate( void * thisMallard )
+mallardMigrate( void * _thisMallard )
 {
-    ASSERT(thisMallard);
-    ASSERT(objIsMallard(thisMallard));
+    Mallard thisMallard = (Mallard)_thisMallard;
 
-    Mallard _thisMallard = (Mallard)thisMallard;
+    ASSERT(thisMallard && objIsMallard(thisMallard));
 
-    if ( (*((Mallard_Interface *)_thisMallard))->migrate )
+    if ( (*((Mallard_Interface *)thisMallard))->migrate )
     {
-        (*((Mallard_Interface *)_thisMallard))->migrate(thisMallard);
+        (*((Mallard_Interface *)thisMallard))->migrate(thisMallard);
     }
     else
     {
-        printf("\t%s: I'm migrating!\n", duckGetName((Duck)_thisMallard));
+        printf("\t%s: I'm migrating!\n", duckGetName((Duck)thisMallard));
     }
 }
 
 void
 mallardDeinit( Mallard thisMallard )
 {
-    ASSERT(thisMallard);
-    ASSERT(objIsMallard(thisMallard));
+    ASSERT(thisMallard && objIsMallard(thisMallard));
 
     printf("\tDeinitializing Mallard object with name: %s\n", duckGetName((Duck)thisMallard));
 
@@ -195,8 +199,7 @@ mallardDeinit( Mallard thisMallard )
 static void
 mallardDestroy_dynamic( void * thisMallard )
 {
-    ASSERT(thisMallard);
-    ASSERT(objIsMallard(thisMallard));
+    ASSERT(thisMallard && objIsMallard(thisMallard));
 
     mallardDeinit((Mallard)thisMallard);
     free((Mallard)thisMallard);
@@ -205,8 +208,7 @@ mallardDestroy_dynamic( void * thisMallard )
 static void
 mallardDestroy_static( void * thisMallard )
 {
-    ASSERT(thisMallard);
-    ASSERT(objIsMallard(thisMallard));
+    ASSERT(thisMallard && objIsMallard(thisMallard));
 
     for( int i = 0; i < MAX_NUM_MALLARD_OBJS; i++)
     {

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include "assert.h"
 #include "duck.h"
 #include "duck.r"
 
@@ -43,6 +44,8 @@ duckCreate_static( void )
 void
 duckInit( Duck thisDuck, char * name )
 {
+    ASSERT(thisDuck);
+    
     printf("\tInitializing duck with name: %s\n", name);
 
     strncpy(thisDuck->name, name, MAX_CHARS_NAME);
@@ -51,24 +54,32 @@ duckInit( Duck thisDuck, char * name )
 void
 duckSetName( Duck thisDuck, char * name )
 {
+    ASSERT(thisDuck);
+    
     strncpy(thisDuck->name, name, MAX_CHARS_NAME);
 }
 
 char *
 duckGetName( Duck thisDuck )
 {
+    ASSERT(thisDuck);
+    
     return thisDuck->name;
 }
 
 void
 duckShow( Duck thisDuck )
 {
+    ASSERT(thisDuck);
+    
     printf("\tHi! My name is %s.\n", thisDuck->name);
 }
 
 void
 duckDeinit( Duck thisDuck )
 {
+    ASSERT(thisDuck);
+    
     printf("\tDeinitializing Duck object with name: %s\n", thisDuck->name);
     
     memset(thisDuck->name, 0, sizeof(char)*MAX_CHARS_NAME);
@@ -77,6 +88,8 @@ duckDeinit( Duck thisDuck )
 void
 duckDestroy_dynamic( Duck thisDuck )
 {
+    ASSERT(thisDuck);
+    
     free(thisDuck);
 }
 

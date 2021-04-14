@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include "assert.h"
 #include "duck.h"
 #include "duck.r"
 #include "mallard.h"
@@ -52,6 +53,8 @@ mallardCreate_static( void )
 void
 mallardInit( Mallard thisMallard, char * name, featherColor color )
 {
+    ASSERT(thisMallard);
+    
     printf("\tInitializing new mallard duck with name: %s\n", name);
 
     duckInit((Duck)thisMallard, name);
@@ -61,12 +64,16 @@ mallardInit( Mallard thisMallard, char * name, featherColor color )
 void
 mallardShow( Mallard thisMallard )
 {
+    ASSERT(thisMallard);
+    
     printf("\tHi! I'm a mallard duck. My name is %s. I have %s feathers.\n", duckGetName((Duck)thisMallard), colorNames[thisMallard->myColor]);
 }
 
 void
 mallardDeinit( Mallard thisMallard )
 {
+    ASSERT(thisMallard);
+    
     printf("\tDeinitializing Mallard object with name: %s\n", duckGetName((Duck)thisMallard));
     
     thisMallard->myColor = 0;
@@ -77,6 +84,8 @@ mallardDeinit( Mallard thisMallard )
 void
 mallardDestroy_dynamic( Mallard thisMallard )
 {
+    ASSERT(thisMallard);
+    
     free(thisMallard);
 }
 

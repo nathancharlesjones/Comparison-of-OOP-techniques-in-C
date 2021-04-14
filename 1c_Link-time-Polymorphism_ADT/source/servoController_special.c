@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include "assert.h"
 #include "servoController.h"
 
 #define MAX_CHARS_NAME 10
@@ -51,6 +52,8 @@ servoControllerCreate_static( void )
 void
 servoControllerInit( servoController thisServoController, char * name )
 {
+    ASSERT(thisServoController);
+    
     printf("\tInitializing new servo controller with name: %s\n", name);
     printf("\tI'm a special servo controller!\n");
 
@@ -61,12 +64,16 @@ servoControllerInit( servoController thisServoController, char * name )
 int
 servoControllerGetCurrentAngle( servoController thisServoController )
 {
+    ASSERT(thisServoController);
+    
     return thisServoController->angle;
 }
 
 void
 servoControllerMoveTo( servoController thisServoController, int angle )
 {
+    ASSERT(thisServoController);
+    
     if ( angle < 0 )
     {
         printf("\t**WARNIG**: Desired angle was < 0. Limiting to 0 degrees.\n");
@@ -87,6 +94,8 @@ servoControllerMoveTo( servoController thisServoController, int angle )
 void
 servoControllerDestroy_dynamic( servoController thisServoController )
 {
+    ASSERT(thisServoController);
+    
     printf("\tDestroying servoController object with name: %s\n", thisServoController->name);
     memset(thisServoController, 0, sizeof(servoController_t));
     free(thisServoController);

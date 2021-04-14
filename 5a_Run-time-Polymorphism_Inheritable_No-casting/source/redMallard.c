@@ -22,6 +22,8 @@ typeIsRedMallard( void const * thisType )
 {
     bool ret = false;
 
+    ASSERT(thisType);
+
     if( *(uint32_t *)thisType == MAGIC )
     {
         while( thisType && thisType != redMallardFromHeapMem && thisType != redMallardFromStaticMem )
@@ -39,6 +41,8 @@ typeIsRedMallard( void const * thisType )
 bool
 parentIsRedMallard( void const * thisType )
 {
+    ASSERT(thisType);
+
     return typeIsRedMallard(thisType);
 }
 
@@ -62,8 +66,7 @@ objIsRedMallard( void * thisRedMallard )
 void
 redMallardInit( redMallard thisRedMallard, va_list * args )
 {
-    ASSERT(thisRedMallard);
-    ASSERT(objIsRedMallard(thisRedMallard));
+    ASSERT(thisRedMallard && objIsRedMallard(thisRedMallard) && args);
 
     mallardInit((Mallard)thisRedMallard, args);
     
@@ -75,6 +78,8 @@ redMallardInit( redMallard thisRedMallard, va_list * args )
 static void *
 redMallardCreate_dynamic( Duck_Interface thisDuckInterface, va_list * args )
 {
+    ASSERT(thisDuckInterface && typeIsRedMallard(thisDuckInterface) && args);
+
     redMallard newRedMallard = (redMallard)calloc(1, sizeof(redMallard_t));
     // TODO: Check for null pointer on malloc failure
 
@@ -89,6 +94,8 @@ redMallardCreate_dynamic( Duck_Interface thisDuckInterface, va_list * args )
 static void *
 redMallardCreate_static( Duck_Interface thisDuckInterface, va_list * args )
 {
+    ASSERT(thisDuckInterface && typeIsRedMallard(thisDuckInterface) && args);
+
     redMallard newRedMallard = NULL;
 
     for( int i = 0; i < MAX_NUM_RED_MALLARD_OBJS; i++)
@@ -122,28 +129,26 @@ redMallardGetParent_static( void )
 static void
 redMallardShow( Duck thisDuck )
 {
-    ASSERT(thisDuck);
-    ASSERT(objIsRedMallard(thisDuck));
+    ASSERT(thisDuck && objIsRedMallard(thisDuck));
 
     Mallard thisMallard = (Mallard)thisDuck;
     printf("\tHi! I'm a red-breasted mallard duck. My name is %s. I have %s feathers.\n", duckGetName((Duck)thisMallard), mallardGetFeatherColorName(thisMallard));
 }
 
 void
-redMallardMigrate( void * thisMallard )
+redMallardMigrate( void * _thisMallard )
 {
-    ASSERT(thisMallard);
-    ASSERT(objIsRedMallard(thisMallard));
+    Mallard thisMallard = (Mallard)_thisMallard;
+    
+    ASSERT(thisMallard && objIsRedMallard(thisMallard));
 
-    Mallard _thisMallard = (Mallard)thisMallard;
-    printf("\t%s: I'm migrating from North to South America with my fellow red-breasted mallards!\n", duckGetName((Duck)_thisMallard));
+    printf("\t%s: I'm migrating from North to South America with my fellow red-breasted mallards!\n", duckGetName((Duck)thisMallard));
 }
 
 void
 redMallardDeinit( redMallard thisRedMallard )
 {
-    ASSERT(thisRedMallard);
-    ASSERT(objIsRedMallard(thisRedMallard));
+    ASSERT(thisRedMallard && objIsRedMallard(thisRedMallard));
 
     printf("\tDeinitializing Red Mallard object with name: %s\n", duckGetName((Duck)thisRedMallard));
 
@@ -155,8 +160,7 @@ redMallardDeinit( redMallard thisRedMallard )
 static void
 redMallardDestroy_dynamic( void * thisRedMallard )
 {
-    ASSERT(thisRedMallard);
-    ASSERT(objIsRedMallard(thisRedMallard));
+    ASSERT(thisRedMallard && objIsRedMallard(thisRedMallard));
 
     redMallardDeinit((redMallard)thisRedMallard);
     free((redMallard)thisRedMallard);
@@ -165,8 +169,7 @@ redMallardDestroy_dynamic( void * thisRedMallard )
 static void
 redMallardDestroy_static( void * thisRedMallard )
 {
-    ASSERT(thisRedMallard);
-    ASSERT(objIsRedMallard(thisRedMallard));
+    ASSERT(thisRedMallard && objIsRedMallard(thisRedMallard));
 
     for( int i = 0; i < MAX_NUM_MALLARD_OBJS; i++)
     {

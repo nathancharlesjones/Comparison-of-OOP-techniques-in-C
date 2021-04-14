@@ -1,11 +1,12 @@
 - [ ] 5a
     - [ ] Check README (Any other major changes?)
+        - [ ] Went back to factory pattern
     - [x] Add magic number
 - [ ] 5b: Write README.
 - [ ] Standardize interfaces? (create/init/deinit/destroy vs deinit/destroy vs destroy ...)
-- [ ] Change references to "vtable" to "*(XXX_Interface *)"
-- [ ] Convert "_OBJ" to "OBJ"
-- [ ] Change "if" to "ASSERT"
+- [x] Change references to "vtable" to "*(XXX_Interface *)"
+- [x] Convert "_OBJ" to "OBJ"
+- [x] Change "if" to "ASSERT"
 - [ ] Check all READMEs
 - [ ] Do side-by-side comparison of all projects to make sure I didn't miss anything (?)
 - [ ] Use makefile sans vpath?

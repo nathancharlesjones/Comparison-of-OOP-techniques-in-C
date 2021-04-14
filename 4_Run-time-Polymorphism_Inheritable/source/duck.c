@@ -3,6 +3,7 @@
 #include <string.h>     // For strncpy, memset
 #include <stdbool.h>    // For bool data type
 #include <stdarg.h>     // For variadic macros (va_list, va_start, va_end)
+#include "assert.h"
 #include "duck.h"
 #include "duck.r"
 
@@ -17,6 +18,8 @@ static duckMemoryPool_t duckMemoryPool[MAX_NUM_DUCK_OBJS] = {0};
 void
 duckDeinit( Duck thisDuck )
 {
+    ASSERT(thisDuck);
+    
     printf("\tDeinitializing duck object with name: %s\n", thisDuck->name);
     memset(thisDuck->name, 0, sizeof(char)*MAX_CHARS_NAME);
 }
@@ -24,23 +27,24 @@ duckDeinit( Duck thisDuck )
 void
 duckDestroy( Duck thisDuck )
 {
-    if( thisDuck )
+    ASSERT(thisDuck && *(Duck_Interface *)thisDuck);
+    
+    if( (*((Duck_Interface *)thisDuck))->deinit )
     {
-        if ( thisDuck->vtable && thisDuck->vtable->deinit )
-        {
-            thisDuck->vtable->deinit(thisDuck);
-        }
+        (*((Duck_Interface *)thisDuck))->deinit(thisDuck);
+    }
 
-        if ( thisDuck->vtable && thisDuck->vtable->destroy )
-        {
-            thisDuck->vtable->destroy(thisDuck);
-        }
+    if( (*((Duck_Interface *)thisDuck))->destroy )
+    {
+        (*((Duck_Interface *)thisDuck))->destroy(thisDuck);
     }
 }
 
 static void
 duckDestroy_dynamic( Duck thisDuck )
 {
+    ASSERT(thisDuck);
+    
     free(thisDuck);
 }
 
@@ -78,6 +82,8 @@ Duck_Interface duckFromStaticMem = &duckStatic;
 Duck
 duckCreate_dynamic( char * name )
 {
+    ASSERT(name);
+    
     Duck newDuck = (Duck)calloc(1, sizeof(Duck_t));
 
     duckInit(newDuck, name);
@@ -89,6 +95,8 @@ duckCreate_dynamic( char * name )
 Duck
 duckCreate_static( char * name )
 {
+    ASSERT(name);
+    
     Duck newDuck = NULL;
 
     for( int i = 0; i < MAX_NUM_DUCK_OBJS; i++)
@@ -109,6 +117,8 @@ duckCreate_static( char * name )
 void
 duckInit( Duck thisDuck, char * name )
 {
+    ASSERT(thisDuck && name);
+    
     printf("\tInitializing duck object with name: %s\n", name);
     strncpy(thisDuck->name, name, MAX_CHARS_NAME);
 }
@@ -116,27 +126,35 @@ duckInit( Duck thisDuck, char * name )
 void
 duckSetName( Duck thisDuck, char * name )
 {
+    ASSERT(thisDuck && name);
+    
     strncpy(thisDuck->name, name, MAX_CHARS_NAME);
 }
 
 char *
 duckGetName( Duck thisDuck )
 {
+    ASSERT(thisDuck);
+    
     return thisDuck->name;
 }
 
 void
 duckQuack( Duck thisDuck )
 {
+    ASSERT(thisDuck);
+    
     printf("\t%s: Quack!\n", thisDuck->name);
 }
 
 void
 duckShow( Duck thisDuck )
 {
-    if ( thisDuck && thisDuck->vtable && thisDuck->vtable->show )
+    ASSERT(thisDuck && *(Duck_Interface *)thisDuck);
+    
+    if( (*((Duck_Interface *)thisDuck))->show )
     {
-        thisDuck->vtable->show(thisDuck);
+        (*((Duck_Interface *)thisDuck))->show(thisDuck);
     }
     else
     {

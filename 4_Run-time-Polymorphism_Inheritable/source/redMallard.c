@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include "assert.h"
 #include "duck.h"
 #include "mallard.h"
 #include "redMallard.h"
@@ -18,6 +19,8 @@ static redMallardMemoryPool_t redMallardMemoryPool[MAX_NUM_RED_MALLARD_OBJS] = {
 static void
 redMallardShow( Duck thisDuck )
 {
+    ASSERT(thisDuck);
+    
     Mallard thisMallard = (Mallard)thisDuck;
     printf("\tHi! I'm a red-breasted mallard duck. My name is %s. I have %s feathers.\n", duckGetName(thisDuck), mallardGetFeatherColorName(thisMallard));
 }
@@ -25,12 +28,16 @@ redMallardShow( Duck thisDuck )
 static void
 redMallardMigrate( Mallard thisMallard )
 {
+    ASSERT(thisMallard);
+    
     printf("\t%s: I'm migrating from North to South America with my fellow red-breasted mallards!\n", duckGetName((Duck)thisMallard));
 }
 
 void
 redMallardDeinit( Duck thisDuck )
 {
+    ASSERT(thisDuck);
+    
     printf("\tDeinitializing red mallard object with name: %s\n", duckGetName(thisDuck));
     
     mallardDeinit(thisDuck);
@@ -39,6 +46,8 @@ redMallardDeinit( Duck thisDuck )
 static void
 redMallardDestroy_dynamic( Duck thisDuck )
 {
+    ASSERT(thisDuck);
+    
     free(thisDuck);
 }
 
@@ -77,6 +86,8 @@ redMallard_Interface redMallardFromStaticMem = &redMallardStatic;
 void
 redMallardInit( redMallard thisRedMallard, char * name, featherColor color )
 {
+    ASSERT(thisRedMallard && name);
+    
     mallardInit((Mallard)thisRedMallard, name, color);
 
     printf("\tInitializing red-breasted mallard with name: %s\n", name);
@@ -87,11 +98,13 @@ redMallardInit( redMallard thisRedMallard, char * name, featherColor color )
 redMallard
 redMallardCreate_dynamic( char * name, featherColor color )
 {
+    ASSERT(name);
+    
     redMallard newRedMallard = (redMallard)calloc(1, sizeof(redMallard_t));
     // TODO: Check for null pointer on malloc failure
 
     redMallardInit(newRedMallard, name, color);
-    ((Duck)newRedMallard)->vtable = (Duck_Interface)redMallardFromHeapMem;
+    *(redMallard_Interface *)newRedMallard = redMallardFromHeapMem;
 
     return newRedMallard;
 }
@@ -99,6 +112,8 @@ redMallardCreate_dynamic( char * name, featherColor color )
 redMallard
 redMallardCreate_static( char * name, featherColor color )
 {
+    ASSERT(name);
+    
     redMallard newRedMallard = NULL;
 
     for( int i = 0; i < MAX_NUM_RED_MALLARD_OBJS; i++)
@@ -108,7 +123,7 @@ redMallardCreate_static( char * name, featherColor color )
             redMallardMemoryPool[i].used = true;
             newRedMallard = &redMallardMemoryPool[i].thisRedMallard;
             redMallardInit(newRedMallard, name, color);
-            ((Duck)newRedMallard)->vtable = (Duck_Interface)redMallardFromStaticMem;
+            *(redMallard_Interface *)newRedMallard = redMallardFromStaticMem;
             break;
         }
     }

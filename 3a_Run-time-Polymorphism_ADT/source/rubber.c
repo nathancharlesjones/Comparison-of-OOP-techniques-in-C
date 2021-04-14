@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include "assert.h"
 #include "duck.h"
 #include "duck.r"
 #include "rubber.h"
@@ -28,6 +29,8 @@ static const Duck_Interface_Struct interface_static;
 static void
 rubberInit( Rubber thisRubber, Duck_Interface interface, char * name, duck_size size )
 {
+    ASSERT(thisRubber && interface && name);
+    
     printf("\tInitializing new rubber duck with name: %s\n", name);
 
     duckSetName((Duck)thisRubber, name);
@@ -38,6 +41,8 @@ rubberInit( Rubber thisRubber, Duck_Interface interface, char * name, duck_size 
 Duck
 rubberCreate_dynamic( char * name, duck_size size )
 {
+    ASSERT(name);
+    
     Rubber newRubber = (Rubber)calloc(1, sizeof(Rubber_t));
     // TODO: Check for null pointer on malloc failure
 
@@ -49,6 +54,8 @@ rubberCreate_dynamic( char * name, duck_size size )
 Duck
 rubberCreate_static( char * name, duck_size size )
 {
+    ASSERT(name);
+    
     Rubber newRubber = NULL;
 
     for( int i = 0; i < MAX_NUM_RUBBER_OBJS; i++)
@@ -68,6 +75,8 @@ rubberCreate_static( char * name, duck_size size )
 static void
 rubberShow( Duck thisDuck )
 {
+    ASSERT(thisDuck);
+    
     Rubber thisRubber = (Rubber)thisDuck;
     printf("\tHi! I'm a %s rubber duck. My name is %s.\n", sizeNames[thisRubber->size], duckGetName((Duck)thisRubber));
 }
@@ -75,6 +84,8 @@ rubberShow( Duck thisDuck )
 static void
 rubberDeinit( Duck thisDuck )
 {
+    ASSERT(thisDuck);
+    
     printf("\tDeinitializing Rubber Duck object with name: %s\n", duckGetName(thisDuck));
 
     ((Rubber)thisDuck)->size = 0;
@@ -83,6 +94,8 @@ rubberDeinit( Duck thisDuck )
 static void
 rubberDestroy_dynamic( Duck thisDuck )
 {
+    ASSERT(thisDuck);
+    
     free((Rubber)thisDuck);
 }
 

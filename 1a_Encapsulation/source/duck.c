@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include "duck.h"
+#include "assert.h"
 
 #define MAX_CHARS_NAME 10
 #define MAX_CHARS_NAME_WITH_NUL (MAX_CHARS_NAME+1)
@@ -50,6 +51,8 @@ duckCreate_static( void )
 void
 duckInit( Duck thisDuck, char * name )
 {
+    ASSERT(thisDuck);
+
     printf("\tInitializing new duck with name: %s\n", name);
 
     memset(thisDuck, 0, sizeof(Duck_t));
@@ -59,24 +62,32 @@ duckInit( Duck thisDuck, char * name )
 void
 duckSetName( Duck thisDuck, char * name )
 {
+    ASSERT(thisDuck);
+
     strncpy(thisDuck->name, name, MAX_CHARS_NAME);
 }
 
 char *
 duckGetName( Duck thisDuck )
 {
+    ASSERT(thisDuck);
+
     return thisDuck->name;
 }
 
 void
 duckShow( Duck thisDuck )
 {
+    ASSERT(thisDuck);
+
     printf("\tHi! My name is %s.\n", thisDuck->name);
 }
 
 void
 duckDestroy_dynamic( Duck thisDuck )
 {
+    ASSERT(thisDuck);
+
     printf("\tDestroying Duck object with name: %s\n", thisDuck->name);
     memset(thisDuck, 0, sizeof(Duck_t));
     free(thisDuck);

@@ -1,33 +1,42 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "assert.h"
 #include "duck.h"
 #include "duck.r"
 
 void
 duckSetName( Duck thisDuck, char * name )
 {
+    ASSERT(thisDuck && name);
+    
     strncpy(thisDuck->name, name, MAX_CHARS_NAME);
 }
 
 char *
 duckGetName( Duck thisDuck )
 {
+    ASSERT(thisDuck);
+    
     return thisDuck->name;
 }
 
 void
 duckQuack( Duck thisDuck )
 {
+    ASSERT(thisDuck);
+    
     printf("\t%s: Quack!\n", thisDuck->name);
 }
 
 void
 duckShow( Duck thisDuck )
 {
-    if ( thisDuck && thisDuck->vtable && thisDuck->vtable->show )
+    ASSERT(thisDuck && *(Duck_Interface *)thisDuck);
+    
+    if( (*((Duck_Interface *)thisDuck))->show )
     {
-        thisDuck->vtable->show(thisDuck);
+        (*((Duck_Interface *)thisDuck))->show(thisDuck);
     }
     else
     {
@@ -38,19 +47,18 @@ duckShow( Duck thisDuck )
 void
 duckDestroy( Duck thisDuck )
 {
-    if( thisDuck )
+    ASSERT(thisDuck && *(Duck_Interface *)thisDuck);
+    
+    if( (*((Duck_Interface *)thisDuck))->deinit )
     {
-        if ( thisDuck->vtable && thisDuck->vtable->deinit )
-        {
-            thisDuck->vtable->deinit(thisDuck);
-        }
+        (*((Duck_Interface *)thisDuck))->deinit(thisDuck);
+    }
 
-        printf("\tDeinitializing Duck object with name: %s\n", thisDuck->name);
-        memset(thisDuck->name, 0, sizeof(char)*MAX_CHARS_NAME);
+    printf("\tDeinitializing Duck object with name: %s\n", thisDuck->name);
+    memset(thisDuck->name, 0, sizeof(char)*MAX_CHARS_NAME);
 
-        if ( thisDuck->vtable && thisDuck->vtable->destroy )
-        {
-            thisDuck->vtable->destroy(thisDuck);
-        }
+    if( (*((Duck_Interface *)thisDuck))->destroy )
+    {
+        (*((Duck_Interface *)thisDuck))->destroy(thisDuck);
     }
 }
