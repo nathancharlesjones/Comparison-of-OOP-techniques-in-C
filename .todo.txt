@@ -10,7 +10,7 @@
 - [ ] Check all READMEs
 - [ ] Do side-by-side comparison of all projects to make sure I didn't miss anything (?)
 - [ ] Use makefile sans vpath?
-- [ ] Change interfaces from "void *" to "Duck_Interface"?
+- [x] Change interfaces from "void *" to "Duck_Interface"? --> Nah. It would definitely add some type-checking but it would look weird to have to put "extern Duck_Interface mallardFromHeapMem".
 - [ ] What are the benefits to Axel's OOP? Ability to call any function without explicitly casting?
     - [ ] Not sure. "Objects" are the same (all have, at least, a pointer to class/vtable). Class adds pointer to object def (why?) and pointer to base class. Not sure why the latter is needed if the super() function exists, but that's why there are initClass() functions (can't initialize a derived class definition using extern variable).
     - [ ] Class_ctor() craziness seems to be a requirement of runtime creation of classes (a requirement of having a base class pointer, I think)
