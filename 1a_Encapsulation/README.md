@@ -16,7 +16,7 @@ The rest of the program is able to interact with these "Duck" objects using the 
 Duck duckCreate_dynamic( void );
 Duck duckCreate_static( void );
 void duckInit( Duck thisDuck, char * name );
-void duckShow( Duck thisDuck );
+...
 ```
 
 This is demonstrated in "main.c". First, "Duck" objects are created and initialized.
@@ -24,6 +24,7 @@ This is demonstrated in "main.c". First, "Duck" objects are created and initiali
 ```
 // source/main.c
 Duck Huey = duckCreate_dynamic();
+...
 duckInit(Huey, "Huey");
 ```
 

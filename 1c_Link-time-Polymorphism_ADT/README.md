@@ -35,14 +35,16 @@ We can't include both files in our project since the C compiler would (rightly) 
 # SERVO is used to define which type of servo we want to build our project with.
 SERVO ?=
 ...
+# Source files
+app_src_list := \
+	($app_src_dir)/main.c \
+	($app_src_dir)/robotArm.c
 ifeq ($(SERVO),normal)
-SRC_FILES += \
-    source/servoController.c
+app_src_list += ($app_src_dir)/servoController.c
 else ifeq ($(SERVO),special)
-SRC_FILES += \
-	source/servoController_special.c
+app_src_list += ($app_src_dir)/servoController_special.c
 else
-$(error Unreachable)
+$(error SERVO variable not defined. Options are normal or special.)
 endif
 ```
 

@@ -185,7 +185,7 @@ const Duck_Interface_Struct duckStatic = {
 
 In this manner, we can test the value of each input to make sure it points to the value of `MAGIC` _before_ we assume the first element is a pointer to a vtable (like for an object) or that the input points to a vtable (like for an object's "type").
 
-The last change to note is that each classes' `init()` and `deinit()` have been put back in their private header files. It's possible and slightly preferable to put them in the base class interface (so that derived classed don't need to explicitly reference functions in the base class's private header file), but donig so adequately requires a bit more complication than I wanted to deal with. Axel Schreiner takes this approach in ["OOP in ANSI C"](https://www.cs.rit.edu/~ats/books/ooc.pdf).
+The last change to note is that each classes' `init()` and `deinit()` have been put back in their private header files. It's possible, and slightly preferable, to keep them in the base class interface (so that derived classed don't need to explicitly reference functions in the base class's private header file), but donig so adequately requires a bit more complication than I wanted to deal with. Axel Schreiner takes this approach in ["OOP in ANSI C"](https://www.cs.rit.edu/~ats/books/ooc.pdf).
 
 ## How do I run it?
 

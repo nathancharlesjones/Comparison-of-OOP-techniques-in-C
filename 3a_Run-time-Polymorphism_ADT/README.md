@@ -17,7 +17,7 @@ duckShow((Duck)Bill);
 
 Ideally, we would be able to provide any derived object to any base class function without casting AND let the derived class define a function which _supercedes_ the base class's function. In other words, instead of writing `duckShow((Duck)Bill)` and seeing `"Hi! My name is Bill."` on the output, we'd like to write `duckShow(Bill)` (notice: no casting to type Duck) and see something like `"Hi! I'm a mallard duck. My name is Bill. I have brown feathers."` on the output. In this project, we're going to look at one way of doing this.
 
-To do this, we first need to define a table of function pointers for the abstract data type, "Duck", emphasis on the word "abstract". As opposed to our last project, we are going to prohibit the ability to create objects of the base class, which will make the implementation much easier (I'll return to creating objects of the base class in a later project). The table of function pointers will allow derived classes the ability to change the default function for a base class to one that's specific to the derived class. Our Duck object will have three functions which we will allow or require derived classes to change or implement (`show()`, `deinit()`, and `destroy()`) and one function which we will not (`duckQuack()`). Thus, the first three are included in our interface definition. In C++ parlance, this is a "vtable" or "table of virtual functions" (the "virtual" part means that they are intended to be defined by the derived classes). Each derived class will also need to write their own "Create" function(s). Making the "Create" functions polymorphic requires a bit more work and will be tackled in a [future project](https://github.com/nathancharlesjones/Comparison-of-OOP-techniques-in-C/tree/main/3c_Run-time-Polymorphism_ADT_Complete-interface).
+First we need to define a table of function pointers for the abstract data type, "Duck" (emphasis on the word "abstract"). As opposed to our last project, we are going to prohibit the ability to create objects of the base class, which will make the implementation much easier (I'll return to creating objects of the base class in a later project). The table of function pointers will allow derived classes the ability to change the default function for a base class to one that's specific to the derived class. Our Duck object will have three functions which we will allow or require derived classes to change or implement (`show()`, `deinit()`, and `destroy()`) and one function which we will not (`duckQuack()`). Thus, the first three are included in our interface definition. In C++ parlance, this is a "vtable" or "table of virtual functions" (the "virtual" part means that they are intended to be defined by the derived classes). Each derived class will also need to write their own "Create" function(s). Making the "Create" functions polymorphic requires a bit more work and will be tackled in a [future project](https://github.com/nathancharlesjones/Comparison-of-OOP-techniques-in-C/tree/main/3c_Run-time-Polymorphism_ADT_Complete-interface).
 
 ```
 // include/duck.r
@@ -41,7 +41,7 @@ We'll also add the interface struct as the first member of our Duck struct.
 typedef struct Duck_t
 {
     Duck_Interface vtable;
-    char name[MAX_CHARS_NAME];
+    char name[MAX_CHARS_NAME_WITH_NUL];
 } Duck_t;
 ```
 
@@ -52,7 +52,9 @@ The definition for `duckQuack()` is straightforward, but the ones for `duckShow(
 void
 duckShow( Duck thisDuck )
 {
-    if ( thisDuck && thisDuck->vtable && thisDuck->vtable->show )
+    ASSERT(thisDuck && thisDuck->vtable);
+    
+    if( thisDuck->vtable->show )
     {
         thisDuck->vtable->show(thisDuck);
     }
