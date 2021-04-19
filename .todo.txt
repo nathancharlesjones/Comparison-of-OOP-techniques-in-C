@@ -1,23 +1,26 @@
-- [ ] 5a
-    - [ ] Check README (Any other major changes?)
-        - [ ] Went back to factory pattern
+- [x] 5a
+    - [x] Check README (Any other major changes?)
+        - Went back to factory pattern
     - [x] Add magic number
-- [ ] 5b: Write README.
-- [ ] Standardize interfaces? (create/init/deinit/destroy vs deinit/destroy vs destroy ...)
+- [ ] 5b
+    - [ ] Copy code from ooc repo
+    - [ ] Updated code for ducks
+    - [ ] Write README
+- [x] Standardize interfaces: create/init/deinit/destroy
 - [x] Change references to "vtable" to "*(XXX_Interface *)"
 - [x] Convert "_OBJ" to "OBJ"
 - [x] Change "if" to "ASSERT"
-- [ ] Check all READMEs
-- [ ] Do side-by-side comparison of all projects to make sure I didn't miss anything (?)
-- [ ] Use makefile sans vpath?
+- [ ] Check all READMEs (particularly for code mismatch)
+- [ ] Do side-by-side comparison of all projects to make sure I didn't miss anything
+- [x] Use makefile sans vpath? --> Not worth the effort
 - [x] Change interfaces from "void *" to "Duck_Interface"? --> Nah. It would definitely add some type-checking but it would look weird to have to put "extern Duck_Interface mallardFromHeapMem".
 - [ ] What are the benefits to Axel's OOP? Ability to call any function without explicitly casting?
-    - [ ] Not sure. "Objects" are the same (all have, at least, a pointer to class/vtable). Class adds pointer to object def (why?) and pointer to base class. Not sure why the latter is needed if the super() function exists, but that's why there are initClass() functions (can't initialize a derived class definition using extern variable).
-    - [ ] Class_ctor() craziness seems to be a requirement of runtime creation of classes (a requirement of having a base class pointer, I think)
-    - [ ] I feel like Point_draw wouldn't be required if draw had the format if (subclass impl) else (default).
-    - [ ] Why is super_draw needed?
-    - [ ] "However, we have decided in chapter 6 that static initialization makes class descriptions hard to maintain: the order of the structure components must agree with all the initializations, and inheritance would force us to reveal dynamically linked methods outside their implementation files." ???
-    - [ ] Implementation feels very efficient: checks only happen where they need to, only 10 LOC needed to implement "Circle" in Ch 9
+    - Not sure. "Objects" are the same (all have, at least, a pointer to class/vtable). Class adds pointer to object def (why?) and pointer to base class. Not sure why the latter is needed if the super() function exists, but that's why there are initClass() functions (can't initialize a derived class definition using extern variable).
+    - Class_ctor() craziness seems to be a requirement of runtime creation of classes (a requirement of having a base class pointer, I think)
+    - I feel like Point_draw wouldn't be required if draw had the format if (subclass impl) else (default).
+    - Why is super_draw needed?
+    - "However, we have decided in chapter 6 that static initialization makes class descriptions hard to maintain: the order of the structure components must agree with all the initializations, and inheritance would force us to reveal dynamically linked methods outside their implementation files." --> Private header files should only be included in their respective source files and in the private header files of derived classes. Dervied classes' source files shouldn't include their base classes' private header files.
+    - Implementation feels very efficient: checks only happen where they need to, only 10 LOC needed to implement "Circle" in Ch 9
 - [ ] Possible to use the LL type-independent macro things for polymorphism?
 
 
