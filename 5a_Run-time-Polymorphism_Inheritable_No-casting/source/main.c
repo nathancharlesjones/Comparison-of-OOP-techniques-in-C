@@ -37,8 +37,11 @@ main( void )
 
     printf("|__Intentionally calling mallard functions on duck objects (to test the 'type-checking'):\n");
 
-    void * Helen = duckCreate(duckFromHeapMem, "Helen");
-    mallardMigrate(Helen);
+    //void * Helen = duckCreate(duckFromHeapMem, "Helen");
+    //mallardMigrate(Helen);
+
+    int x = 5;
+    mallardMigrate(&x);
 
     return 0;
 }

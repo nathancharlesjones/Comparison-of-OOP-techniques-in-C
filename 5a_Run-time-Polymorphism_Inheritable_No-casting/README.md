@@ -17,10 +17,10 @@ objIsDuck( void * thisDuck )
 {
     bool ret = false;
     ...
-    void const * thisType = *(Duck_Interface *)thisDuck;
+        void const * thisType = *(Duck_Interface *)thisDuck;
 
-    if( ( thisType == duckFromHeapMem ) || ( thisType == duckFromStaticMem ) || parentIsDuck(thisType) ) ret = true;
-
+        if( ( thisType == duckFromHeapMem ) || ( thisType == duckFromStaticMem ) || parentIsDuck(thisType) ) ret = true;
+    ...
     return ret;
 }
 
@@ -28,7 +28,7 @@ void
 duckSetName( void * thisDuck, char * name )
 {
     ...
-    ASSERT(objIsDuck(thisDuck));
+    ASSERT(thisDuck && objIsDuck(thisDuck) && name);
     ...
 }
 
@@ -36,7 +36,7 @@ void
 duckQuack( void * thisDuck )
 {
     ...
-    ASSERT(objIsDuck(thisDuck));
+    ASSERT(thisDuck && objIsDuck(thisDuck));
     ...
 }
 
@@ -50,14 +50,16 @@ bool
 typeIsDuck( void * thisType )
 {
     bool ret = false;
+    ASSERT(thisType);
+    ...
+        while( thisType && thisType != duckFromHeapMem && thisType != duckFromStaticMem )
+        {
+            ASSERT(((Duck_Interface)thisType)->getParentInterface);
+            thisType = ((Duck_Interface)thisType)->getParentInterface();
+        }
 
-    while( thisType && thisType != duckFromHeapMem && thisType != duckFromStaticMem )
-    {
-        thisType = ((Duck_Interface)thisType)->getParentInterface();
-    }
-
-    if( ( thisType == duckFromHeapMem ) || ( thisType == duckFromStaticMem ) ) ret = true;
-
+        if( ( thisType == duckFromHeapMem ) || ( thisType == duckFromStaticMem ) ) ret = true;
+    ...
     return ret;
 }
 
@@ -132,7 +134,58 @@ In this manner, the objects of all derived classes point the way up through thei
 
 **IT'S REALLY IMPORTANT TO NOTE** that although we've implemented a basic form of type-checking at this point, our framework still isn't completely safe from garbage arguments causing it to run off the rails. In following the chain of `getParentInterfaces()`, we're still assuming that the `void *` object being passed to a function actually implements the `getParentInterface()` function. In essence, if we call a `Duck` method on something that is not an object of any type (e.g. it is a pointer to an integer), it will fail the test of whether it points to a pointer to a `Duck` interface (`if( ( thisType == duckFromHeapMem ) || ( thisType == duckFromStaticMem )...`) and then our framework will **assume** that the first memory value of the interface is a function pointer (to a function that _should_ return the memory address of the parent interface) and then **jump to that location and start executing code**. This is a huge flaw, mitigated only by the thought that calling a class function on something that isn't an object (of that or any other class) shouldn't ever really happen.
 
-The last change to note is that each classes' `init()` and `deinit()` have been put back in their private header files. It's possible to put them in the base class interface, but referencing them from their was a bit convoluted and also unnecessary. Since each class already knows which `init()`/`deinit()` functions to call, there isn't really a need to put them into the interface.
+To remedy this, I've stolen a technique from Axel Schreiner, which is to embed a "magic" value at the start of each object and vtable.
+
+```
+#define MAGIC 0x0EFFACED // efface: to make (oneself) modestly or shyly inconspicuous (shamelessly stolen from "OOP in ANSI C" by Axel Schreiner)
+
+typedef struct Duck_t
+{
+    Duck_Interface vtable;
+    uint32_t magic_number;  // magic_number comes after vtable so we can stil treat pointers to objects like double-pointers to vtables
+    ...
+} Duck_t, *Duck;
+
+typedef struct Duck_Interface_Struct
+{
+    uint32_t magic_number;
+    ...
+} Duck_Interface_Struct;
+```
+
+The `magic_number` fields are initilized to `MAGIC` in either the `Create()` function or the interface defintion:
+
+```
+static void *
+duckCreate_dynamic( Duck_Interface thisDuckInterface, va_list * args )
+{
+    ...
+    newDuck->magic_number = MAGIC;
+    ...
+}
+
+static void *
+duckCreate_static( Duck_Interface thisDuckInterface, va_list * args )
+{
+    ...
+            newDuck->magic_number = MAGIC;
+    ...
+}
+
+const Duck_Interface_Struct duckDynamic = {
+    .magic_number = MAGIC,
+    ...
+};
+
+const Duck_Interface_Struct duckStatic = {
+    .magic_number = MAGIC,
+    ...
+};
+```
+
+In this manner, we can test the value of each input to make sure it points to the value of `MAGIC` _before_ we assume the first element is a pointer to a vtable (like for an object) or that the input points to a vtable (like for an object's "type").
+
+The last change to note is that each classes' `init()` and `deinit()` have been put back in their private header files. It's possible and slightly preferable to put them in the base class interface (so that derived classed don't need to explicitly reference functions in the base class's private header file), but donig so adequately requires a bit more complication than I wanted to deal with. Axel Schreiner takes this approach in ["OOP in ANSI C"](https://www.cs.rit.edu/~ats/books/ooc.pdf).
 
 ## How do I run it?
 
