@@ -21,7 +21,7 @@
     - Why is super_draw needed?
     - "However, we have decided in chapter 6 that static initialization makes class descriptions hard to maintain: the order of the structure components must agree with all the initializations, and inheritance would force us to reveal dynamically linked methods outside their implementation files." --> Private header files should only be included in their respective source files and in the private header files of derived classes. Dervied classes' source files shouldn't include their base classes' private header files.
     - Implementation feels very efficient: checks only happen where they need to, only 10 LOC needed to implement "Circle" in Ch 9
-- [ ] Possible to use the LL type-independent macro things for polymorphism?
+- [x] Possible to use the LL type-independent macro things for polymorphism? --> Not that I can tell.
 
 
 - [x] 3b: Match format of 3a. Update README.
