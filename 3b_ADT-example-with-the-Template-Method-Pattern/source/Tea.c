@@ -69,12 +69,12 @@ static void Tea_addCondiments(CaffeinatedBeverage super __attribute__((unused)))
 }
 
 static void Tea_destroyDynamic( CaffeinatedBeverage super ) {
-    ASSERT(super);
-    
+    ASSERT(super);    
     free(super);
 }
 
 static void Tea_destroyStatic( CaffeinatedBeverage super ) {
+    ASSERT(super);    
     for( int i = 0; i < MAX_NUM_TEA_OBJS; i++)
     {
         if( (Tea)super == &teaMemoryPool[i].thisTea )

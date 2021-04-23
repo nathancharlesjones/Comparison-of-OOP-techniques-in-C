@@ -174,9 +174,9 @@ duckShow( void * _thisDuck )
 
     ASSERT(thisDuck && objIsDuck(thisDuck));
     
-    if ( (*(Duck_Interface *)thisDuck)->show )
+    if ( thisDuck->vtable->show )
     {
-        (*(Duck_Interface *)thisDuck)->show(thisDuck);
+        thisDuck->vtable->show(thisDuck);
     }
     else
     {
@@ -191,8 +191,8 @@ duckDestroy( void * _thisDuck )
     
     ASSERT(thisDuck && objIsDuck(thisDuck));
     
-    ASSERT( (*((Duck_Interface *)_thisDuck))->destroy );
-    (*((Duck_Interface *)_thisDuck))->destroy(thisDuck);
+    ASSERT( thisDuck->vtable->destroy );
+    thisDuck->vtable->destroy(thisDuck);
 }
 
 void

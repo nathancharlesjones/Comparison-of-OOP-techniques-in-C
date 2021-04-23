@@ -33,9 +33,9 @@ duckCreate( Duck_Interface newDuckType, char * name, ... )
         *(Duck_Interface *)newDuck = newDuckType;
         strncpy(newDuck->name, name, MAX_CHARS_NAME);
 
-        if ( (*((Duck_Interface *)newDuck))->init )
+        if ( newDuck->vtable->init )
         {
-            (*((Duck_Interface *)newDuck))->init(newDuck, &args);
+            newDuck->vtable->init(newDuck, &args);
         }
     }
 
@@ -79,10 +79,10 @@ duckQuack( Duck thisDuck )
 void
 duckShow( Duck thisDuck )
 {
-    ASSERT( thisDuck && *(Duck_Interface *)thisDuck );
-    if ( (*((Duck_Interface *)thisDuck))->show )
+    ASSERT( thisDuck && thisDuck->vtable );
+    if( thisDuck->vtable->show )
     {
-        (*((Duck_Interface *)thisDuck))->show(thisDuck);
+        thisDuck->vtable->show(thisDuck);
     }
     else
     {
@@ -93,19 +93,17 @@ duckShow( Duck thisDuck )
 void
 duckDestroy( Duck thisDuck )
 {
-    ASSERT( thisDuck && *(Duck_Interface *)thisDuck );
-    if ( (*((Duck_Interface *)thisDuck))->deinit )
+    ASSERT( thisDuck && thisDuck->vtable );
+    if( thisDuck->vtable->deinit )
     {
-        (*((Duck_Interface *)thisDuck))->deinit(thisDuck);
+        thisDuck->vtable->deinit(thisDuck);
     }
 
     printf("\tDeinitializing Duck object with name: %s\n", thisDuck->name);
     memset(thisDuck->name, 0, sizeof(char)*MAX_CHARS_NAME);
 
-    if ( (*((Duck_Interface *)thisDuck))->destroy )
-    {
-        (*((Duck_Interface *)thisDuck))->destroy(thisDuck);
-    }
+    ASSERT( thisDuck->vtable->destroy );
+    thisDuck->vtable->destroy(thisDuck);
 }
 
 static void

@@ -72,12 +72,12 @@ static void Coffee_addWhip(CaffeinatedBeverage super __attribute__((unused))) {
 }
 
 static void coffeeDestroy_dynamic( CaffeinatedBeverage super ) {
-    ASSERT(super);
-    
+    ASSERT(super);    
     free(super);
 }
 
 static void coffeeDestroy_static( CaffeinatedBeverage super ) {
+    ASSERT(super);    
     for( int i = 0; i < MAX_NUM_COFFEE_OBJS; i++)
     {
         if( (Coffee)super == &coffeeMemoryPool[i].thisCoffee )

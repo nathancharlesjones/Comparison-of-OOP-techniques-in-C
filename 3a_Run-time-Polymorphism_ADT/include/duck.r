@@ -14,8 +14,8 @@ typedef struct Duck_t
 
 typedef struct Duck_Interface_Struct
 {
-    void (*show)( Duck_t * thisDuck );
-    void (*deinit)( Duck_t * thisDuck );
+    void (*show)( Duck_t * thisDuck );  // Optional for derived classes; set to "0" or "NULL" to use the default "Duck" implementation
+    void (*deinit)( Duck_t * thisDuck ); // Optional for derived classes; set to "0" or "NULL" if no deinitialization of the derived class is required
     void (*destroy)( Duck_t * thisDuck );
 } Duck_Interface_Struct;
 

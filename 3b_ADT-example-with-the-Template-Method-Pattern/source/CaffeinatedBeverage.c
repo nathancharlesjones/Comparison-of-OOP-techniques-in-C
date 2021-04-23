@@ -26,10 +26,10 @@ static void CaffeinatedBeverage_boilWater(CaffeinatedBeverage _self __attribute_
 }
 
 static void CaffeinatedBeverage_brew(CaffeinatedBeverage _self) {
-    ASSERT(_self && *(CaffeinatedBeverage_Interface *)_self);
+    ASSERT(_self && _self->interface);
 
-    if( (*((CaffeinatedBeverage_Interface *)_self))->brew ) {
-        (*((CaffeinatedBeverage_Interface *)_self))->brew(_self);
+    if( _self->interface->brew ) {
+        _self->interface->brew(_self);
     }
 }
 
@@ -38,18 +38,18 @@ static void CaffeinatedBeverage_pourInCup(CaffeinatedBeverage _self __attribute_
 }
 
 static void CaffeinatedBeverage_addCondiments(CaffeinatedBeverage _self) {
-    ASSERT(_self && *(CaffeinatedBeverage_Interface *)_self);
+    ASSERT(_self && _self->interface);
 
-    if( (*((CaffeinatedBeverage_Interface *)_self))->addCondiments ) {
-        (*((CaffeinatedBeverage_Interface *)_self))->addCondiments(_self);
+    if( _self->interface->addCondiments ) {
+        _self->interface->addCondiments(_self);
     }
 }
 
 static void CaffeinatedBeverage_addWhip(CaffeinatedBeverage _self) {
-    ASSERT(_self && *(CaffeinatedBeverage_Interface *)_self);
+    ASSERT(_self && _self->interface);
 
-    if( (*((CaffeinatedBeverage_Interface *)_self))->addWhip ) {
-        (*((CaffeinatedBeverage_Interface *)_self))->addWhip(_self);
+    if( _self->interface->addWhip ) {
+        _self->interface->addWhip(_self);
     }
 }
 
@@ -67,18 +67,16 @@ void CaffeinatedBeverage_prepare(CaffeinatedBeverage _self) {
 void
 CaffeinatedBeverage_destroy(CaffeinatedBeverage _self)
 {
-    ASSERT(_self && *(CaffeinatedBeverage_Interface *)_self);
+    ASSERT(_self && _self->interface);
 
-    if( (*((CaffeinatedBeverage_Interface *)_self))->deinit )
+    if( _self->interface->deinit )
     {
-        (*((CaffeinatedBeverage_Interface *)_self))->deinit(_self);
+        _self->interface->deinit(_self);
     }
 
     printf("\tDeinitializing caffeinated beverage object with name: %s\n", _self->name);
     memset(_self->name, 0, sizeof(char)*MAX_CHARS_NAME);
 
-    if( (*((CaffeinatedBeverage_Interface *)_self))->destroy )
-    {
-        (*((CaffeinatedBeverage_Interface *)_self))->destroy(_self);
-    }
+    ASSERT( _self->interface->destroy );
+    _self->interface->destroy(_self);
 }

@@ -47,18 +47,16 @@ duckShow( Duck thisDuck )
 void
 duckDestroy( Duck thisDuck )
 {
-    ASSERT(thisDuck && *(Duck_Interface *)thisDuck);
+    ASSERT(thisDuck && thisDuck->vtable);
     
-    if( (*((Duck_Interface *)thisDuck))->deinit )
+    if( thisDuck->vtable->deinit )
     {
-        (*((Duck_Interface *)thisDuck))->deinit(thisDuck);
+        thisDuck->vtable->deinit(thisDuck);
     }
 
     printf("\tDeinitializing Duck object with name: %s\n", thisDuck->name);
     memset(thisDuck->name, 0, sizeof(char)*MAX_CHARS_NAME);
 
-    if( (*((Duck_Interface *)thisDuck))->destroy )
-    {
-        (*((Duck_Interface *)thisDuck))->destroy(thisDuck);
-    }
+    ASSERT( thisDuck->vtable->destroy );
+    thisDuck->vtable->destroy(thisDuck);
 }
