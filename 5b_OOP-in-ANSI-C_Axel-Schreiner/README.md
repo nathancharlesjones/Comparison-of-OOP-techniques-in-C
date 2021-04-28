@@ -8,6 +8,9 @@ Since we've built up nearly all of the same functionality, and since Axel does a
 
 I will, however, point out a few areas in which Axel's implementation is superior to that which I stumbled upon in Project 5a.
 
+- Compare SLOC
+- No deinit, static memory
+
 ## How do I run it?
 
 Download or clone this repository. Navigate to this folder and then run "make" or "make clean && make" from the command line. This program requires at least one command line argument to run.

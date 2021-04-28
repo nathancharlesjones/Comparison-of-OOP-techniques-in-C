@@ -1,11 +1,13 @@
 #ifndef OBJECT_R
 #define OBJECT_R
 
-struct Object {
+struct Object
+{
 	const struct Class * class;	/* object's description */
 };
 
-struct Class {
+struct Class
+{
 	const struct Object _;			/* class' description */
 	const char * name;				/* class' name */
 	const struct Class * super;		/* class' super class */

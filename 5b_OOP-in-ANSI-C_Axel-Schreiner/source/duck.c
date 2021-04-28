@@ -1,6 +1,6 @@
-#include "assert.h"
 #include <string.h>
-
+#include <stdlib.h>
+#include "assert.h"
 #include "duck.h"
 #include "duck.r"
 
@@ -8,48 +8,77 @@
  *	Duck
  */
 
-static void * Duck_ctor (void * _self, va_list * app)
-{	struct Duck * self = super_ctor(Duck, _self, app);
+static void *
+Duck_ctor (void * _self, va_list * app)
+{
+	struct Duck * self = super_ctor(Duck, _self, app);
 
 	char * name = va_arg(*app, char *);
-    strncpy(self->name, name, MAX_CHARS_NAME);
+    printf("\tInitializing duck with name: %s\n", name);
+	strncpy(self->name, name, MAX_CHARS_NAME);
 
 	return self;
 }
 
-static void Duck_show (const void * _self)
-{	const struct Duck * self = _self;
+static void
+Duck_show (const void * _self)
+{	
+	const struct Duck * self = _self;
 
 	printf("\tHi! My name is %s.\n", self->name);
 }
 
-void show (const void * _self)
-{	const struct DuckClass * class = classOf(_self);
+void
+show (const void * _self)
+{	
+	const struct DuckClass * class = classOf(_self);
 
 	ASSERT(class -> show);
 	class -> show(_self);
 }
 
-void super_show (const void * _class, const void * _self)
-{	const struct DuckClass * superclass = super(_class);
+void
+super_show (const void * _class, const void * _self)
+{	
+	const struct DuckClass * superclass = super(_class);
 
 	ASSERT(_self && superclass -> show);
 	superclass -> show(_self);
 }
 
-void quack (const void * _self)
-{	const struct Duck * self = _self;
+void
+quack (const void * _self)
+{	
+	const struct Duck * self = _self;
 
 	printf("\t%s: Quack!\n", self->name);
+}
+
+void
+duckSetName( void * _self, char * name )
+{
+    const struct Duck * self = _self;
+    
+    strncpy(self->name, name, MAX_CHARS_NAME);
+}
+
+char *
+duckGetName( const void * _self )
+{
+	const struct Duck * self = _self;
+        
+    return self->name;
 }
 
 /*
  *	DuckClass
  */
 
-static void * DuckClass_ctor (void * _self, va_list * app)
-{	struct DuckClass * self
-					= super_ctor(DuckClass, _self, app);
+static void *
+DuckClass_ctor (void * _self, va_list * app)
+{	
+	struct DuckClass * self = super_ctor(DuckClass, _self, app);
+
 	typedef void (* voidf) ();
 	voidf selector;
 #ifdef va_copy
@@ -62,7 +91,9 @@ static void * DuckClass_ctor (void * _self, va_list * app)
 	{	voidf method = va_arg(ap, voidf);
 
 		if (selector == (voidf) show)
+		{
 			* (voidf *) & self -> show = method;
+		}
 	}
 #ifdef va_copy
     va_end(ap);
@@ -77,17 +108,15 @@ static void * DuckClass_ctor (void * _self, va_list * app)
 
 const void * DuckClass, * Duck;
 
-void initDuck (void)
+void
+initDuck (void)
 {
 	if (! DuckClass)
-		DuckClass = new(Class, "DuckClass",
-				Class, sizeof(struct DuckClass),
-				ctor, DuckClass_ctor,
-				0);
+	{
+		DuckClass = new(Class, "DuckClass", Class, sizeof(struct DuckClass), ctor, DuckClass_ctor, 0);
+	}
 	if (! Duck)
-		Duck = new(DuckClass, "Duck",
-				Object, sizeof(struct Duck),
-				ctor, Duck_ctor,
-				show, Duck_show,
-				0);
+	{
+		Duck = new(DuckClass, "Duck", Object, sizeof(struct Duck), ctor, Duck_ctor, show, Duck_show, 0);
+	}
 }
