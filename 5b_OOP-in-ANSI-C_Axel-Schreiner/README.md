@@ -14,10 +14,10 @@ I will, however, point out a few areas in which Axel's implementation is superio
         - duck (.r/.h/.c): 234 (26 + 14 + 194); 193 w/o static memory option
         - mallard (.r/.h/.c): 221 (18 + 13 + 190); 179 w/o static memory option
     - 5b
-        - Total: 
+        - Total: 479
         - Object (.r/.h/.c): 260 (24 + 22 + 214)
         - duck (.r/.h/.c): 112 (18 + 9 + 85)
-        - mallard (.r/.h/.c): 47 (10 + 7 + 30)
+        - mallard (.r/.h/.c): 107 (17 + 9 + 81)
 - No init/deinit, static memory, getters/setters
 - Runtime declaration of classes
 - Warnings about implicit casts
@@ -41,7 +41,7 @@ Running "make" simply runs the program with a default set of command line argume
 
 ```
 // For default command-line arguments: "m d"
-Initializing duck with name: Freida
+Freida: I'm migrating!
 Hi! I'm a mallard duck. My name is Freida. I have brown feathers.
 Freida: Quack!
 Initializing duck with name: Freida

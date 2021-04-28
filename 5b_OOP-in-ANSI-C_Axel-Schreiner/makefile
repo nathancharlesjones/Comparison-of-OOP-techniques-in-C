@@ -3,7 +3,7 @@ app_src_dir := \
     source
 inc_dir := \
     include
-CFLAGS := -Wall -Wextra
+CFLAGS := -Wall -Wextra -ggdb
 
 # External variables
 TARGET ?= $(lastword $(subst /,$(space),$(shell pwd)))

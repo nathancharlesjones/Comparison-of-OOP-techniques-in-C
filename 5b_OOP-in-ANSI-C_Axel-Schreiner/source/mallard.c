@@ -90,13 +90,13 @@ const void * MallardClass, * Mallard;
 void
 initMallard (void)
 {
+	initDuck();
 	if (! MallardClass)
 	{
-		MallardClass = new(Class, "MallardClass", Class, sizeof(struct MallardClass), ctor, MallardClass_ctor, 0);
+		MallardClass = new(DuckClass, "MallardClass", DuckClass, sizeof(struct MallardClass), ctor, MallardClass_ctor, 0);
 	}
 	if (! Mallard)
 	{	
-		initDuck();
 		Mallard = new(MallardClass, "Mallard", Duck, sizeof(struct Mallard), ctor, Mallard_ctor, show, Mallard_show, migrate, Mallard_migrate, 0);
 	}
 }
