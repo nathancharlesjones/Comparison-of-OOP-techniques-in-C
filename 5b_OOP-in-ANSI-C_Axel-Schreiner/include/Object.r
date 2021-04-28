@@ -1,8 +1,11 @@
 #ifndef OBJECT_R
 #define OBJECT_R
 
+#include <stdint.h>
+
 struct Object
 {
+	uint32_t magic;
 	const struct Class * class;	/* object's description */
 };
 

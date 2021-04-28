@@ -4,6 +4,10 @@
 #include "duck.r"
 #include "mallard.h"
 
-struct Mallard { const struct Duck _; featherColor myColor; };
+struct Mallard
+{
+    const struct Duck _;
+    featherColor myColor;
+};
 
 #endif

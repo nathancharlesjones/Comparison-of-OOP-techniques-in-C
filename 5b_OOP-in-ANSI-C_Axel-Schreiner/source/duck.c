@@ -23,7 +23,7 @@ Duck_ctor (void * _self, va_list * app)
 static void
 Duck_show (const void * _self)
 {	
-	const struct Duck * self = _self;
+	const struct Duck * self = cast(Duck, _self);
 
 	printf("\tHi! My name is %s.\n", self->name);
 }
@@ -49,25 +49,9 @@ super_show (const void * _class, const void * _self)
 void
 quack (const void * _self)
 {	
-	const struct Duck * self = _self;
+	const struct Duck * self = cast(Duck, _self);
 
 	printf("\t%s: Quack!\n", self->name);
-}
-
-void
-duckSetName( void * _self, char * name )
-{
-    const struct Duck * self = _self;
-    
-    strncpy(self->name, name, MAX_CHARS_NAME);
-}
-
-char *
-duckGetName( const void * _self )
-{
-	const struct Duck * self = _self;
-        
-    return self->name;
 }
 
 /*

@@ -3,8 +3,9 @@
         - Went back to factory pattern
     - [x] Add magic number
 - [ ] 5b
-    - [ ] Copy code from ooc repo
-    - [ ] Updated code for ducks
+    - [x] Copy code from ooc repo
+    - [x] Updated code for ducks
+    - [ ] Add type checking
     - [ ] Write README
 - [x] Standardize interfaces: create/init/deinit/destroy
 - [x] Change references to "vtable" to "*(XXX_Interface *)"

@@ -9,7 +9,12 @@ Since we've built up nearly all of the same functionality, and since Axel does a
 I will, however, point out a few areas in which Axel's implementation is superior to that which I stumbled upon in Project 5a.
 
 - Compare SLOC
-- No deinit, static memory
+- No init/deinit, static memory, getters/setters
+- Runtime declaration of classes
+- Warnings about implicit casts
+- Separate default and selector functions
+- Seems to expect derived classes to be aware of certain functions, i.e. super_draw, casts
+- Parameterizes isObj, isType
 
 ## How do I run it?
 
@@ -26,10 +31,16 @@ Running "make" simply runs the program with a default set of command line argume
 ## Expected output
 
 ```
-
+// For default command-line arguments: "m d"
+Initializing duck with name: Freida
+Hi! I'm a mallard duck. My name is Freida. I have brown feathers.
+Freida: Quack!
+Initializing duck with name: Freida
+Hi! My name is Freida.
+Freida: Quack!
 ```
 
 ## References
-- "OOP in ANSI C" by Axel Schreiner (Primarily chapters 1-4, 6, and 8).
+- "OOP in ANSI C" by Axel Schreiner (primarily chapters 1-4, 6, and 8).
     - [PDF](https://www.cs.rit.edu/~ats/books/ooc.pdf)
     - [Git repo](https://github.com/shichao-an/ooc)
