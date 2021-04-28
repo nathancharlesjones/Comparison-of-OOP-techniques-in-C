@@ -2,17 +2,18 @@
     - [x] Check README (Any other major changes?)
         - Went back to factory pattern
     - [x] Add magic number
-- [ ] 5b
+- [x] 5b
     - [x] Copy code from ooc repo
     - [x] Updated code for ducks
-    - [ ] Add type checking
-    - [ ] Write README
+    - [x`] Add type checking
+    - [x] Write README
 - [x] Standardize interfaces: create/init/deinit/destroy
 - [x] Change references to "vtable" to "*(XXX_Interface *)"
 - [x] Convert "_OBJ" to "OBJ"
 - [x] Change "if" to "ASSERT"
 - [ ] Check all READMEs (particularly for code mismatch)
 - [ ] Do side-by-side comparison of all projects to make sure I didn't miss anything
+- [ ] Make order of class functions consistent
 - [x] Use makefile sans vpath? --> Not worth the effort
 - [x] Change interfaces from "void *" to "Duck_Interface"? --> Nah. It would definitely add some type-checking but it would look weird to have to put "extern Duck_Interface mallardFromHeapMem".
 - [ ] What are the benefits to Axel's OOP? Ability to call any function without explicitly casting?
