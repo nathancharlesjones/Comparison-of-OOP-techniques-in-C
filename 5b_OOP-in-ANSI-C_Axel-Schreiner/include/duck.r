@@ -12,7 +12,7 @@ struct Duck
 	char name[MAX_CHARS_NAME_WITH_NUL];				/* name */
 };
 
-#define	name(duck)	(((const struct Duck *)(duck)) -> name)
+#define	name(duck)	(((struct Duck *)(duck)) -> name)
 
 void super_show (const void * class, const void * self);
 

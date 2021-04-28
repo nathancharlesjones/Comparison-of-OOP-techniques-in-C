@@ -9,6 +9,15 @@ Since we've built up nearly all of the same functionality, and since Axel does a
 I will, however, point out a few areas in which Axel's implementation is superior to that which I stumbled upon in Project 5a.
 
 - Compare SLOC
+    - 5a
+        - Total (minus redMallard): 455; 372 w/o static memory option
+        - duck (.r/.h/.c): 234 (26 + 14 + 194); 193 w/o static memory option
+        - mallard (.r/.h/.c): 221 (18 + 13 + 190); 179 w/o static memory option
+    - 5b
+        - Total: 
+        - Object (.r/.h/.c): 260 (24 + 22 + 214)
+        - duck (.r/.h/.c): 112 (18 + 9 + 85)
+        - mallard (.r/.h/.c): 47 (10 + 7 + 30)
 - No init/deinit, static memory, getters/setters
 - Runtime declaration of classes
 - Warnings about implicit casts

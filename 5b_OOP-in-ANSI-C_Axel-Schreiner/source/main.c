@@ -13,6 +13,7 @@ main (int argc __attribute__((unused)), char ** argv)
         {
             case 'm':
                 p = new(Mallard, "Freida", BROWN);
+                migrate(p);
                 break;
             case 'd':
                 p = new(Duck, "Freida");
