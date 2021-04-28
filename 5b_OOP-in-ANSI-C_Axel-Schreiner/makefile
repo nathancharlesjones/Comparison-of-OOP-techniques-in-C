@@ -47,7 +47,7 @@ all: $(BUILD_DIR)/$(TARGET).out
 
 $(BUILD_DIR)/$(TARGET).out: $(app_obj_list)
 	$(Q) $(CC) $(app_obj_list) $(inc) -o $@
-	./$@
+	./$@ m d
 	
 $(BUILD_DIR)/%.o: %.c %.d | $(BUILD_DIR)
 	$(Q) $(CC) $(CFLAGS) $(DEPFLAGS) $(inc) -c $< -o $@
