@@ -6,7 +6,6 @@ main (int argc __attribute__((unused)), char ** argv)
     void * p;
 
     initMallard();
-    printf("After initMallard");
     
     while (* ++ argv)
     {	

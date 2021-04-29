@@ -34,6 +34,7 @@ Running "make" simply runs the program with a default set of command line argume
 
 ```
 // For default command-line arguments: "m d"
+Initializing duck with name: Freida
 Freida: I'm migrating!
 Hi! I'm a mallard duck. My name is Freida. I have brown feathers.
 Freida: Quack!
