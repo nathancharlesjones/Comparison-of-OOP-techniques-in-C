@@ -1,3 +1,4 @@
+- [ ] Add license
 - [x] 5a
     - [x] Check README (Any other major changes?)
         - Went back to factory pattern
