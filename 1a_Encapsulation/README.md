@@ -82,3 +82,4 @@ main( void )
 - Miro Samek describes "encapsulation" in section 1 of his [PDF](https://www.state-machine.com/doc/AN_OOP_in_C.pdf) (code example [here](https://github.com/QuantumLeaps/OOP-in-C/tree/master/encapsulation)). At the risk of being very wrong, though, I'll state that I don't think we can call Miro's technique encapsulation since the struct definitions for the objects in question are placed in the public header file, allowing any other part of the program to access them.
 - Axel Schreiner discusses encapsulation in ["OOP in ANSI C"](https://www.cs.rit.edu/~ats/books/ooc.pdf), Chapter 1, though he uses objects of type `void *` (which we'll discuss in Project 5a) and chooses needlessly convoluted examples (in my opinion).
     - [Code example](https://github.com/shichao-an/ooc/tree/master/01)
+- [Practical Design Patterns: Opaque Pointers and Objects in C](https://interrupt.memfault.com/blog/opaque-pointers) (Interrupt Blog)
