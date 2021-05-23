@@ -45,4 +45,4 @@
         - Allocate size * num for buffer
         - Change put and get to take a void *. Put copies size bytes from void * to buffer. Get copies size bytes from buffer to void *.
     - Using static memory
-        - ??
+        - Declare array of data prior to construction. Pass in to constructor a `void *` pointer to the array and `size_t` of the data.
