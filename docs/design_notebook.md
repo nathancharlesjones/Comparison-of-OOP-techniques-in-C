@@ -1,0 +1,48 @@
+# Saturday, 22 May 2021
+- How to handle opaque modules that have variable length internal data?
+    - E.g. Circular buffer with variable size
+    - Malloc
+    - Malloc + zero-length array (I guess has the advantage of being an array instead of a pointer)
+    - Memory pool
+    - Memory pool + ZLA
+    - All of the above are still dynamic, meaning that they still allow for the possibility that a system might run out of memory. How could you define, at compile-time and across many compilation units, a desired size for the objects of another module? Export object size?
+    - Could maybe use VLA, giving pointer to array to module, provided the caller never left scope (I think this only works for preemptive, infinite loop tasks)
+    - Use alloca + a "get_size" function to allocate memory in the caller's frame
+        - Would require changing the API slightly, to allow "init" without "create" 
+    - https://stackoverflow.com/questions/4440476/static-allocation-of-opaque-data-types
+- How to handle modules that operate on variable data types?
+    - E.g. Circular buffer for variable data types
+    - Functions take a `void *` and `size_t` and just push bytes around
+    - Use macros
+        - https://www.oracle.com/solaris/technologies/c-type.html
+        - https://www.davidespataro.it/kernel-linux-list-efficient-generic-linked-list/
+    - Make a union/ADT
+        - Not scalable; only really works if there are a very small number of specific data types
+        - Or maybe not? "Fun with Unions" used a few primitives and an array of unions to create ~59k data types
+    - Var args?
+    - __Generic? That's part of the C standard.
+    - Serialization
+    - `void *` to container (like Linux LL but using a pointer to container, rather than the `container_of` macro)
+- Other factors to consider
+    - Macros vs functions
+    - Static vs dynamic memory allocation
+    - Single-instance vs multiple-instance module
+    - Which implementations offer type-checking?
+
+# Sunday, 23 May 2021
+- Improve tlist by...
+    - Using static memory
+        - For each module that uses tlist to create a linked list, declare an array of structs for the data being used (plus an "in_use" flag); basically a memory pool
+        - Pass in the address of that array to any macros that might create a new node
+        - Change "malloc" to finding an array element not in use
+    - Using functions
+        - ??
+    - How is tlist used by other modules? How are linked lists exported?
+        - Probably not. Module in question should just expose a "put" method that, internally, uses tlist.
+- Improve circular buffer by...
+    - Using arbitrary data types
+        - Add size of buffer elements to constructor
+        - Allocate size * num for buffer
+        - Change put and get to take a void *. Put copies size bytes from void * to buffer. Get copies size bytes from buffer to void *.
+    - Using static memory
+        - ??
