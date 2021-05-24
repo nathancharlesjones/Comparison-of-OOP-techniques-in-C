@@ -1,15 +1,19 @@
 # Saturday, 22 May 2021
 - How to handle opaque modules that have variable length internal data?
     - E.g. Circular buffer with variable size
-    - Malloc
-    - Malloc + zero-length array (I guess has the advantage of being an array instead of a pointer)
-    - Memory pool
-    - Memory pool + ZLA
-    - All of the above are still dynamic, meaning that they still allow for the possibility that a system might run out of memory. How could you define, at compile-time and across many compilation units, a desired size for the objects of another module? Export object size?
-    - Could maybe use VLA, giving pointer to array to module, provided the caller never left scope (I think this only works for preemptive, infinite loop tasks)
-    - Use alloca + a "get_size" function to allocate memory in the caller's frame
-        - Would require changing the API slightly, to allow "init" without "create" 
+    - Malloc / Malloc + zero-length array (I guess has the advantage of being an array instead of a pointer)
+    - Memory pool / Memory pool + ZLA
+        - Can be internal or external
+        - If external, module requires either (1) a pointer to data or (2) an API to create/return data
+        - Internal only really feasible if there is a small, set number of types to be managed
+    - Using linked-list (vice array) mitigates the problem of fragmentation
+    - Ideas below are ill-advised, since they still require the opaque struct to make known it's size/alignment, which defeats some of the purpose of an opaque struct (the size/alignment of any updated opaque structs have to remain unchanged or risk breaking clients' code)
+        - All of the above are still dynamic, meaning that they still allow for the possibility that a system might run out of memory. How could you define, at compile-time and across many compilation units, a desired size for the objects of another module? Export object size?
+        - Could maybe use VLA, giving pointer to array to module, provided the caller never left scope (I think this only works for preemptive, infinite loop tasks)
+        - Use alloca + a "get_size" function to allocate memory in the caller's frame
+            - Would require changing the API slightly, to allow "init" without "create" 
     - https://stackoverflow.com/questions/4440476/static-allocation-of-opaque-data-types
+    - https://stackoverflow.com/questions/22800594/c-best-practice-for-using-stack-memory-for-incomplete-structs
 - How to handle modules that operate on variable data types?
     - E.g. Circular buffer for variable data types
     - Functions take a `void *` and `size_t` and just push bytes around
@@ -25,7 +29,11 @@
     - `void *` to container (like Linux LL but using a pointer to container, rather than the `container_of` macro)
 - Other factors to consider
     - Macros vs functions
+        - 
     - Static vs dynamic memory allocation
+        - If struct has a known size/type, use internal memory pool
+        - If unknown size/type, use an external memory pool and give the constructor either a pointer to the data or a delegate for creating/returning data
+        - Or reimplement malloc (heavyweight solution)
     - Single-instance vs multiple-instance module
     - Which implementations offer type-checking?
 
