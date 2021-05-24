@@ -24,10 +24,11 @@
     - Make a union/ADT
         - Not scalable; only really works if there are a very small number of specific data types
         - Or maybe not? "Fun with Unions" used a few primitives and an array of unions to create ~59k data types
-    - Var args?
+    - Var args? --> Functionally the same as `void *`, though perhaps a bit more complicated.
     - __Generic? That's part of the C standard.
     - Serialization
     - `void *` to container (like Linux LL but using a pointer to container, rather than the `container_of` macro)
+    - How to account for different function signatures (e.g. `cb_put(cb, INT)`, `cb_put(cb, STRUCT)`, etc)
 - Other factors to consider
     - Macros vs functions
     - Static vs dynamic memory allocation
@@ -43,7 +44,13 @@
             - If specific to a data type, block size could be = 1 or >= 1
         - Only (4) allows for compile-time verification of max memory usage (i.e. is not dynamic)
         - Only (2), (4) and (5) (for block size = 1) avoid fragmentation
-        - Only (1), 
+        - For (3) and (5) (for block size >= 1), it seems *possible* to create a "simple malloc" by creating an array of bytes and reserving them based on the number of bytes required. This would allow for arbitrary data types to be used with a module. *However*,
+            - Modules can **only** move data to/from memory using byte-transfers (i.e. memcpy)
+            - Still suffers from possible fragmentation and any effort to mitigate that issue complicates the code sufficiently that a whole new module should be created to handle what is quickly becoming a reimplementation of malloc.
+            - Like a very crude/simple form of serialization.
+            - Behaves very different from normal variables. Instead of reading/writing memory directly, we have to work through memcpy.
+            - https://blog.regehr.org/archives/959
+        - Other considerations for variable data types?
     - Single-instance vs multiple-instance module
     - Which implementations offer type-checking?
 
@@ -56,7 +63,7 @@
     - Using functions
         - ??
     - How is tlist used by other modules? How are linked lists exported?
-        - Probably not. Module in question should just expose a "put" method that, internally, uses tlist.
+        - It probably isn't. Module in question should just expose a "put" method that, internally, uses tlist.
 - Improve circular buffer by...
     - Using arbitrary data types
         - Add size of buffer elements to constructor
