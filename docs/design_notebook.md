@@ -3,7 +3,7 @@
     - E.g. Circular buffer with variable size
     - Malloc / Malloc + zero-length array (I guess has the advantage of being an array instead of a pointer)
     - Memory pool / Memory pool + ZLA
-        - Can be internal or external
+        - Can be internal or external. For external, can be either specific (e.g. myStruct mem_pool[MAX_STRUCTS] or int32_t mem_pool[MAX_NUM_INT32]) or general (i.e. a replacement for malloc)
         - If external, module requires either (1) a pointer to data or (2) an API to create/return data
         - Internal only really feasible if there is a small, set number of types to be managed
     - Using linked-list (vice array) mitigates the problem of fragmentation
