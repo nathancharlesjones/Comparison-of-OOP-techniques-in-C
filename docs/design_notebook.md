@@ -6,6 +6,7 @@
         - Can be internal or external. For external, can be either specific (e.g. myStruct mem_pool[MAX_STRUCTS] or int32_t mem_pool[MAX_NUM_INT32]) or general (i.e. a replacement for malloc)
         - If external, module requires either (1) a pointer to data or (2) an API to create/return data
         - Internal only really feasible if there is a small, set number of types to be managed
+    - Remove the internal data. Give the module a pointer to a piece of external data or a delegate to create/return data as needed.
     - Using linked-list (vice array) mitigates the problem of fragmentation
     - Ideas below are ill-advised, since they still require the opaque struct to make known it's size/alignment, which defeats some of the purpose of an opaque struct (the size/alignment of any updated opaque structs have to remain unchanged or risk breaking clients' code)
         - All of the above are still dynamic, meaning that they still allow for the possibility that a system might run out of memory. How could you define, at compile-time and across many compilation units, a desired size for the objects of another module? Export object size?
@@ -29,11 +30,20 @@
     - `void *` to container (like Linux LL but using a pointer to container, rather than the `container_of` macro)
 - Other factors to consider
     - Macros vs functions
-        - 
     - Static vs dynamic memory allocation
-        - If struct has a known size/type, use internal memory pool
-        - If unknown size/type, use an external memory pool and give the constructor either a pointer to the data or a delegate for creating/returning data
-        - Or reimplement malloc (heavyweight solution)
+        - (1) Malloc
+        - (2) Internal memory pool, block size = 1
+            - e.g. for structs with constant size or for linked list nodes
+        - (3) Internal memory pool, block size >= 1
+            - e.g. for variable length arrays
+        - (4) External memory pool, module gets pointer to data
+            - e.g. for arrays
+        - (5) External memory pool, module uses API/delegate to create/return data
+            - Could be specific to a data type or more general (i.e. reimplementation of malloc)
+            - If specific to a data type, block size could be = 1 or >= 1
+        - Only (4) allows for compile-time verification of max memory usage (i.e. is not dynamic)
+        - Only (2), (4) and (5) (for block size = 1) avoid fragmentation
+        - Only (1), 
     - Single-instance vs multiple-instance module
     - Which implementations offer type-checking?
 
