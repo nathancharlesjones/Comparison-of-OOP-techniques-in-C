@@ -24,11 +24,13 @@
     - Make a union/ADT
         - Not scalable; only really works if there are a very small number of specific data types
         - Or maybe not? "Fun with Unions" used a few primitives and an array of unions to create ~59k data types
+        - ADT would give some measure of type-checking, though
     - Var args? --> Functionally the same as `void *`, though perhaps a bit more complicated.
     - __Generic? That's part of the C standard.
     - Serialization
     - `void *` to container (like Linux LL but using a pointer to container, rather than the `container_of` macro)
     - How to account for different function signatures (e.g. `cb_put(cb, INT)`, `cb_put(cb, STRUCT)`, etc)
+    - `#define TYPE struct` / `typedef struct TYPE` (for single-instance module)
 - Other factors to consider
     - Macros vs functions
     - Static vs dynamic memory allocation
