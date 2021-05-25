@@ -32,7 +32,7 @@
     - How to account for different function signatures (e.g. `cb_put(cb, INT)`, `cb_put(cb, STRUCT)`, etc)
     - `#define TYPE struct` / `typedef struct TYPE` (for single-instance module)
     - Interpreter? Plus union?
-    - How useful is this? The only time I would need truly arbitrary data that I can think of is for a container/collection class. Everything else just needs an ADT, I think.
+    - How useful is this? The only time I would need truly arbitrary data that I can think of is for a container/collection class. Everything else just needs an ADT, I think. Serialization/deserialization, also. Basically any time I have operations I want to perform on a piece of data but I don't know ahead of time what, exactly, that data looks like. So, actually, probably lots of things need this.
 - Other factors to consider
     - Macros vs functions
         - bsearch and qsort both operate on arrays, and they both require (1) a `void *` pointer to the array, (2) the `size_t` of each element in the array, and (3) the overall number of items in the array (as a `size_t`).
