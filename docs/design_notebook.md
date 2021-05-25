@@ -31,6 +31,8 @@
     - `void *` to container (like Linux LL but using a pointer to container, rather than the `container_of` macro)
     - How to account for different function signatures (e.g. `cb_put(cb, INT)`, `cb_put(cb, STRUCT)`, etc)
     - `#define TYPE struct` / `typedef struct TYPE` (for single-instance module)
+    - Interpreter? Plus union?
+    - How useful is this? The only time I would need truly arbitrary data that I can think of is for a container/collection class. Everything else just needs an ADT, I think.
 - Other factors to consider
     - Macros vs functions
     - Static vs dynamic memory allocation
