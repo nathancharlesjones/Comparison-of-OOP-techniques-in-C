@@ -36,6 +36,8 @@
 - Other factors to consider
     - Macros vs functions
         - bsearch and qsort both operate on arrays, and they both require (1) a `void *` pointer to the array, (2) the `size_t` of each element in the array, and (3) the overall number of items in the array (as a `size_t`).
+            - https://www.tutorialspoint.com/c_standard_library/c_function_bsearch.htm
+            - https://www.tutorialspoint.com/c_standard_library/c_function_qsort.htm
     - Static vs dynamic memory allocation
         - (1) Malloc
         - (2) Internal memory pool, block size = 1
