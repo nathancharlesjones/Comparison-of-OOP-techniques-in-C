@@ -21,6 +21,7 @@
     - Use macros
         - https://www.oracle.com/solaris/technologies/c-type.html
         - https://www.davidespataro.it/kernel-linux-list-efficient-generic-linked-list/
+        - https://github.com/embeddedartistry/libmemory/blob/master/dependencies/lib/linkedlist/ll.h
     - Make a union/ADT
         - Not scalable; only really works if there are a very small number of specific data types
         - Or maybe not? "Fun with Unions" used a few primitives and an array of unions to create ~59k data types
