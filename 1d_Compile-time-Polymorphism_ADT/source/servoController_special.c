@@ -12,7 +12,7 @@ typedef struct servoController_special_t
 } servoController_special_t;
 
 servoController_special
-servoController_specialCreate( void )
+servoController_special_Create( void )
 {
     servoController_special newServoController = (servoController_special)malloc(sizeof(servoController_special_t));
     // TODO: Check for null pointer on malloc failure
@@ -21,7 +21,7 @@ servoController_specialCreate( void )
 }
 
 void
-servoController_specialInit( servoController_special thisServoController, char * name )
+servoController_special_Init( servoController_special thisServoController, char * name )
 {
     printf("\tInitializing new servo controller with name: %s\n", name);
     printf("\tI'm a special servo controller!\n");
@@ -31,13 +31,13 @@ servoController_specialInit( servoController_special thisServoController, char *
 }
 
 int
-servoController_specialGetCurrentAngle( servoController_special thisServoController )
+servoController_special_GetCurrentAngle( servoController_special thisServoController )
 {
     return thisServoController->angle;
 }
 
 void
-servoController_specialMoveTo( servoController_special thisServoController, int angle )
+servoController_special_MoveTo( servoController_special thisServoController, int angle )
 {
     if ( angle < 0 )
     {

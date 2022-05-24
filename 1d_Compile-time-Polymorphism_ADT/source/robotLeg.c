@@ -1,17 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "robotLeg.h"
+#include "servoController_special.h"
+#include "servoController.h"
 
 //#define SERVO_SPECIAL
 #ifdef SERVO_SPECIAL
-#   include "servoController_special.h"
-#   define servoController                 servoController_special
-#   define servoControllerCreate           servoController_specialCreate
-#   define servoControllerInit             servoController_specialInit
-#   define servoControllerGetCurrentAngle  servoController_specialGetCurrentAngle
-#   define servoControllerMoveTo           servoController_specialMoveTo
+#    define servoController servoController_special
+#    define SERVO(fcn, ...) servoController_special_## fcn(__VA_ARGS__)
 #else
-#   include "servoController.h"
+#    define SERVO(fcn, ...) servoController_## fcn(__VA_ARGS__)
 #endif
 
 typedef struct robotLeg_t
@@ -35,13 +33,13 @@ robotLegInit( robotLeg thisRobotLeg )
 {
     printf("|__Creating servo controllers:\n");
 
-    servoController ankle = servoControllerCreate();
-    servoController knee = servoControllerCreate();
-    servoController hip = servoControllerCreate();
+    servoController ankle = SERVO(Create);
+    servoController knee = SERVO(Create);
+    servoController hip = SERVO(Create);
 
-    servoControllerInit(ankle, "Ankle");
-    servoControllerInit(knee, "Knee");
-    servoControllerInit(hip, "Hip");
+    SERVO(Init, ankle, "Ankle");
+    SERVO(Init, knee, "Knee");
+    SERVO(Init, hip, "Hip");
 
     printf("\tInitializing new robot leg\n");
 
@@ -53,41 +51,41 @@ robotLegInit( robotLeg thisRobotLeg )
 void
 robotLeg_moveHipTo( robotLeg thisRobotLeg, int angle )
 {
-    if ( ( servoControllerGetCurrentAngle( thisRobotLeg->knee ) > 155 ) || ( servoControllerGetCurrentAngle( thisRobotLeg->knee ) < 25 ) )
+    if ( ( SERVO(GetCurrentAngle, thisRobotLeg->knee ) > 155 ) || ( SERVO(GetCurrentAngle, thisRobotLeg->knee ) < 25 ) )
     {
         printf("\tRestricting hip movement to [10, 170] degrees when knee joint is within 25 degrees of its extremes.\n");
         if ( angle > 170 ) angle = 170;
         if ( angle < 10 ) angle = 10;
     }
-    servoControllerMoveTo( thisRobotLeg->hip, angle );
+    SERVO(MoveTo, thisRobotLeg->hip, angle );
 }
 
 void
 robotLeg_moveKneeTo( robotLeg thisRobotLeg, int angle )
 {
-    if ( ( servoControllerGetCurrentAngle( thisRobotLeg->hip ) > 170 ) || ( servoControllerGetCurrentAngle( thisRobotLeg->hip ) < 10 ) )
+    if ( ( SERVO(GetCurrentAngle, thisRobotLeg->hip ) > 170 ) || ( SERVO(GetCurrentAngle, thisRobotLeg->hip ) < 10 ) )
     {
         printf("\tRestricting knee movement to [25, 155] degrees when hip joint is within 10 degrees of its extremes.\n");
         if ( angle > 155 ) angle = 155;
         if ( angle < 25 ) angle = 25;
     }
-    if ( ( servoControllerGetCurrentAngle( thisRobotLeg->ankle ) > 130 ) || ( servoControllerGetCurrentAngle( thisRobotLeg->ankle ) < 50 ) )
+    if ( ( SERVO(GetCurrentAngle, thisRobotLeg->ankle ) > 130 ) || ( SERVO(GetCurrentAngle, thisRobotLeg->ankle ) < 50 ) )
     {
         printf("\tRestricting knee movement to [30, 150] degrees when ankle joint is within 50 degrees of its extremes.\n");
         if ( angle > 150 ) angle = 150;
         if ( angle < 30 ) angle = 30;
     }
-    servoControllerMoveTo( thisRobotLeg->knee, angle );
+    SERVO(MoveTo, thisRobotLeg->knee, angle );
 }
 
 void
 robotLeg_moveAnkleTo( robotLeg thisRobotLeg, int angle )
 {
-    if ( ( servoControllerGetCurrentAngle( thisRobotLeg->knee ) > 150 ) || ( servoControllerGetCurrentAngle( thisRobotLeg->knee ) < 30 ) )
+    if ( ( SERVO(GetCurrentAngle, thisRobotLeg->knee ) > 150 ) || ( SERVO(GetCurrentAngle, thisRobotLeg->knee ) < 30 ) )
     {
         printf("\tRestricting ankle movement to [50, 130] degrees when knee joint is within 30 degrees of its extremes.\n");
         if ( angle > 130 ) angle = 130;
         if ( angle < 50 ) angle = 50;
     }
-    servoControllerMoveTo( thisRobotLeg->ankle, angle );
+    SERVO(MoveTo, thisRobotLeg->ankle, angle );
 }
