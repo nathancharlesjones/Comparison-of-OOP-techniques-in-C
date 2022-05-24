@@ -1,22 +1,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "robotLeg.h"
-#include "servoController_special.h"
-#include "servoController.h"
 
-//#define SERVO_SPECIAL
-#ifdef SERVO_SPECIAL
-#    define servoController servoController_special
+#define SERVO_NORMAL
+#if defined SERVO_SPECIAL
+#    include "servoController_special.h"
+#    define SERVO_T servoController_special
 #    define SERVO(fcn, ...) servoController_special_## fcn(__VA_ARGS__)
-#else
+#elif defined SERVO_NORMAL
+#    include "servoController.h"
+#    define SERVO_T servoController
 #    define SERVO(fcn, ...) servoController_## fcn(__VA_ARGS__)
+#else
+#    error Servo type not defined!
 #endif
 
 typedef struct robotLeg_t
 {
-    servoController hip;
-    servoController knee;
-    servoController ankle;
+    SERVO_T hip;
+    SERVO_T knee;
+    SERVO_T ankle;
 } robotLeg_t;
 
 robotLeg
@@ -33,9 +36,9 @@ robotLegInit( robotLeg thisRobotLeg )
 {
     printf("|__Creating servo controllers:\n");
 
-    servoController ankle = SERVO(Create);
-    servoController knee = SERVO(Create);
-    servoController hip = SERVO(Create);
+    SERVO_T ankle = SERVO(Create);
+    SERVO_T knee = SERVO(Create);
+    SERVO_T hip = SERVO(Create);
 
     SERVO(Init, ankle, "Ankle");
     SERVO(Init, knee, "Knee");

@@ -1,22 +1,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "robotArm.h"
-#include "servoController_special.h"
-#include "servoController.h"
 
 #define SERVO_SPECIAL
-#ifdef SERVO_SPECIAL
-#    define servoController servoController_special
+#if defined SERVO_SPECIAL
+#    include "servoController_special.h"
+#    define SERVO_T servoController_special
 #    define SERVO(fcn, ...) servoController_special_## fcn(__VA_ARGS__)
-#else
+#elif defined SERVO_NORMAL
+#    include "servoController.h"
+#    define SERVO_T servoController
 #    define SERVO(fcn, ...) servoController_## fcn(__VA_ARGS__)
+#else
+#    error Servo type not defined!
 #endif
 
 typedef struct robotArm_t
 {
-    servoController shoulder;
-    servoController elbow;
-    servoController wrist;
+    SERVO_T shoulder;
+    SERVO_T elbow;
+    SERVO_T wrist;
 } robotArm_t;
 
 robotArm
@@ -33,9 +36,9 @@ robotArmInit( robotArm thisRobotArm )
 {
     printf("|__Creating servo controllers:\n");
 
-    servoController wrist = SERVO(Create);
-    servoController elbow = SERVO(Create);
-    servoController shoulder = SERVO(Create);
+    SERVO_T wrist = SERVO(Create);
+    SERVO_T elbow = SERVO(Create);
+    SERVO_T shoulder = SERVO(Create);
 
     SERVO(Init, wrist, "Wrist");
     SERVO(Init, elbow, "Elbow");
