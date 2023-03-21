@@ -3,17 +3,22 @@
 #include <string.h>
 #include "duck.h"
 
-Duck_t *
+typedef struct Duck_t
+{
+    char name[MAX_CHARS_NAME_WITH_NUL];
+} Duck_t;
+
+p_Duck_t
 duckCreate( void )
 {
-    Duck_t * newDuck = (Duck_t *)calloc(1, sizeof(Duck_t));
+    p_Duck_t newDuck = (p_Duck_t)calloc(1, sizeof(Duck_t));
     // TODO: Check for null pointer on malloc failure
 
     return newDuck;
 }
 
 void
-duckInit( Duck_t * thisDuck, char * name )
+duckInit( p_Duck_t thisDuck, char * name )
 {
     printf("\tInitializing new duck with name: %s\n", name);
 
@@ -22,13 +27,13 @@ duckInit( Duck_t * thisDuck, char * name )
 }
 
 void
-duckShow( Duck_t * thisDuck )
+duckShow( p_Duck_t thisDuck )
 {
     printf("\tHi! My name is %s.\n", thisDuck->name);
 }
 
 void
-duckDestroy( Duck_t * thisDuck )
+duckDestroy( p_Duck_t thisDuck )
 {
     printf("\tDestroying Duck object with name: %s\n", thisDuck->name);
     memset(thisDuck, 0, sizeof(Duck_t));

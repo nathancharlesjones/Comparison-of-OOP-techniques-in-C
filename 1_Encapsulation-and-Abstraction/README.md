@@ -1,6 +1,6 @@
-# No OOP
+# Encapsulation
 
-This project demonstrates no OOP techniques. All of the project's code lives in `main.c` and it's not written in a way to support any of the four principles of object-oriented programming (encapsulation, abstraction, polymorphism, and inheritance).
+Encapsulation is the concept that methods/functions that operate on data are put near the place where that data is defined. This project demonstrates encapsulation by declaring a `Duck_t` data type, which includes all of the data elements that are pertinent to creating and using a "duck" object, and by putting the functions that operate on `Duck_t` structs in `duck.h` and `duck.c`.
 
 ## Expected output
 
