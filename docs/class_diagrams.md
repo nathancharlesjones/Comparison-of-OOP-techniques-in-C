@@ -13,7 +13,7 @@ classDiagram
 %% Singleton
 classDiagram
     direction RL
-    main ..|> "1" duck
+    main --> "1" duck
     note for duck "'name' made private by\n being put inside duck.c"
     class duck{
         -char name[]
@@ -42,7 +42,7 @@ classDiagram
 %% Headers as interface classes
 classDiagram
     direction LR
-    main --> "*" duck_h
+    main --> "*" duck_h : build-time
     duck_h <|.. duck_c : implements
     note for duck_h "typedef struct Duck_t * p_Duck_t"
     note for duck_c "typedef struct Duck_t{\nchar name[]\n} Duck_t"
@@ -99,7 +99,7 @@ title: Functional Simulator
 ---
 classDiagram
     direction LR
-    main --> "1" hardwarePlatform_h    
+    main --> "1" hardwarePlatform_h : build-time  
     hardwarePlatform_h <|.. x86_c : implements
     hardwarePlatform_h <|.. STM32F1_c : implements
     <<interface>> hardwarePlatform_h
@@ -108,6 +108,87 @@ classDiagram
         +ledToggle()*
         +delay_ms(uint16_t)*
         +delay_sec(uint8_t)*
+    }
+```
+
+```mermaid
+%% Compile-time polymorphism
+classDiagram
+    direction LR
+    source1 --> "*" OBJECT
+    OBJECT <|.. object1 : implements
+    OBJECT <|.. object2: implements
+    class OBJECT{
+        +init(OBJECT, int)
+    }
+    class object1{
+        +Obj1_init( p_Object1, int );
+    }
+    note for object1 "//In object1.h\ntypedef struct Object1 * p_Object1"
+    class object2{
+        +Obj2_init( p_Object2, int );
+    }
+    note for object2 "//In object2.h\ntypedef struct Object2 * p_Object2"
+```
+
+```mermaid
+%% More Ducks
+classDiagram
+    direction LR
+    main --> "*" Duck : run-time
+    Duck <|.. Mallard : extends
+    Duck <|.. Rubber  : extends
+    note for Duck "typedef struct Duck_t * Duck"
+    <<abstract>> Duck
+    class Duck{
+        -char name[]
+        ....()
+        +duckShow(Duck)
+        ....()
+    }
+    note for Mallard "typedef enum {RED, BROWN, WHITE} featherColor"
+    class Mallard{
+        -featherColor myColor 
+        +duckShow(Duck)
+    }
+    note for Rubber "typedef enum {SMALL, MEDIUM, LARGE} duck_size"
+    class Rubber{
+        -duck_size size     
+        +duckShow(Duck)
+    }
+```
+
+```mermaid
+%% Full Duck class diagram
+classDiagram
+    direction LR
+    main --> "*" Duck : run-time
+    Duck <|.. Mallard : extends
+    Duck <|.. Rubber  : extends
+    note for Duck "typedef struct Duck_t * Duck"
+    <<abstract>> Duck
+    class Duck{
+        -char name[]
+        #duckInit(Duck, char *)
+        +duckQuack(Duck)
+        +duckShow(Duck)*
+        +duckDestroy(Duck)
+    }
+    note for Mallard "typedef enum {RED, BROWN, WHITE} featherColor"
+    class Mallard{
+        -featherColor myColor
+        +mallardCreate(char * , featherColor) Duck   
+        +duckShow(Duck)
+        -mallardDeinit(Duck)
+        -mallardDestroy(Duck)
+    }
+    note for Rubber "typedef enum {SMALL, MEDIUM, LARGE} duck_size"
+    class Rubber{
+        -duck_size size     
+        +rubberCreate(char * , duck_size) Duck
+        +duckShow(Duck)
+        -rubberDeinit(Duck)
+        -rubberDestroy(Duck)
     }
 ```
 

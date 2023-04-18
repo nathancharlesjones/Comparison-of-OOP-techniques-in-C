@@ -11,13 +11,9 @@ main( void )
 {
     printf("|__Creating duck objects:\n");                                    -->  |__Creating duck objects:
 
-    Duck_t * Huey = duckCreate();
-    Duck_t * Dewey = duckCreate();
-    Duck_t * Louie = duckCreate();
-
-    duckInit(Huey, "Huey");                                                   -->      Initializing new duck with name: Huey
-    duckInit(Dewey, "Dewey");                                                 -->      Initializing new duck with name: Duey
-    duckInit(Louie, "Louie");                                                 -->      Initializing new duck with name: Luey
+    Duck_t * Huey = duckNew("Huey");                                          -->      Initializing new duck with name: Huey
+    Duck_t * Dewey = duckNew("Dewey");                                        -->      Initializing new duck with name: Duey
+    Duck_t * Louie = duckNew("Louie");                                        -->      Initializing new duck with name: Luey
 
     printf("|__Showing duck objects:\n");                                     -->  |__Showing duck objects:
     

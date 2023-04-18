@@ -1,6 +1,8 @@
-# Encapsulation
+# Singleton
 
-Encapsulation is the concept that methods/functions that operate on data are put near the place where that data is defined. This project demonstrates encapsulation by declaring a `Duck_t` data type, which includes all of the data elements that are pertinent to creating and using a "duck" object, and by putting the functions that operate on `Duck_t` structs in `duck.h` and `duck.c`.
+Encapsulation and abstraction are very similar concepts. Abstraction is the idea that the data in a class or module doesn't have a format with which a programmer can interact directly. A module that is abstracted could change it's specific implementation (e.g. the data types used to store certain values or the way certain functions are written) and the code that uses the module wouldn't have to change. Encapsulation is the idea that methods/functions that operate on data are put near the place where that data is defined. A module is well encapsulated if there aren't any functions in other modules that are needed to make it work.
+
+This project demonstrates abstraction by declaring a `Duck_t` data type, which includes all of the data elements that are pertinent to creating and using a "duck" object, though the exact nature of these data types isn't revealed. It also demonstrates encapsulation by putting the functions that operate on `Duck_t` structs in `duck.h` and `duck.c`.
 
 ## Expected output
 

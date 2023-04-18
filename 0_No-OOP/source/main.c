@@ -10,23 +10,18 @@ typedef struct Duck_t
     char name[MAX_CHARS_NAME_WITH_NUL];
 } Duck_t;
 
-Duck_t * duckCreate( void );
-void duckInit( Duck_t * thisDuck, char * name );
-void duckShow( Duck_t * thisDuck );
-void duckDestroy( Duck_t * thisDuck );
+Duck_t *    duckNew( char * name );
+void        duckShow( Duck_t * thisDuck );
+void        duckDestroy( Duck_t * thisDuck );
 
 int
 main( void )
 {
     printf("|__Creating duck objects:\n");
 
-    Duck_t * Huey = duckCreate();
-    Duck_t * Dewey = duckCreate();
-    Duck_t * Louie = duckCreate();
-
-    duckInit(Huey, "Huey");
-    duckInit(Dewey, "Dewey");
-    duckInit(Louie, "Louie");
+    Duck_t * Huey = duckNew("Huey");
+    Duck_t * Dewey = duckNew("Dewey");
+    Duck_t * Louie = duckNew("Louie");
 
     printf("|__Showing duck objects:\n");
     
@@ -50,21 +45,17 @@ main( void )
 }
 
 Duck_t *
-duckCreate( void )
+duckNew( char * name )
 {
     Duck_t * newDuck = (Duck_t *)calloc(1, sizeof(Duck_t));
     // TODO: Check for null pointer on malloc failure
 
-    return newDuck;
-}
-
-void
-duckInit( Duck_t * thisDuck, char * name )
-{
     printf("\tInitializing new duck with name: %s\n", name);
 
-    memset(thisDuck, 0, sizeof(Duck_t));
-    strncpy(thisDuck->name, name, MAX_CHARS_NAME);
+    memset(newDuck, 0, sizeof(Duck_t));
+    strncpy(newDuck->name, name, MAX_CHARS_NAME);
+
+    return newDuck;
 }
 
 void
